@@ -1,8 +1,3 @@
-/*
-!.gitignore
-!/scripts
-/scripts/_old
-
 *.xls
 *.xlsx
 *.dta
@@ -28,4 +23,3 @@
 *.mkv
 *.mp4
 *.pyc
-scripts/2.6. Sistema de georreferenciacion/Armado de bases/EDESUR_con_multi_georef.qgz
