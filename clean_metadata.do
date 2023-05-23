@@ -4,7 +4,7 @@
 
 set more off
 *--------------------------------Directories-------------------------------*
-global root "C:\Users\Nico\Documents\World Bank\Data Portal"
+global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
 *global root "C:\Users\llohi\Documents\WB\Data Portal"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 cd "${root}"
@@ -133,8 +133,8 @@ save "$data_processed\metadata_ilo", replace
 
 *----------------------------------UNICEF----------------------------------*
 
-import excel "$data_raw\metadata_unicef_0.xlsx", firstrow clear
-drop coverage
+import excel "$data_raw\metadata_unicef_0.xlsx", firstrow clear // FIXME: ¿Agregar con API?
+/* drop coverage */
 gen source1 = "UNICEF"
 save "$data_processed\metadata_unicef_0", replace
 import excel "$data_raw\metadata_unicef.xlsx", firstrow clear 
@@ -168,7 +168,7 @@ gen source1 = "UNESCO"
 save "$data_processed\metadata_unesco", replace
 
 *-----------------------------------UN--------------------------------------*
-import excel "$data_raw\metadata_UN.xlsx", firstrow clear
+import excel "$data_raw\metadata_UN.xlsx", firstrow clear // FIXME: UN metadata está rota. Hay que tocar el excel
 gen source1 = "UN"
 save "$data_processed\metadata_UN", replace
 
@@ -186,7 +186,7 @@ append using "$data_processed\metadata_wdi"
 append using "$data_processed\metadata_hci_web", force
 append using "$data_processed\metadata_who"
 append using "$data_processed\metadata_unesco"
-append using "$data_processed\metadata_UN"
+append using "$data_processed\metadata_UN", force
 append using "$data_processed\metadata_FAO"
 drop gender
 replace code = "unicef_water" if code=="basicdwater"
@@ -220,16 +220,20 @@ import excel "$data_raw\Units.xlsx", firstrow clear
 save "$data_processed\units", replace
 restore
 
+*---------------------------------sigle metadata dta-----------------------------------*
+use "$data_processed\metadata", clear 
+drop if code=="" | code=="NA"
+merge 1:1 code using "$data_processed\download_link", nogen keep(3)
+merge 1:1 code using "$data_processed\categories", nogen keep(3)
+merge 1:1 code using "$data_processed\units", nogen force keep(3)
+drop D C E
+save "$data_processed\metadata_full", replace 
+
 *-----------------------------------merge----------------------------------*
 use "$data_processed\complete_series_wmetadata", clear
 *drop name
-merge m:1 code using "$data_processed\metadata", nogen 
-merge m:1 code using "$data_processed\download_link", nogen
 merge m:1 wbcode using "$data_processed\country_class", nogen keep(3)
-merge m:1 code using "$data_processed\categories", nogen
-*drop D // melanie - 29 marzo 2023
-merge m:1 code using "$data_processed\units", nogen force
-drop D C E
+merge m:1 code using "$data_processed\metadata_full", nogen keep(3)
 
 *-----------------------------Learning Poverty-----------------------------*
 

@@ -29,7 +29,7 @@ save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
 *--------------------------------------------------------------------------*
 *----------------------------------UNICEF----------------------------------*
 *--------------------------------------------------------------------------*
-
+* FIXME: Agregar todo esto a la API y chau.
 *vaccines
 foreach vac in BCG DTP1 DTP3 HEPB3 HEPBB HIB3 IPV1 MCV1 MCV2 PCV3 POL3 ROTAC { // I noticed we are not using the vaccine YFV - alison - 27 marzo 2023
 import excel "$data_raw\unicef_vaccines.xlsx", firstrow clear sheet("`vac'")
