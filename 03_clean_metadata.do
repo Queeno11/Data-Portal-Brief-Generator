@@ -271,7 +271,7 @@ replace scale = "0 - not bounded" if scale==""
 gen year2 = year if value!=.
 bysort code: egen minyear = min(year2)
 bysort code: egen maxyear = max(year2)
-drop coverage
+// drop coverage
 tostring minyear, replace
 tostring maxyear, replace
 gen coverage = minyear + " - " + maxyear 
