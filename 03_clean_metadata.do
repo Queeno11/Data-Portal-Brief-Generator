@@ -3,7 +3,7 @@
 *------------------------------------------------------------------------------*
 
 set more off
-*--------------------------------Directories-------------------------------*
+/* *--------------------------------Directories-------------------------------*
 global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
 *global root "C:\Users\llohi\Documents\WB\Data Portal"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
@@ -11,7 +11,7 @@ cd "${root}"
 global portal    	  "$root\Data"
 global data_raw 	  "$portal\Data_Raw"
 global data_processed "$portal\Data_Processed"
-
+ */
 *------------------------------------WDI-----------------------------------*
 
 import excel "$data_raw\wdi_1972-2022.xlsx", clear firstrow sheet("Series - Metadata")
@@ -251,6 +251,8 @@ replace download_link = "https://databank.worldbank.org/source/human-capital-ind
 gen data = "HCI" if code=="eyrs" | code=="hci" | code=="hci_lower" | code=="hci_upper" | code=="nostu" | code=="psurv" | code=="qeyrs" | code=="test" | code=="se_lpv_prim" | code=="asr"
 replace data = "HCCI" if missing(data)
 replace description = "The final index score ranges from zero to one and measures the productivity as a future worker of child born today relative to the benchmark of full health and complete education." if code=="hci"
+* FIXME: This should be a comment, not a description 
+
 replace description = "To track progress over a decade, a version of the HCI was calculated for 103 economies. Data to populate the 2010 HCI was carefully selected to maximize comparability with the 2020 HCI. In particular, only those countries where learning scores measured by the same international assessment in 2010 and 2020 entered the comparison." if code=="hci" & year==2010
 
 gen scale = ""
@@ -289,7 +291,7 @@ drop if code == "`var'" & (gender==1|gender==2)
 
 gen note = ""
 replace note = "This variable is classified in Adulthood and Elderly as stage of life, however it should also include the age group Youth" if code=="asr"
-replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023
+// replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 FIXME: Nico, 24-Mayo-2023. No tenemos variable age... why?
 
 *---------Add column for type of graph  TO CONFIRM WITH GERMAN AND RYTHIA-----------*// alison - 29 marzo 2023
 

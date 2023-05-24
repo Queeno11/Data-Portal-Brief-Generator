@@ -3,14 +3,14 @@
 *------------------------------------------------------------------------------*
 cls
 set more off
-*--------------------------------Directories-------------------------------*
+/* *--------------------------------Directories-------------------------------*
 global root "C:\Users\Nico\Documents\World Bank\Data Portal"
 *global root "C:\Users\llohi\Documents\WB\Data Portal"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 cd "${root}"
 global portal    	  "$root\Data"
 global data_raw 	  "$portal\Data_Raw"
-global data_processed "$portal\Data_Processed"
+global data_processed "$portal\Data_Processed" */
 
 *------------------------Codes and Country names---------------------------*
 capture qui dir "$data_processed\Country codes\"
@@ -209,7 +209,7 @@ save "$data_processed\unicef_health", replace
 
 *****NUEVOS:
 
-use "$data_raw\UNICEF api", clear
+use "$data_raw\UNICEF_api_${date}", clear
 gen gender=.
 replace gender=0 if SEX=="_T"
 replace gender=1 if SEX=="M"
@@ -317,7 +317,7 @@ replace gender = 2 if (Dim1type=="Sex" & Dim1=="Female")
 replace gender = 0 if (Dim1type=="Sex" & Dim1=="Both sexes")
 keep insuf_activity year gender WHO_code
 save "$data_processed\who_activity", replace
-use "$data_processed\wbcodes_equivalences_WHO", clear
+use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_code using "$data_processed\who_activity", nogen keep(3)
 keep wbcode insuf_activity gender year
 save "$data_processed\who_activity", replace
@@ -335,7 +335,7 @@ replace gender = 2 if (Dim1type=="Sex" & Dim1=="Female")
 replace gender = 0 if (Dim1type=="Sex" & Dim1=="Both sexes")
 keep u5_anaemia year gender WHO_code
 save "$data_processed\who_anaemia", replace
-use "$data_processed\wbcodes_equivalences_WHO", clear
+use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_code using "$data_processed\who_anaemia", nogen keep(3)
 keep wbcode u5_anaemia gender year
 save "$data_processed\who_anaemia", replace
@@ -357,7 +357,7 @@ rename Period year
 destring year, replace
 keep year hypertension_30_79 WHO_code gender
 save "$data_processed\who_hypertension", replace
-use "$data_processed\wbcodes_equivalences_WHO", clear
+use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_code using "$data_processed\who_hypertension", nogen keep(3)
 keep wbcode hypertension_30_79 gender year
 save "$data_processed\who_hypertension", replace
@@ -375,7 +375,7 @@ rename Period year
 destring year, replace
 keep year obesity WHO_code gender
 save "$data_processed\who_obesity", replace
-use "$data_processed\wbcodes_equivalences_WHO", clear
+use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_code using "$data_processed\who_obesity", nogen keep(3)
 keep wbcode obesity gender year
 save "$data_processed\who_obesity", replace
