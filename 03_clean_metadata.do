@@ -350,17 +350,17 @@ compress
 replace source = "World Bank DataBank" if source=="WDI"|source=="World Bank Data Catalog"
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
-save "$data_processed\complete_series_wmd_3may23", replace // melanie - 29 marzo 2023
+save "$data_processed\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
 *use "$data_processed\complete_series_wmd_29march23", clear
 
 *export excel "$data_processed\complete_series_wmd_24march23.xlsx", replace firstrow(variables)
-export excel "$data_processed\complete_series_wmd_3may23.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
+export excel "$data_processed\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
-use "$data_processed\complete_series_wmd_3may23", clear
+use "$data_processed\complete_series_wmd_${date}", clear
 
-br wbcode wbregion wbincome year code gender value
+/* br wbcode wbregion wbincome year code gender value */
 
 by code year wbregion gender, sort: egen median_reg = median(value) 
 
