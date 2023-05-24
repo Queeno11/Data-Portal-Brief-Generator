@@ -4,8 +4,8 @@
 
 set more off
 *--------------------------------Directories-------------------------------*
-global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
-*global root "C:\Users\llohi\Documents\WB\Data Portal"
+*global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
+global root "C:\Users\llohi\Documents\WB\Data Portal"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 cd "${root}"
 global portal    	  "$root\Data"
@@ -142,7 +142,13 @@ gen source1 = "UNICEF"
 drop update
 gen update=""
 save "$data_processed\metadata_unicef", replace
+import excel "$data_raw\names.xlsx", clear firstrow
+save "$data_processed\names", replace
 use "$data_processed\metadata_unicef", clear
+merge 1:m code using "$data_processed\names", nogen keep(3)
+rename code code_source
+rename name_portal code
+drop code_source source
 append using "$data_processed\metadata_unicef_0"
 *------------------------------------HCI-----------------------------------*
 
@@ -160,6 +166,11 @@ import excel "$data_raw\metadata_who.xlsx", firstrow clear
 gen source1 = "WHO"
 drop id
 save "$data_processed\metadata_who", replace
+merge 1:m code using "$data_processed\names", nogen keep(3)
+rename code code_source
+rename name_portal code
+drop code_source source
+save "$data_processed\metadata_who", replace
 
 *----------------------------------UNESCO-----------------------------------*
 
@@ -168,7 +179,7 @@ gen source1 = "UNESCO"
 save "$data_processed\metadata_unesco", replace
 
 *-----------------------------------UN--------------------------------------*
-import excel "$data_raw\metadata_UN.xlsx", firstrow clear // FIXME: UN metadata está rota. Hay que tocar el excel
+import excel "$data_raw\metadata_UN.xlsx", firstrow clear
 gen source1 = "UN"
 save "$data_processed\metadata_UN", replace
 
@@ -269,7 +280,7 @@ replace scale = "0 - not bounded" if scale==""
 gen year2 = year if value!=.
 bysort code: egen minyear = min(year2)
 bysort code: egen maxyear = max(year2)
-drop coverage
+*drop coverage
 tostring minyear, replace
 tostring maxyear, replace
 gen coverage = minyear + " - " + maxyear 
@@ -289,7 +300,9 @@ drop if code == "`var'" & (gender==1|gender==2)
 
 gen note = ""
 replace note = "This variable is classified in Adulthood and Elderly as stage of life, however it should also include the age group Youth" if code=="asr"
-replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023
+
+//FIX ME: AGE NO ESTA
+*replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 
 
 *---------Add column for type of graph  TO CONFIRM WITH GERMAN AND RYTHIA-----------*// alison - 29 marzo 2023
 
@@ -306,6 +319,7 @@ replace name = name + ", Male" if gender==1
 rename source1 source
 ren coverage timespan // alison - 27 marzo 2023
 ren wbincomegroup wbincome // alison - 27 marzo 2023
+
 
 lab var wbcode "WB country code"
 lab var year "Year"
