@@ -142,7 +142,13 @@ gen source1 = "UNICEF"
 drop update
 gen update=""
 save "$data_processed\metadata_unicef", replace
+import excel "$data_raw\names.xlsx", clear firstrow
+save "$data_processed\names", replace
 use "$data_processed\metadata_unicef", clear
+merge 1:m code using "$data_processed\names", nogen keep(3)
+rename code code_source
+rename name_portal code
+drop code_source source
 append using "$data_processed\metadata_unicef_0"
 *------------------------------------HCI-----------------------------------*
 
@@ -159,6 +165,11 @@ save "$data_processed\metadata_hci_web", replace
 import excel "$data_raw\metadata_who.xlsx", firstrow clear
 gen source1 = "WHO"
 drop id
+save "$data_processed\metadata_who", replace
+merge 1:m code using "$data_processed\names", nogen keep(3)
+rename code code_source
+rename name_portal code
+drop code_source source
 save "$data_processed\metadata_who", replace
 
 *----------------------------------UNESCO-----------------------------------*
@@ -271,7 +282,7 @@ replace scale = "0 - not bounded" if scale==""
 gen year2 = year if value!=.
 bysort code: egen minyear = min(year2)
 bysort code: egen maxyear = max(year2)
-// drop coverage
+*drop coverage
 tostring minyear, replace
 tostring maxyear, replace
 gen coverage = minyear + " - " + maxyear 
@@ -291,7 +302,9 @@ drop if code == "`var'" & (gender==1|gender==2)
 
 gen note = ""
 replace note = "This variable is classified in Adulthood and Elderly as stage of life, however it should also include the age group Youth" if code=="asr"
-// replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 FIXME: Nico, 24-Mayo-2023. No tenemos variable age... why?
+
+//FIX ME: AGE NO ESTA
+*replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 
 
 *---------Add column for type of graph  TO CONFIRM WITH GERMAN AND RYTHIA-----------*// alison - 29 marzo 2023
 
@@ -308,6 +321,7 @@ replace name = name + ", Male" if gender==1
 rename source1 source
 ren coverage timespan // alison - 27 marzo 2023
 ren wbincomegroup wbincome // alison - 27 marzo 2023
+
 
 lab var wbcode "WB country code"
 lab var year "Year"
