@@ -168,7 +168,7 @@ gen source1 = "UNESCO"
 save "$data_processed\metadata_unesco", replace
 
 *-----------------------------------UN--------------------------------------*
-import excel "$data_raw\metadata_UN.xlsx", firstrow clear // FIXME: UN metadata está rota. Hay que tocar el excel
+import excel "$data_raw\metadata_UN.xlsx", firstrow clear
 gen source1 = "UN"
 save "$data_processed\metadata_UN", replace
 
