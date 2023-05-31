@@ -350,15 +350,15 @@ compress
 replace source = "World Bank DataBank" if source=="WDI"|source=="World Bank Data Catalog"
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
-save "$data_processed\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
-*use "$data_processed\complete_series_wmd_29march23", clear
+save "$data_output\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
+*use "$data_output\complete_series_wmd_${date}", clear
 
-*export excel "$data_processed\complete_series_wmd_24march23.xlsx", replace firstrow(variables)
-export excel "$data_processed\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
+*export excel "$data_output\complete_series_wmd_24march23.xlsx", replace firstrow(variables)
+export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
-use "$data_processed\complete_series_wmd_${date}", clear
+use "$data_output\complete_series_wmd_${date}", clear
 
 /* br wbcode wbregion wbincome year code gender value */
 
@@ -376,10 +376,10 @@ sort wbcode year code gender
 
 drop units scale update timespan minyear maxyear source download_link note
 
-*export excel "$data_processed\benchmarking_29march23_all.xlsx", replace firstrow(variables)
+*export excel "$data_processed\benchmarking_${date}_all.xlsx", replace firstrow(variables)
 
-save "$data_processed\benchmarking_29march23_all", replace // alison - 29 marzo 2023
-*use "$data_processed\benchmarking_29march23_all", clear // alison - 29 marzo 2023
+save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
+*use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
 
 **************************************alison - 29 marzo 2023*************************************************
 *keep the last available year for the 49 variables contained in the Country Briefs (including gender split)*
@@ -396,21 +396,21 @@ drop if nr_countries == 0 //maybe delete in the future all those with value==0 t
 *see if they have enough countries for comparison
 *tab nr_countries code 
 
-export excel "$data_processed\benchmarking_29march23_2021.xlsx", replace firstrow(variables) 
+export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
 
 *-----------------Calculate indicators by category-------------------------* // melanie - 29 marzo 2023
 /*
-use "$data_processed\complete_series_wmd_29march23", clear
+use "$data_processed\complete_series_wmd_${date}", clear
 collapse (mean) value, by(name topic stage)
 gen n = 1 
 collapse (sum) n, by(topic)
 
-use "$data_processed\complete_series_wmd_29march23", clear
+use "$data_processed\complete_series_wmd_${date}", clear
 collapse (mean) value, by(name topic stage)
 gen n = 1 
 collapse (sum) n, by(stage)
 
-use "$data_processed\complete_series_wmd_29march23", clear
+use "$data_processed\complete_series_wmd_${date}", clear
 keep value year wbcode wbcountryname name code gender
 reshape wide value, i(wbcode wbcountryname name code gender) j(year)
 egen countt = rownonmiss(value1950 value1951 value1952 value1953 value1954 value1955 value1956 value1957 value1958 value1959 value1960 value1961 value1962 value1963 value1964 value1965 value1966 value1967 value1968 value1969 value1970 value1971 value1972 value1973 value1974 value1975 value1976 value1977 value1978 value1979 value1980 value1981 value1982 value1983 value1984 value1985 value1986 value1987 value1988 value1989 value1990 value1991 value1992 value1993 value1994 value1995 value1996 value1997 value1998 value1999 value2000 value2001 value2002 value2003 value2004 value2005 value2006 value2007 value2008 value2009 value2010 value2011 value2012 value2013 value2014 value2015 value2016 value2017 value2018 value2019 value2020 value2021)
