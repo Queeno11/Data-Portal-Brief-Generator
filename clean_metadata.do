@@ -362,11 +362,11 @@ compress
 replace source = "World Bank DataBank" if source=="WDI"|source=="World Bank Data Catalog"
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
-save "$data_processed\complete_series_wmd_3may23", replace // melanie - 29 marzo 2023
+save "$data_processed\complete_series_wmd_31may23", replace // yanel 31 marzo 2023
 *use "$data_processed\complete_series_wmd_29march23", clear
 
 *export excel "$data_processed\complete_series_wmd_24march23.xlsx", replace firstrow(variables)
-export excel "$data_processed\complete_series_wmd_3may23.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
+export excel "$data_processed\complete_series_wmd_31may23.xlsx", replace firstrow(variables) // yanel 31 mayo 2023
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
