@@ -7,10 +7,6 @@
 	****************************************************************************
 	
 	*----------------------------------last 5----------------------------------*
-	/*
-	import excel "$data_output\complete_series_wmd_17march23.xlsx", firstrow clear
-	save "$data_output\complete_series_wmd_17march23", replace
-	*/
 	use "$data_output\complete_series_wmd_${date}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017)

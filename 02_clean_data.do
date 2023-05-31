@@ -13,9 +13,6 @@ global data_raw 	  "$portal\Data_Raw"
 global data_processed "$portal\Data_Processed" */
 
 *------------------------Codes and Country names---------------------------*
-capture qui dir "$data_processed\Country codes\"
-if _rc!=0 shell mkdir "$data_processed\Country codes\"
-
 import excel "$data_raw\Country codes\wbcodes_equiv_unicef.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_unicef", replace
 import excel "$data_raw\Country codes\wbcodes_equiv_FAO.xlsx", firstrow clear

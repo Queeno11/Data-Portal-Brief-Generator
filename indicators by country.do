@@ -5,14 +5,14 @@
 
 	*--------------------------------Directories-------------------------------*
 		
-		global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\HCI update\"
+		/* global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\HCI update\"
 		global charts "${root}/Outputs/Update"
 		global dhci "${root}/Data"
 		global dport "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\Data"
-		cd "${root}"
+		cd "${root}" */
 
 		*----------------------------Load data---------------------------------*
-		
+		* FIXME: por qué no tengo esta base?
 		use "$dhci\data_briefs_allcountries", clear
 		keep wbcode unicef_neomort unicef_mealfreq uisger02 lastnm_mmrt unicef_care lastnm_birth_reg unicef_breastf unicef_diarrhoea vacBCG uiscr1 lastnm_sec_ger se_lpv_prim uiscr2 vacHEPBB eip_neet_mf_y lastnm_afr lastnm_ter_ger une_2eap_mf_y emp_nifl_y eap_2wap_mf_a eap_2wap_mf_a_f eap_2wap_mf_a_m sp_dyn_le00_in lastnm_probdeath_ncd une_2eap_mf_a emp_nifl_a uisger02_f uisger02_m uisger01 vacDTP1 vacDTP3 vacHEPB3 vacHIB3 vacIPV1 vacMCV1 vacMCV2 vacPCV3 vacPOL3 vacROTAC uiscr1_f uiscr1_m se_lpv_prim_f se_lpv_prim_m eip_neet_mf_y_f eip_neet_mf_y_m une_2eap_mf_y_f une_2eap_mf_y_m emp_nifl_y_f emp_nifl_y_m sp_dyn_le00_in_f sp_dyn_le00_in_m une_2eap_mf_a_f une_2eap_mf_a_m_y emp_nifl_a_f emp_nifl_a_m unicef_neomort_y unicef_mealfreq_y uisger02_y lastnm_mmrt_y unicef_care_y lastnm_birth_reg_y unicef_breastf_y unicef_diarrhoea_y vacBCG_y uiscr1_y lastnm_sec_ger_y se_lpv_prim_y uiscr2_y vacHEPBB_y eip_neet_mf_y_y lastnm_afr_y lastnm_ter_ger_y une_2eap_mf_y_y emp_nifl_y_y eap_2wap_mf_a_f_y eap_2wap_mf_a_m_y sp_dyn_le00_in_y lastnm_probdeath_ncd_y une_2eap_mf_a_y emp_nifl_a_y uisger02_f_y uisger02_m_y uisger01_y vacDTP1_y vacDTP3_y vacHEPB3_y vacHIB3_y vacIPV1_y vacMCV1_y vacMCV2_y vacPCV3_y vacPOL3_y vacROTAC_y uiscr1_f_y uiscr1_m_y se_lpv_prim_f_y se_lpv_prim_m_y eip_neet_mf_y_f_y eip_neet_mf_y_m_y une_2eap_mf_y_f_y une_2eap_mf_y_m_y emp_nifl_y_f_y emp_nifl_y_m_y sp_dyn_le00_in_f_y sp_dyn_le00_in_m_y une_2eap_mf_a_f_y une_2eap_mf_a_m_y emp_nifl_a_f_y emp_nifl_a_m_y eap_2wap_mf_a_y
 		
