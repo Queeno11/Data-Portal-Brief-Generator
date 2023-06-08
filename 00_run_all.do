@@ -34,7 +34,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators
-do "$root\03_clean_metadata"
+/* do "$root\03_clean_metadata" */
 
 ** 04 - Missing data reports
-do "$root\_missing_data"
+do "$root\04_missing_data"
