@@ -23,76 +23,15 @@ import excel "$data_raw\Country codes\wbcodes_equiv_UN.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_UN", replace
 import excel "$data_raw\Country codes\wbcodes_equiv_unesco.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
+import excel "$data_raw\names.xlsx", firstrow clear
+duplicates drop name, force
+save "$data_processed\names", replace
+
 *--------------------------------------------------------------------------*
 *----------------------------------UNICEF----------------------------------*
 *--------------------------------------------------------------------------*
-* FIXME: Agregar todo esto a la API y chau.
-*vaccines
-foreach vac in BCG DTP1 DTP3 HEPB3 HEPBB HIB3 IPV1 MCV1 MCV2 PCV3 POL3 ROTAC { // I noticed we are not using the vaccine YFV - alison - 27 marzo 2023
-import excel "$data_raw\unicef_vaccines.xlsx", firstrow clear sheet("`vac'")
-*rename iso wbcode // alison - 27 marzo 2023
-rename iso3 wbcode // alison - 27 marzo 2023
-reshape long y, i(wbcode) j(year)
-*drop unicef country // alison - 27 marzo 2023
-drop unicef_region country // alison - 27 marzo 2023
-gen gender=0
-rename y vac`vac'
-lab var vac`vac' "Vaccination coverage of `vac'"
-keep vac`vac' year wbcode gender
-save "$data_processed\unicef_`vac'", replace 
-}
 
-*under 5 mortality
-import excel "$data_raw\unicef_u5mort_series.xlsx", firstrow clear
-reshape long y, i(wbcode) j(year)
-rename y unicef_u5mort
-lab var unicef_u5mort "Under-5 mortality rate"
-*drop wbcountry // alison - 27 marzo 2023
-drop wbcountryname // alison - 27 marzo 2023
-gen gender=0
-save "$data_processed\unicef_u5mort", replace
-
-*5-14 mortality
-import excel "$data_raw\unicef_514mort_series.xlsx", firstrow clear
-reshape long y, i(wbcode) j(year)
-rename y unicef_514mort
-lab var unicef_514mort "Infant mortality rate"
-*drop wbcountry // alison - 27 marzo 2023
-drop wbcountryname // alison - 27 marzo 2023
-gen gender=0
-save "$data_processed\unicef_514mort", replace
-
-*under 5 mortality
-import excel "$data_raw\unicef_1524mort_series.xlsx", firstrow clear
-reshape long y, i(wbcode) j(year)
-rename y unicef_1524mort
-lab var unicef_1524mort "Ages 15-24 mortality rate"
-*drop wbcountry // alison - 27 marzo 2023
-drop wbcountryname // alison - 27 marzo 2023
-gen gender=0
-save "$data_processed\unicef_1524mort", replace
-
-*care for mothers
-import excel "$data_raw\unicef_caremother_series.xlsx", firstrow clear
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country Codes\wbcodes", nogen keep(3)
-reshape long y, i(wbcode) j(year)
-rename y unicef_caremother
-lab var unicef_caremother "Percentage of women (ages 15-49) who received postnatal care within 2 days of giving birth"
-*drop wbcountry // alison - 27 marzo 2023
-drop wbcountryname // alison - 27 marzo 2023
-*foreach var in unicef_ { // alison - 27 marzo 2023
-foreach var in unicef_caremother { // alison - 27 marzo 2023
-replace `var' = "" if `var'=="-"
-replace `var' = "100" if `var'==">99"
-replace `var' = "0" if `var'=="<1"
-destring `var', replace
-}
-gen gender=0
-save "$data_processed\unicef_caremother", replace
-
-*stillbirths
+*stillbirths *FIXME: no lo encontré en la API
 import excel "$data_raw\unicef_stillbirths.xlsx", firstrow clear
 drop Y Z A* B*
 drop in 196
@@ -109,102 +48,7 @@ drop wbcountryname // alison - 27 marzo 2023
 gen gender=0
 save "$data_processed\unicef_stillbirths", replace
 
-*unicef_hygiene
-import excel "$data_raw\unicef_hygiene.xlsx", firstrow clear
-drop D
-drop if missing(year)	
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
-rename value unicef_hygiene
-lab var unicef_hygiene "Basic hygiene in household"
-drop if year=="-"
-destring year, replace
-foreach var in unicef_hygiene {
-replace `var' = "" if `var'=="-"
-replace `var' = "100" if `var'==">99"
-replace `var' = "0" if `var'=="<1"
-destring `var', replace
-}
-drop wbcountryname
-gen gender=0
-save "$data_processed\unicef_hygiene", replace
-
-*unicef_water
-import excel "$data_raw\unicef_water.xlsx", firstrow clear
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
-rename value unicef_water
-lab var unicef_water "Basic water in household"
-drop wbcountryname
-gen gender=0
-save "$data_processed\unicef_water", replace
-
-*unicef_sanitation
-import excel "$data_raw\unicef_sanitation.xlsx", firstrow clear
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
-rename value unicef_sanitation
-lab var unicef_sanitation "Basic sanitation in household"
-foreach var in unicef_sanitation {
-replace `var' = "" if `var'=="-"
-replace `var' = "100" if `var'==">99"
-replace `var' = "0" if `var'=="<1"
-destring `var', replace
-}
-drop wbcountryname
-gen gender=0
-save "$data_processed\unicef_sanitation", replace
-
-*unicef_schools
-import excel "$data_raw\unicef_water_schools.xlsx", firstrow clear
-foreach var in basic_water_schools basic_hygiene_schools basic_sanitation_schools {
-replace `var' = "" if `var'=="-"
-replace `var' = "100" if `var'==">99"
-replace `var' = "0" if `var'=="<1"
-destring `var', replace
-}
-rename name wbcountryname
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
-*lab var basic_water "Basic water in schools" // alison - 27 marzo 2023
-*lab var basic_hyg "Basic hygiene in schools" // alison - 27 marzo 2023
-*lab var basic_sanit "Basic sanitation in schools" // alison - 27 marzo 2023
-lab var basic_water_schools "Basic water in schools" // alison - 27 marzo 2023
-lab var basic_hygiene_schools "Basic hygiene in schools" // alison - 27 marzo 2023
-lab var basic_sanitation_schools "Basic sanitation in schools" // alison - 27 marzo 2023
-drop wbcountryname
-gen gender=0
-save "$data_processed\unicef_schools", replace
-
-*unicef_healthfac
-import excel "$data_raw\unicef_water_health.xlsx", firstrow clear
-*foreach var in basic_water_ basic_hygiene_ basic_sanitation_ {  // alison - 27 marzo 2023
-foreach var in basic_water_health basic_hygiene_health basic_sanitation_health {  // alison - 27 marzo 2023
-replace `var' = "" if `var'=="-"
-replace `var' = "100" if `var'==">99"
-replace `var' = "0" if `var'=="<1"
-destring `var', replace
-}
-rename name wbcountryname
-*replace wbcountry = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-replace wbcountryname = "Cote d'Ivoire" if wbcountryname=="Côte d'Ivoire" // alison - 27 marzo 2023
-merge m:1 wbcountryname using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
-*lab var basic_water "Basic water in health facilities" // alison - 27 marzo 2023
-*lab var basic_hygi "Basic hygiene in health facilities" // alison - 27 marzo 2023
-*lab var basic_sanit "Basic sanitation in health facilities" // alison - 27 marzo 2023
-lab var basic_water_health "Basic water in health facilities" // alison - 27 marzo 2023
-lab var basic_hygiene_health "Basic hygiene in health facilities" // alison - 27 marzo 2023
-lab var basic_sanitation_health "Basic sanitation in health facilities" // alison - 27 marzo 2023
-drop wbcountryname
-gen gender=0
-save "$data_processed\unicef_health", replace
-
-
-*****NUEVOS:
+***** NUEVOS via API:
 
 use "$data_raw\UNICEF_api_${date}", clear
 gen gender=.
@@ -235,8 +79,8 @@ foreach oldvar of varlist i_* {
 	destring `var', replace
 	drop `var'_str
 } 
-
-		rename ED_MAT_G23 ed_mat_g23
+		* FIXME: Rename a todos o a ninguno...
+		/* rename ED_MAT_G23 ed_mat_g23
 		rename ED_READ_G23 ed_read_g23
 		rename HVA_EPI_DTH_ANN_15_24 AID_deaths_1524
 		rename HVA_EPI_DTH_RT_0_14 AID_deaths_014
@@ -253,35 +97,22 @@ foreach oldvar of varlist i_* {
 		rename NT_ANT_WHZ_NE3 severe_wasting
 		rename NT_ANT_WHZ_PO2 overweight
 		rename PT_CHLD_5_17_LBR_ECON child_labor
-		rename MNCH_ORS ORS_children
+		rename MNCH_ORS ORS_children */
 
 
 * Adds wbcode
 merge m:1 unicef_code using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
 drop wbcountryname unicef_countryname unicef_code
+
+* Adds stillbirth as is not in the API for some reason... FIXME: check why
+merge 1:1 wbcode year gender using "$data_processed\unicef_stillbirths", nogen keep(3)
+
 save "$data_processed\all_unicef", replace
 	
 
 *--------------------------------------------------------------------------*
-*---------------------------------WDI Nora---------------------------------*
-*--------------------------------------------------------------------------*
-
-use "$data_raw\inputdata", clear
-keep year wbcountryname wbcode hci_mf_lower_2020 hci_mf_upper_2020 hci_m_2010 hci_f_2010 hci_mf_2010 hci_m_2018 hci_f_2018 hci_mf_2018 hci_m_2020 hci_f_2020 hci_mf_2020 psurv_m_2010 psurv_f_2010 psurv_mf_2010 psurv_m_2018 psurv_f_2018 psurv_mf_2018 psurv_m_2020 psurv_f_2020 psurv_mf_2020 qeyrs_m_2010 qeyrs_f_2010 qeyrs_mf_2010 qeyrs_m_2018 qeyrs_f_2018 qeyrs_mf_2018 qeyrs_m_2020 qeyrs_f_2020 qeyrs_mf_2020 eyrs_m_2010 eyrs_f_2010 eyrs_mf_2010 eyrs_m_2018 eyrs_f_2018 eyrs_mf_2018 eyrs_m_2020 eyrs_f_2020 eyrs_mf_2020 test_m_2010 test_f_2010 test_mf_2010 test_m_2018 test_f_2018 test_mf_2018 test_m_2020 test_f_2020 test_mf_2020 asr_m_2010 asr_f_2010 asr_mf_2010 asr_m_2018 asr_f_2018 asr_mf_2018 asr_m_2020 asr_f_2020 asr_mf_2020 nostu_m_2010 nostu_f_2010 nostu_mf_2010 nostu_m_2018 nostu_f_2018 nostu_mf_2018 nostu_m_2020 nostu_f_2020 nostu_mf_2020
-drop year
-reshape long hci_mf_lower_ hci_mf_upper_ hci_m_ hci_f_ hci_mf_ psurv_m_ psurv_f_ psurv_mf_ qeyrs_m_ qeyrs_f_ qeyrs_mf_ eyrs_m_ eyrs_f_ eyrs_mf_ test_m_ test_f_ test_mf_ asr_m_ asr_f_ asr_mf_ nostu_m_ nostu_f_ nostu_mf_, i(wbcode wbcountryname) j(year)
-rename *_ *
-rename (hci_mf_lower hci_mf_upper)(hci_lower_mf hci_upper_mf)
-reshape long hci_ hci_upper_ hci_lower_ psurv_ qeyrs_ eyrs_ test_ asr_ nostu_, i(wbcode wbcountryname year) j(gender2) string
-rename *_ *
-gen gender = 0 if gender2=="mf"
-replace gender = 1 if gender2=="m"
-replace gender = 2 if gender2=="f"
-drop gender2
-drop wbcountryname
-save "$data_processed\hci", replace
-
 *--------------------------------WDI online--------------------------------*
+*--------------------------------------------------------------------------*
 
 import excel "$data_raw\hci_web.xlsx", clear firstrow
 bysort name code wbcode: gen n = _n
@@ -599,20 +430,19 @@ save "$data_processed\all_UN", replace
 *--------------------------------Merge all---------------------------------*
 
 use "$data_processed\comp_series", clear // FIXME: ¿De donde sale este DTA? No es reproducible porque me falta lo que genera este archivo
+drop vacbcg	vachepbb // Ya están en UNICEF API
 merge 1:1 wbcode year gender using "$data_processed\all_unicef", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_who", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_unesco", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
-*merge 1:1 wbcode year gender using "$data_processed\hci", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
 lab var wbcode "WB country code"
 lab var year "Year"
 lab var gender "Gender"
 drop if missing(year)
-*drop vacbcg vache // alison - 27 marzo 2023
-drop vacbcg vache* // para verificar - se quiere borrar 1 variable vache con miniscula?  alison - 27 marzo 2023
+
 save "$data_processed\complete_series", replace
 
 *---------------------------------dataset----------------------------------*
@@ -626,4 +456,22 @@ rename a_ value
 append using "$data_processed\hci_web"
 *replace code="NUTRITION_ANAEMIA_CHILDREN_PREV" if code=="NUTRITION_ANAEMIA_CHILDREN"
 drop name
+
 save "$data_processed\complete_series_wmetadata", replace
+
+python:
+import pandas as pd
+from sfi import Macro
+
+data_raw = Macro.getGlobal("data_raw")
+data_processed = Macro.getGlobal("data_processed")
+ 
+complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
+names = pd.read_excel(fr"{data_raw}\names.xlsx")
+coded_names = names.code.unique()
+variables = pd.Series(complete_series_wmetadata.code.unique())
+assert variables.isin(coded_names).all(), f"There are indicators without metadata in names: {variables[-variables.isin(coded_names)]}"
+print("####################")
+print("All indicators have the respective metadata")
+print("####################")
+end

@@ -39,6 +39,38 @@ indicators_for_briefs = [
     'MNCH_DEMAND_FP',   # Demand for family planning satisfied with modern methods - percentage of women(aged 15-49 years)
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
+
+    ## Vaccines
+    'IM_BCG',
+    'IM_DTP1', 
+    'IM_DTP3', 
+    'IM_HEPB3', 
+    'IM_HEPBB', 
+    'IM_HIB3', 
+    'IM_IPV1', 
+    'IM_MCV1', 
+    'IM_MCV2', 
+    'IM_PCV3', 
+    'IM_POL3', 
+    'IM_ROTAC',
+    ## Child mortality
+    'CME_MRY0T4', #04mort
+    'CME_MRY5T14', #514mort
+    'CME_MRY15T24', #1512mort
+    ## Caremother
+    'MNCH_PNCNB', #Postnatal care for newborns within 2 days of birth
+    ## Stilbirth
+    ######
+    ## WASH
+    'WS_PPL_W-ALB', #  "Basic water in household"
+    'WS_PPL_S-ALB', #  "Basic sanitation in household"
+    'WS_PPL_H-B', # "Basic hygiene in household"
+    'WS_SCH_W-B', #  "Basic water in school"
+    'WS_HCF_W-B', # "Basic water in health facility"
+    'WS_SCH_S-B', #  "Basic sanitation in school"
+    'WS_HCF_S-B', # "Basic sanitation in health facility"
+    'WS_SCH_H-B', #  "Basic hygiene in school"
+    'WS_HCF_H-B', # "Basic hygiene in health facility"
 ]
 
 def get_county_codes():
@@ -61,7 +93,7 @@ def get_county_codes():
 def get_indicators_description():
     # Get dataset structure from UNESCO
     unicef = sdmx.Request('UNICEF') # Queries the UNICEF database
-    params = dict(startPeriod='2010')
+    params = dict(startPeriod='2010') # FIXME: ¿Desde que año hay que descargar los datos?
 
     # Only immunisation
     exr_msg = unicef.dataflow('IMMUNISATION')
@@ -170,6 +202,9 @@ def format_dataframe(df, cl_ref_areas):
                             'name']], left_on='REF_AREA', right_index=True, how='left', validate='m:1')
     df = df.rename(columns={'name': 'COUNTRY'})
 
+    # If SEX is not in the dataframe, it is added as 'B' (both)
+    df['SEX'] = '_T'
+
     # Reorder dataframe columns
     ids = ['REF_AREA', 'COUNTRY', 'INDICATOR', 'TIME_PERIOD', 'SEX']
     df = df[ids + ['value']]
@@ -179,6 +214,12 @@ def format_dataframe(df, cl_ref_areas):
 
 if __name__ == '__main__':
 
+    # FIXME: if this raises errors, they must have fixed the WASH dataset. 
+    #   In such case, delete the wash indicators ifs in the loop (next fixme).
+    wash_indicators_house  = ['WS_PPL_W-ALB', 'WS_PPL_S-ALB','WS_PPL_H-B',]
+    wash_indicators_school = ['WS_SCH_W-B','WS_SCH_S-B','WS_SCH_H-B',]
+    wash_indicators_health = ['WS_HCF_W-B','WS_HCF_S-B','WS_HCF_H-B']
+    
     indicators = get_list_of_unicef_indicators()
     cl_ref_areas = get_county_codes()
 
@@ -195,7 +236,16 @@ if __name__ == '__main__':
             selected_ind_code = selected_ind_data.name
             selected_ind_name = selected_ind_data['name']
             selected_ind_parent = selected_ind_data['parent']
-            
+                        
+            # Parents in WASH are not correct
+            #   FIXME: if this raises errors, they must have fixed the WASH dataset. Check previous fixme...
+            if selected_ind in wash_indicators_house:
+                selected_ind_parent = 'WASH_HOUSEHOLDS'
+            elif selected_ind in wash_indicators_school:
+                selected_ind_parent = 'WASH_SCHOOLS'
+            elif selected_ind in wash_indicators_health:
+                selected_ind_parent = 'WASH_HEALTHCARE_FACILITY'
+
             df = query_indicator(selected_ind_code, selected_ind_parent)
             datasets[selected_ind_code] = format_dataframe(df, cl_ref_areas)
             

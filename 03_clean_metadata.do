@@ -2,7 +2,7 @@
 *							METADATA for database						   
 *------------------------------------------------------------------------------*
 
-set more off
+set more on
 /* *--------------------------------Directories-------------------------------*
 global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
 *global root "C:\Users\llohi\Documents\WB\Data Portal"
@@ -133,7 +133,7 @@ save "$data_processed\metadata_ilo", replace
 
 *----------------------------------UNICEF----------------------------------*
 
-import excel "$data_raw\metadata_unicef_0.xlsx", firstrow clear // FIXME: ¿Agregar con API?
+import excel "$data_raw\metadata_unicef_0.xlsx", firstrow clear 
 /* drop coverage */
 gen source1 = "UNICEF"
 save "$data_processed\metadata_unicef_0", replace
@@ -145,16 +145,16 @@ save "$data_processed\metadata_unicef", replace
 import excel "$data_raw\names.xlsx", clear firstrow
 save "$data_processed\names", replace
 use "$data_processed\metadata_unicef", clear
-merge 1:m code using "$data_processed\names", nogen keep(3)
+merge 1:m code using "$data_processed\names"
+more
+drop if _merge==2 // FIXME: Agregar con API y resolver merge == 2
+drop _merge
 rename code code_source
 rename name_portal code
 drop code_source source
 append using "$data_processed\metadata_unicef_0"
-*------------------------------------HCI-----------------------------------*
 
-import excel "$data_raw\hci_metadata.xlsx", firstrow clear
-gen source1 = "HCP"
-save "$data_processed\metadata_hci", replace
+*------------------------------------HCI-----------------------------------*
 
 import excel "$data_raw\metadata_hci_web.xlsx", clear firstrow 
 gen source1 = "World Bank Data Catalog"
@@ -166,7 +166,8 @@ import excel "$data_raw\metadata_who.xlsx", firstrow clear
 gen source1 = "WHO"
 drop id
 save "$data_processed\metadata_who", replace
-merge 1:m code using "$data_processed\names", nogen keep(3)
+merge 1:m code using "$data_processed\names", nogen keep(master match)
+
 rename code code_source
 rename name_portal code
 drop code_source source
@@ -231,20 +232,50 @@ import excel "$data_raw\Units.xlsx", firstrow clear
 save "$data_processed\units", replace
 restore
 
-*---------------------------------sigle metadata dta-----------------------------------*
+*---------------------------------single metadata dta-----------------------------------*
 use "$data_processed\metadata", clear 
 drop if code=="" | code=="NA"
-merge 1:1 code using "$data_processed\download_link", nogen keep(3)
-merge 1:1 code using "$data_processed\categories", nogen keep(3)
-merge 1:1 code using "$data_processed\units", nogen force keep(3)
+merge 1:1 code using "$data_processed\download_link", 
+more
+drop if _merge==2 
+drop _merge
+
+merge 1:1 code using "$data_processed\categories", 
+more
+drop if _merge==2 
+drop _merge
+
+merge 1:1 code using "$data_processed\units"
+more
+drop if _merge==2 
+drop _merge
+
 drop D C E
 save "$data_processed\metadata_full", replace 
 
 *-----------------------------------merge----------------------------------*
 use "$data_processed\complete_series_wmetadata", clear
+
+* Add names
+merge m:1 code using "$data_processed\names"
+drop if _merge == 2
+drop _merge
+more 
+
+replace code = name_portal if name_portal != ""
+drop name_portal source
+
 *drop name
-merge m:1 wbcode using "$data_processed\country_class", nogen keep(3)
-merge m:1 code using "$data_processed\metadata_full", nogen keep(3)
+merge m:1 wbcode using "$data_processed\country_class"
+more
+drop if _merge==2 
+drop _merge
+
+merge m:1 code using "$data_processed\metadata_full"
+more
+drop if _merge==2 
+drop _merge
+
 
 *-----------------------------Learning Poverty-----------------------------*
 
@@ -367,8 +398,8 @@ replace download_link = "https://databank.worldbank.org/source/world-development
 save "$data_output\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
 *use "$data_output\complete_series_wmd_${date}", clear
 
-*export excel "$data_output\complete_series_wmd_24march23.xlsx", replace firstrow(variables)
-export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023
+* FIXME: no se puede exportar a excel porque hay demasiadas obs
+/* export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023 */
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
