@@ -6,8 +6,6 @@ This repository contains the scripts for generating the WB HCP Data Portal datas
 
 The 'Data_Raw' directory contains the downloaded data required to run all the code. Please note that without this data, the code will not be executable.
 
-Codes for creating WB HCP Data Portal and WB HCP Briefs. Most data is directly downloaded from relevant International organizations' portals, except from UNICEF that is accesed via API. Data_Raw contains dowloaded data requiered to run everything, without it, you wont be able to run the code.
-
 ## Getting Started
 
 ### Dependencies

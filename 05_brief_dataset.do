@@ -10,7 +10,7 @@
 	set maxvar 32000
 	use "$data_output\complete_series_wmd_${date}", replace
 	drop name description units scale update timespan minyear maxyear data source download_link note 
-	
+
 *--------------------------------keep years--------------------------------*
 
 	/* Me quedo con último año disponible */
