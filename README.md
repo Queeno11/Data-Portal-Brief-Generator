@@ -33,6 +33,11 @@ With this changes, the final output will be:
 * Scripts 05 to 08 generates the Dataset required for creating the Briefs
 * Scripts 08 to 10 creates the Briefs PDFs
 
+## Adding indicators
+
+In order to add indicators to the Data Portal database, it is required to include the indicator in the metadata.xlsx file.
+
+
 <!-- ## Help
 
 Any advise for common problems or issues.

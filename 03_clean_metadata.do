@@ -2,17 +2,6 @@
 *							METADATA for database						   
 *------------------------------------------------------------------------------*
 
-set more on
-/* *--------------------------------Directories-------------------------------*
-global root "C:\Users\Nico\Documents\World Bank\Data Portal\Data Portal & Brief Generator"
-*global root "C:\Users\llohi\Documents\WB\Data Portal"
-*global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
-cd "${root}"
-global portal    	  "$root\Data"
-global data_raw 	  "$portal\Data_Raw"
-global data_processed "$portal\Data_Processed"
- */
-
  * FIXME: Metadata from WDI, UIS and ILO are from comp_series data. I have to add Marcos' data to main pipeline - Nico
 // *------------------------------------WDI-----------------------------------*
 //
@@ -142,6 +131,9 @@ global data_processed "$portal\Data_Processed"
 //
 // *** End of FIXME...
 
+import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
+duplicates drop code, force
+save "$data_processed\metadata_processed", replace
 
 *-------------------------Add everything to database-------------------*
 use "$data_processed\complete_series_wmetadata", clear

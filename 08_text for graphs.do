@@ -2,16 +2,6 @@
 *								Text for graphs						   
 *------------------------------------------------------------------------------*
 	
-	*--------------------------------Directories-------------------------------*
-
-	*--------------------------------Directories-------------------------------*
-		
-		global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\HCI update\"
-		global charts "${root}/Outputs/Update"
-		global dhci "${root}/Data"
-		global dport "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\Data"
-		cd "${root}"
-
 	*---------------------------------Pendings---------------------------------*	
 		
 		/*
@@ -26,7 +16,7 @@
 		clear all
 		set more off	
 		set maxvar 32000
-		use "$dhci\data_briefs_wprev", replace
+		use "$data_output\data_briefs_wprev", replace
 	
 	*------------------------------Keep vars-----------------------------------*
 	
@@ -1129,11 +1119,11 @@
 	br hci_t	
 	
 	
-	save "$dhci\text", replace
+	save "$data_processed\text", replace
 	
 	*---------------------------------Ordering---------------------------------*
 	
-	use "$dhci\text", clear
+	use "$data_processed\text", clear
 	/* Mantener estos? o más? */
 	keep wbcode unicef_neomort_text unicef_mealfreq_text vacBCG_text uisger02_text uisger02_f_text uisger02_m_text uisger01_text lastnm_mmrt_text_1 unicef_care_text lastnm_birth_reg_text_1 unicef_breastf_text unicef_diarrhoea_text uiscr1_text uiscr1_f_text uiscr1_m_text lastnm_sec_ger_text_1 se_lpv_prim_text se_lpv_prim_f_text se_lpv_prim_m_text vacHEPBB_text uiscr2_text eip_neet_mf_y_text eip_neet_mf_y_f_text eip_neet_mf_y_m_text lastnm_afr_text_1 lastnm_ter_ger_text une_2eap_mf_y_text une_2eap_mf_y_f_text une_2eap_mf_y_m_text eap_2wap_mf_a_f_text eap_2wap_mf_a_m_text sp_dyn_le00_in_text sp_dyn_le00_in_f_text sp_dyn_le00_in_m_text lastnm_probdeath_ncd_text_1
 	
@@ -5448,7 +5438,7 @@ replace lab = "Life expectancy at birth (years)" if wbcode=="ZWE" & name=="sp_dy
 	/**** Esto se hace porque nos habían pedido agregar algunos valores de indicadores, a parte de los name, lab y text para cada stage y orden ****/
 	/* Habría que chequear cuál de estos es el correcto (parecen pisarse) y borrar los que no sirvan */ 
 	
-	use "$dhci\text", clear
+	use "$data_processed\text", clear
 	drop unicef_neomort_text unicef_mealfreq_text vacBCG_text uisger02_text uisger02_f_text uisger02_m_text uisger01_text lastnm_mmrt_text_1 unicef_care_text lastnm_birth_reg_text_1 unicef_breastf_text unicef_diarrhoea_text uiscr1_text uiscr1_f_text uiscr1_m_text lastnm_sec_ger_text_1 se_lpv_prim_text se_lpv_prim_f_text se_lpv_prim_m_text vacHEPBB_text uiscr2_text eip_neet_mf_y_text eip_neet_mf_y_f_text eip_neet_mf_y_m_text lastnm_afr_text_1 lastnm_ter_ger_text une_2eap_mf_y_text une_2eap_mf_y_f_text une_2eap_mf_y_m_text eap_2wap_mf_a_f_text eap_2wap_mf_a_m_text sp_dyn_le00_in_text sp_dyn_le00_in_f_text sp_dyn_le00_in_m_text lastnm_probdeath_ncd_text_1
 	merge 1:1 wbcode using "$charts\ordered_text", nogen 	
 	export excel "$charts\ordered_2", replace firstrow(variable) 

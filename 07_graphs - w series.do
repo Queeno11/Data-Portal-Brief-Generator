@@ -1,21 +1,13 @@
 *------------------------------------------------------------------------------*
 *--------------------------------------Graphs----------------------------------*
 *------------------------------------------------------------------------------*
-
-	*--------------------------------Directories-------------------------------*
-		
-		global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\HCI update\"
-		global charts "${root}/Outputs/Update"
-		global dhci "${root}/Data"
-		global dport "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\Data"
-		cd "${root}"
-		
+	
 	*--------------------------------Load data---------------------------------*
 	
 		clear all
 		set more off	
 		set maxvar 32000
-		use "$dhci\data_briefs_allcountries_wprev", replace
+		use "$data_output\data_briefs_allcountries_wprev", replace
 			
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
