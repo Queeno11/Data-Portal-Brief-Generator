@@ -1,6 +1,4 @@
-# Project Title
-
-Data Portal & Brief Generator
+# Data Portal & Brief Generator
 
 ## Description
 
