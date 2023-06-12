@@ -12,291 +12,166 @@ global portal    	  "$root\Data"
 global data_raw 	  "$portal\Data_Raw"
 global data_processed "$portal\Data_Processed"
  */
-*------------------------------------WDI-----------------------------------*
 
-import excel "$data_raw\wdi_1972-2022.xlsx", clear firstrow sheet("Series - Metadata")
-*drop Lic* Topic Period Agg Statistic Develop Limit Gene // alison - 27 marzo 2023 
-drop Lic* Topic Periodicity Aggregationmethod Statistic* Develop* Limit* Gene* // alison - 27 marzo 2023
+ * FIXME: Metadata from WDI, UIS and ILO are from comp_series data. I have to add Marcos' data to main pipeline - Nico
+// *------------------------------------WDI-----------------------------------*
+//
+// import excel "$data_raw\wdi_1972-2022.xlsx", clear firstrow sheet("Series - Metadata")
+// *drop Lic* Topic Period Agg Statistic Develop Limit Gene // alison - 27 marzo 2023 
+// drop Lic* Topic Periodicity Aggregationmethod Statistic* Develop* Limit* Gene* // alison - 27 marzo 2023
+//
+// gen variable = ""
+// replace variable = "lastnm_afr" if Code=="SP.ADO.TFRT"	
+// replace variable = "lastnm_probdeath_ncd" if Code=="SH.DTH.NCOM.ZS"
+// replace variable = "lastnm_birth_reg" if Code=="SP.REG.BRTH.ZS" | Code=="SP.REG.BRTH.MA.ZS" | Code=="SP.REG.BRTH.FE.ZS" 
+// replace variable = "sp_dyn_le00_in" if Code=="SP.DYN.LE00.IN" | Code=="SP.DYN.LE00.MA.IN" | Code=="SP.DYN.LE00.FE.IN" 
+// replace variable = "uiscr2" if Code=="SE.SEC.CMPT.LO.ZS" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.SEC.CMPT.LO.FE.ZS"
+// replace variable = "lastnm_mmrt" if Code=="SH.STA.MMRT.NE"
+// replace variable = "unicef_neomort" if Code=="SH.DYN.NMRT"
+// replace variable = "uiscr1" if Code=="SE.PRM.CMPT.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.PRM.CMPT.FE.ZS"
+// replace variable = "uisger02" if Code=="SE.PRE.ENRR" | Code=="SE.PRE.ENRR.MA" | Code=="SE.PRE.ENRR.FE"
+// replace variable = "lastnm_sec_ger" if Code=="SE.SEC.ENRR" | Code=="SE.SEC.ENRR.MA" | Code=="SE.SEC.ENRR.FE"	
+// replace variable = "lastnm_ter_ger" if Code=="SE.TER.ENRR" | Code=="SE.TER.ENRR.MA" | Code=="SE.TER.ENRR.FE"
+//
+// gen gender = 0
+// replace gender = 1 if Code=="SP.REG.BRTH.MA.ZS" | Code=="SP.DYN.LE00.MA.IN" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.PRE.ENRR.MA" | Code=="SE.SEC.ENRR.MA" | Code=="SE.TER.ENRR.MA"
+// replace gender = 2 if Code=="SP.REG.BRTH.FE.ZS" | Code=="SP.DYN.LE00.FE.IN" | Code=="SE.SEC.CMPT.LO.FE.ZS" | Code=="SE.PRM.CMPT.FE.ZS" | Code=="SE.PRE.ENRR.FE" | Code=="SE.SEC.ENRR.FE" | Code=="SE.TER.ENRR.FE"
+//
+// drop if Code=="SE.PRE.ENRR.FE" | Code=="SE.PRE.ENRR.MA" | Code=="SP.REG.BRTH.FE.ZS" | Code=="SP.REG.BRTH.MA.ZS" | Code=="SE.PRM.CMPT.FE.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.SEC.ENRR.FE" | Code=="SE.SEC.ENRR.MA" | Code=="SE.SEC.CMPT.LO.FE.ZS" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.TER.ENRR.FE" | Code=="SE.TER.ENRR.MA" | Code=="SP.DYN.LE00.FE.IN" | Code=="SP.DYN.LE00.MA.IN"
+//
+// gen update = "2022, October" if strpos(Source,"October 24, 2022")
+// replace update = "2023, February" if missing(update)
+//
+// gen source1 = "WDI"
+// rename Source source2
+// *rename Ind name // alison - 27 marzo 2023 
+// rename Ind* name // alison - 27 marzo 2023 
+// *rename Long description // alison - 27 marzo 2023
+// rename Long* description // alison - 27 marzo 2023 
+// rename variable code
+// drop Code
+//
+// replace name = "Primary completion rate (% of relevant age group)" if name=="Primary completion rate, total (% of relevant age group)"
+// replace name = "Lower secondary completion rate (% of relevant age group)" if name=="Lower secondary completion rate, total (% of relevant age group)"
+// replace name = "Life expectancy at birth (years)" if name=="Life expectancy at birth, total (years)"
+//
+// order code gender name description update source1 source2
+// drop source2
+// save "$data_processed\metadata_wdi", replace
+//
+// *------------------------------------UIS-----------------------------------*
+//
+// import excel "$data_raw\SDG_LABEL.xlsx", clear firstrow
+// rename IN*EN name
+// /* // alison - 27 marzo 2023 
+// keep if INDI=="CR.3" |INDI=="GER.01" |INDI=="OAEPG.1" |INDI=="OAEPG.2.GPV" | INDI=="SCHBSP.1.WELEC" |INDI=="XGDP.FSGOV" |INDI=="XGOVEXP.IMF" |INDI=="QUTP.1" |INDI=="QUTP.2T3"
+//
+// gen code = "uiscr3" if INDI=="CR.3" 
+// replace code = "uisger01" if INDI=="GER.01" 
+// replace code = "uisoaepg1" if INDI=="OAEPG.1" 
+// replace code = "uisoaepg2gpv" if INDI=="OAEPG.2.GPV" 
+// replace code = "uisschbsp1welec" if INDI=="SCHBSP.1.WELEC" 
+// replace code = "uisxgdpfsgov" if INDI=="XGDP.FSGOV" 
+// replace code = "uisxgovexpimf" if INDI=="XGOVEXP.IMF" 
+// replace code = "uisqutp1" if INDI=="QUTP.1" 
+// replace code = "uisqutp2t3" if INDI=="QUTP.2T3"
+// */
+// keep if INDICATOR_ID=="CR.3" |INDICATOR_ID=="GER.01" |INDICATOR_ID=="OAEPG.1" |INDICATOR_ID=="OAEPG.2.GPV" | INDICATOR_ID=="SCHBSP.1.WELEC" |INDICATOR_ID=="XGDP.FSGOV" |INDICATOR_ID=="XGOVEXP.IMF" |INDICATOR_ID=="QUTP.1" |INDICATOR_ID=="QUTP.2T3"
+//
+// gen code = "uiscr3" if INDICATOR_ID=="CR.3" // alison - 27 marzo 2023 
+// replace code = "uisger01" if INDICATOR_ID=="GER.01" // alison - 27 marzo 2023 
+// replace code = "uisoaepg1" if INDICATOR_ID=="OAEPG.1" // alison - 27 marzo 2023 
+// replace code = "uisoaepg2gpv" if INDICATOR_ID=="OAEPG.2.GPV" // alison - 27 marzo 2023 
+// replace code = "uisschbsp1welec" if INDICATOR_ID=="SCHBSP.1.WELEC" // alison - 27 marzo 2023 
+// replace code = "uisxgdpfsgov" if INDICATOR_ID=="XGDP.FSGOV" // alison - 27 marzo 2023 
+// replace code = "uisxgovexpimf" if INDICATOR_ID=="XGOVEXP.IMF" // alison - 27 marzo 2023 
+// replace code = "uisqutp1" if INDICATOR_ID=="QUTP.1" // alison - 27 marzo 2023 
+// replace code = "uisqutp2t3" if INDICATOR_ID=="QUTP.2T3" // alison - 27 marzo 2023 
+//
+// replace name = "Completion rate, upper secondary education (%)" if name=="Completion rate, upper secondary education, both sexes (%)"
+// replace name = "Gross enrolment ratio, early childhood educational development programmes (%)" if name=="Gross enrolment ratio, early childhood educational development programmes, both sexes (%)"
+// replace name = "Over-age primary students (%)" if name=="Percentage of pupils enrolled in primary education who are at least 2 years over-age for their current grade, both sexes (%)"
+// replace name = "Over-age lower secondary students (%)" if name=="Percentage of pupils enrolled in lower secondary general education who are at least 2 years over-age for their current grade, both sexes (%)"
+// replace name = "Qualified teachers in primary education (%)" if name=="Percentage of qualified teachers in primary education, both sexes (%)"
+// replace name = "Qualified teachers in secondary education (%)" if name=="Percentage of qualified teachers in secondary education, both sexes (%)"
+//
+// gen update = "Not specified" // check - alison - 27 marzo 2023
+//
+// gen description = "Total enrolment in a specific level of education, regardless of age, expressed as a percentage of the eligible official school-age population corresponding to the same level of education in a given school year." if code == "uisger01"
+// replace description = "Percentage of a cohort of children or young people aged 3-5 years above the intended age for the last grade of each level of education who have completed that grade" if code=="uiscr3"
+// replace description = "Percentage of pupils in each level of education (primary education) who are at least 2 years above the intended age for their grade" if code=="uisoaepg1"
+// replace description = "Percentage of pupils in each level of education (lower secondary education) who are at least 2 years above the intended age for their grade" if code=="uisoaepg2gpv"
+// replace description = "Percentage of teachers by level of education taught who have at least the minimum academic qualifications required for teaching their subjects at the relevant level in a given country, in a given academic year." if code == "uisqutp1"
+// replace description = "Percentage of teachers by level of education taught who have at least the minimum academic qualifications required for teaching their subjects at the relevant level in a given country, in a given academic year." if code == "uisqutp2t3"
+// replace description = "Regularly and readily available sources of power (e.g. grid/mains connection, wind, water, solar and fuel-powered generator, etc.) that enable the adequate and sustainable use of ICT infrastructure for educational purposes." if code == "uisschbsp1welec"
+// replace description = "Expenditure on education refers to expenditure on core educational goods and services, such as teaching staff, school buildings, or school books and teaching materials, and peripheral educational goods and services such as ancillary services, general administration and other activities. As percentage of GDP." if code == "uisxgdpfsgov"
+// replace description = "Expenditure on education refers to expenditure on core educational goods and services, such as teaching staff, school buildings, or school books and teaching materials, and peripheral educational goods and services such as ancillary services, general administration and other activities. As percentage of total government expenditure." if code == "uisxgovexpimf"
+//
+// *drop INDI // alison - 27 marzo 2023 
+// drop INDI* // alison - 27 marzo 2023 
+// gen source1 = "UIS"
+// save "$data_processed\metadata_uis", replace
+//
+// *------------------------------------ILO-----------------------------------*
+//
+// import excel "$data_raw\Metadata ILO.xlsx", firstrow clear
+// *gen name = Lablel + ", ages " + Relevant // alison - 27 marzo 2023 
+// gen name = Lablel + ", ages " + Relevantagegroup // alison - 27 marzo 2023 
+// drop if code==""
+// *gen update = "2021, November" if Lastup=="Nov. 2021"|Lastup=="Nov. 2021 " // alison - 27 marzo 2023  
+// *replace update = "2022, November" if Lastup=="Nov. 2022" // alison - 27 marzo 2023 
+// *replace update = "2020, November" if Lastup=="Nov. 2020"|Lastup=="Nov. 2020 " // alison - 27 marzo 2023 
+// *replace update = "Not specified" if Lastup =="Not specified" // alison - 27 marzo 2023 
+// gen update = "2021, November" if Lastupdate=="Nov. 2021"|Lastupdate=="Nov. 2021 " // alison - 27 marzo 2023  
+// replace update = "2022, November" if Lastupdate=="Nov. 2022" // alison - 27 marzo 2023 
+// replace update = "2020, November" if Lastupdate=="Nov. 2020"|Lastupdate=="Nov. 2020 " // alison - 27 marzo 2023 
+// replace update = "Not specified" if Lastupdate =="Not specified" // alison - 27 marzo 2023 
+// gen source1 = "ILO"
+// *rename OriginalD description // alison - 27 marzo 2023 
+// rename OriginalD* description // alison - 27 marzo 2023
+// *keep name code update source description // alison - 27 marzo 2023
+// keep name code update source1 description // alison - 27 marzo 2023
+// save "$data_processed\metadata_ilo", replace	
+//
+// *------------------------Unify indicators metadata--------------------------*
+// use "$data_processed\metadata_wdi", clear
+// append using "$data_processed\metadata_ilo"
+// append using "$data_processed\metadata_uis"
+// save "$data_processed\metadata", replace
+//
+//
+// *** End of FIXME...
 
-gen variable = ""
-replace variable = "lastnm_afr" if Code=="SP.ADO.TFRT"	
-replace variable = "lastnm_probdeath_ncd" if Code=="SH.DTH.NCOM.ZS"
-replace variable = "lastnm_birth_reg" if Code=="SP.REG.BRTH.ZS" | Code=="SP.REG.BRTH.MA.ZS" | Code=="SP.REG.BRTH.FE.ZS" 
-replace variable = "sp_dyn_le00_in" if Code=="SP.DYN.LE00.IN" | Code=="SP.DYN.LE00.MA.IN" | Code=="SP.DYN.LE00.FE.IN" 
-replace variable = "uiscr2" if Code=="SE.SEC.CMPT.LO.ZS" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.SEC.CMPT.LO.FE.ZS"
-replace variable = "lastnm_mmrt" if Code=="SH.STA.MMRT.NE"
-replace variable = "unicef_neomort" if Code=="SH.DYN.NMRT"
-replace variable = "uiscr1" if Code=="SE.PRM.CMPT.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.PRM.CMPT.FE.ZS"
-replace variable = "uisger02" if Code=="SE.PRE.ENRR" | Code=="SE.PRE.ENRR.MA" | Code=="SE.PRE.ENRR.FE"
-replace variable = "lastnm_sec_ger" if Code=="SE.SEC.ENRR" | Code=="SE.SEC.ENRR.MA" | Code=="SE.SEC.ENRR.FE"	
-replace variable = "lastnm_ter_ger" if Code=="SE.TER.ENRR" | Code=="SE.TER.ENRR.MA" | Code=="SE.TER.ENRR.FE"
 
-gen gender = 0
-replace gender = 1 if Code=="SP.REG.BRTH.MA.ZS" | Code=="SP.DYN.LE00.MA.IN" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.PRE.ENRR.MA" | Code=="SE.SEC.ENRR.MA" | Code=="SE.TER.ENRR.MA"
-replace gender = 2 if Code=="SP.REG.BRTH.FE.ZS" | Code=="SP.DYN.LE00.FE.IN" | Code=="SE.SEC.CMPT.LO.FE.ZS" | Code=="SE.PRM.CMPT.FE.ZS" | Code=="SE.PRE.ENRR.FE" | Code=="SE.SEC.ENRR.FE" | Code=="SE.TER.ENRR.FE"
-
-drop if Code=="SE.PRE.ENRR.FE" | Code=="SE.PRE.ENRR.MA" | Code=="SP.REG.BRTH.FE.ZS" | Code=="SP.REG.BRTH.MA.ZS" | Code=="SE.PRM.CMPT.FE.ZS" | Code=="SE.PRM.CMPT.MA.ZS" | Code=="SE.SEC.ENRR.FE" | Code=="SE.SEC.ENRR.MA" | Code=="SE.SEC.CMPT.LO.FE.ZS" | Code=="SE.SEC.CMPT.LO.MA.ZS" | Code=="SE.TER.ENRR.FE" | Code=="SE.TER.ENRR.MA" | Code=="SP.DYN.LE00.FE.IN" | Code=="SP.DYN.LE00.MA.IN"
-
-gen update = "2022, October" if strpos(Source,"October 24, 2022")
-replace update = "2023, February" if missing(update)
-
-gen source1 = "WDI"
-rename Source source2
-*rename Ind name // alison - 27 marzo 2023 
-rename Ind* name // alison - 27 marzo 2023 
-*rename Long description // alison - 27 marzo 2023
-rename Long* description // alison - 27 marzo 2023 
-rename variable code
-drop Code
-
-replace name = "Primary completion rate (% of relevant age group)" if name=="Primary completion rate, total (% of relevant age group)"
-replace name = "Lower secondary completion rate (% of relevant age group)" if name=="Lower secondary completion rate, total (% of relevant age group)"
-replace name = "Life expectancy at birth (years)" if name=="Life expectancy at birth, total (years)"
-
-order code gender name description update source1 source2
-drop source2
-save "$data_processed\metadata_wdi", replace
-
-*------------------------------------UIS-----------------------------------*
-
-import excel "$data_raw\SDG_LABEL.xlsx", clear firstrow
-rename IN*EN name
-/* // alison - 27 marzo 2023 
-keep if INDI=="CR.3" |INDI=="GER.01" |INDI=="OAEPG.1" |INDI=="OAEPG.2.GPV" | INDI=="SCHBSP.1.WELEC" |INDI=="XGDP.FSGOV" |INDI=="XGOVEXP.IMF" |INDI=="QUTP.1" |INDI=="QUTP.2T3"
-
-gen code = "uiscr3" if INDI=="CR.3" 
-replace code = "uisger01" if INDI=="GER.01" 
-replace code = "uisoaepg1" if INDI=="OAEPG.1" 
-replace code = "uisoaepg2gpv" if INDI=="OAEPG.2.GPV" 
-replace code = "uisschbsp1welec" if INDI=="SCHBSP.1.WELEC" 
-replace code = "uisxgdpfsgov" if INDI=="XGDP.FSGOV" 
-replace code = "uisxgovexpimf" if INDI=="XGOVEXP.IMF" 
-replace code = "uisqutp1" if INDI=="QUTP.1" 
-replace code = "uisqutp2t3" if INDI=="QUTP.2T3"
-*/
-keep if INDICATOR_ID=="CR.3" |INDICATOR_ID=="GER.01" |INDICATOR_ID=="OAEPG.1" |INDICATOR_ID=="OAEPG.2.GPV" | INDICATOR_ID=="SCHBSP.1.WELEC" |INDICATOR_ID=="XGDP.FSGOV" |INDICATOR_ID=="XGOVEXP.IMF" |INDICATOR_ID=="QUTP.1" |INDICATOR_ID=="QUTP.2T3"
-
-gen code = "uiscr3" if INDICATOR_ID=="CR.3" // alison - 27 marzo 2023 
-replace code = "uisger01" if INDICATOR_ID=="GER.01" // alison - 27 marzo 2023 
-replace code = "uisoaepg1" if INDICATOR_ID=="OAEPG.1" // alison - 27 marzo 2023 
-replace code = "uisoaepg2gpv" if INDICATOR_ID=="OAEPG.2.GPV" // alison - 27 marzo 2023 
-replace code = "uisschbsp1welec" if INDICATOR_ID=="SCHBSP.1.WELEC" // alison - 27 marzo 2023 
-replace code = "uisxgdpfsgov" if INDICATOR_ID=="XGDP.FSGOV" // alison - 27 marzo 2023 
-replace code = "uisxgovexpimf" if INDICATOR_ID=="XGOVEXP.IMF" // alison - 27 marzo 2023 
-replace code = "uisqutp1" if INDICATOR_ID=="QUTP.1" // alison - 27 marzo 2023 
-replace code = "uisqutp2t3" if INDICATOR_ID=="QUTP.2T3" // alison - 27 marzo 2023 
-
-replace name = "Completion rate, upper secondary education (%)" if name=="Completion rate, upper secondary education, both sexes (%)"
-replace name = "Gross enrolment ratio, early childhood educational development programmes (%)" if name=="Gross enrolment ratio, early childhood educational development programmes, both sexes (%)"
-replace name = "Over-age primary students (%)" if name=="Percentage of pupils enrolled in primary education who are at least 2 years over-age for their current grade, both sexes (%)"
-replace name = "Over-age lower secondary students (%)" if name=="Percentage of pupils enrolled in lower secondary general education who are at least 2 years over-age for their current grade, both sexes (%)"
-replace name = "Qualified teachers in primary education (%)" if name=="Percentage of qualified teachers in primary education, both sexes (%)"
-replace name = "Qualified teachers in secondary education (%)" if name=="Percentage of qualified teachers in secondary education, both sexes (%)"
-
-gen update = "Not specified" // check - alison - 27 marzo 2023
-
-gen description = "Total enrolment in a specific level of education, regardless of age, expressed as a percentage of the eligible official school-age population corresponding to the same level of education in a given school year." if code == "uisger01"
-replace description = "Percentage of a cohort of children or young people aged 3-5 years above the intended age for the last grade of each level of education who have completed that grade" if code=="uiscr3"
-replace description = "Percentage of pupils in each level of education (primary education) who are at least 2 years above the intended age for their grade" if code=="uisoaepg1"
-replace description = "Percentage of pupils in each level of education (lower secondary education) who are at least 2 years above the intended age for their grade" if code=="uisoaepg2gpv"
-replace description = "Percentage of teachers by level of education taught who have at least the minimum academic qualifications required for teaching their subjects at the relevant level in a given country, in a given academic year." if code == "uisqutp1"
-replace description = "Percentage of teachers by level of education taught who have at least the minimum academic qualifications required for teaching their subjects at the relevant level in a given country, in a given academic year." if code == "uisqutp2t3"
-replace description = "Regularly and readily available sources of power (e.g. grid/mains connection, wind, water, solar and fuel-powered generator, etc.) that enable the adequate and sustainable use of ICT infrastructure for educational purposes." if code == "uisschbsp1welec"
-replace description = "Expenditure on education refers to expenditure on core educational goods and services, such as teaching staff, school buildings, or school books and teaching materials, and peripheral educational goods and services such as ancillary services, general administration and other activities. As percentage of GDP." if code == "uisxgdpfsgov"
-replace description = "Expenditure on education refers to expenditure on core educational goods and services, such as teaching staff, school buildings, or school books and teaching materials, and peripheral educational goods and services such as ancillary services, general administration and other activities. As percentage of total government expenditure." if code == "uisxgovexpimf"
-
-*drop INDI // alison - 27 marzo 2023 
-drop INDI* // alison - 27 marzo 2023 
-gen source1 = "UIS"
-save "$data_processed\metadata_uis", replace
-
-*------------------------------------ILO-----------------------------------*
-
-import excel "$data_raw\Metadata ILO.xlsx", firstrow clear
-*gen name = Lablel + ", ages " + Relevant // alison - 27 marzo 2023 
-gen name = Lablel + ", ages " + Relevantagegroup // alison - 27 marzo 2023 
-drop if code==""
-*gen update = "2021, November" if Lastup=="Nov. 2021"|Lastup=="Nov. 2021 " // alison - 27 marzo 2023  
-*replace update = "2022, November" if Lastup=="Nov. 2022" // alison - 27 marzo 2023 
-*replace update = "2020, November" if Lastup=="Nov. 2020"|Lastup=="Nov. 2020 " // alison - 27 marzo 2023 
-*replace update = "Not specified" if Lastup =="Not specified" // alison - 27 marzo 2023 
-gen update = "2021, November" if Lastupdate=="Nov. 2021"|Lastupdate=="Nov. 2021 " // alison - 27 marzo 2023  
-replace update = "2022, November" if Lastupdate=="Nov. 2022" // alison - 27 marzo 2023 
-replace update = "2020, November" if Lastupdate=="Nov. 2020"|Lastupdate=="Nov. 2020 " // alison - 27 marzo 2023 
-replace update = "Not specified" if Lastupdate =="Not specified" // alison - 27 marzo 2023 
-gen source1 = "ILO"
-*rename OriginalD description // alison - 27 marzo 2023 
-rename OriginalD* description // alison - 27 marzo 2023
-*keep name code update source description // alison - 27 marzo 2023
-keep name code update source1 description // alison - 27 marzo 2023
-save "$data_processed\metadata_ilo", replace	
-
-*----------------------------------UNICEF----------------------------------*
-
-import excel "$data_raw\metadata_unicef_0.xlsx", firstrow clear 
-/* drop coverage */
-gen source1 = "UNICEF"
-save "$data_processed\metadata_unicef_0", replace
-import excel "$data_raw\metadata_unicef.xlsx", firstrow clear 
-gen source1 = "UNICEF"
-drop update
-gen update=""
-save "$data_processed\metadata_unicef", replace
-import excel "$data_raw\names.xlsx", clear firstrow
-save "$data_processed\names", replace
-use "$data_processed\metadata_unicef", clear
-merge 1:m code using "$data_processed\names"
-more
-drop if _merge==2 // FIXME: Agregar con API y resolver merge == 2
-drop _merge
-rename code code_source
-rename name_portal code
-drop code_source source
-append using "$data_processed\metadata_unicef_0"
-
-*------------------------------------HCI-----------------------------------*
-
-import excel "$data_raw\metadata_hci_web.xlsx", clear firstrow 
-gen source1 = "World Bank Data Catalog"
-save "$data_processed\metadata_hci_web", replace
-
-*------------------------------------WHO-----------------------------------*
-
-import excel "$data_raw\metadata_who.xlsx", firstrow clear
-gen source1 = "WHO"
-drop id
-save "$data_processed\metadata_who", replace
-merge 1:m code using "$data_processed\names", nogen keep(master match)
-
-rename code code_source
-rename name_portal code
-drop code_source source
-save "$data_processed\metadata_who", replace
-
-*----------------------------------UNESCO-----------------------------------*
-
-import excel "$data_raw\metadata_unesco.xlsx", firstrow clear
-gen source1 = "UNESCO"
-save "$data_processed\metadata_unesco", replace
-
-*-----------------------------------UN--------------------------------------*
-import excel "$data_raw\metadata_UN.xlsx", firstrow clear
-gen source1 = "UN"
-save "$data_processed\metadata_UN", replace
-
-*-----------------------------------FAO-------------------------------------*
-import excel "$data_raw\metadata_FAO.xlsx", firstrow clear
-gen source1 = "FAO"
-save "$data_processed\metadata_FAO", replace
-*----------------------------------append----------------------------------*
-
-use "$data_processed\metadata_unicef", clear
-append using "$data_processed\metadata_ilo"
-append using "$data_processed\metadata_uis"
-append using "$data_processed\metadata_wdi"
-*append using "$data_processed\metadata_hci", force
-append using "$data_processed\metadata_hci_web", force
-append using "$data_processed\metadata_who"
-append using "$data_processed\metadata_unesco"
-append using "$data_processed\metadata_UN", force
-append using "$data_processed\metadata_FAO"
-drop gender
-replace code = "unicef_water" if code=="basicdwater"
-replace code = "unicef_hygiene" if code=="basichygiene"
-replace code = "unicef_sanitation" if code=="basicsanitation"
-save "$data_processed\metadata", replace
-
-*----------------------------------Links-----------------------------------*
-
-import excel "$data_raw\Data sources.xlsx", firstrow clear
-*keep Indi Link // alison - 27 marzo 2023
-keep Indi* Link // alison - 27 marzo 2023
-*rename (Indi Link) (code download_link) // alison - 27 marzo 2023
-rename (Indicator Link) (code download_link) // alison - 27 marzo 2023
-save "$data_processed\download_link", replace
-
-*------------------------country classification----------------------------*
-
-import excel "$data_raw\country_classification.xlsx", firstrow clear
-save "$data_processed\country_class", replace
-
-*------------------------topic + stage of life-----------------------------*
-
-import excel "$data_raw\Categories.xlsx", firstrow clear // updated manually -alison - 27 marzo 2023 
-save "$data_processed\categories", replace
-
-*--------------------------------Units-------------------------------------*
-
-preserve
-import excel "$data_raw\Units.xlsx", firstrow clear
-save "$data_processed\units", replace
-restore
-
-*---------------------------------single metadata dta-----------------------------------*
-use "$data_processed\metadata", clear 
-drop if code=="" | code=="NA"
-merge 1:1 code using "$data_processed\download_link", 
-more
-drop if _merge==2 
-drop _merge
-
-merge 1:1 code using "$data_processed\categories", 
-more
-drop if _merge==2 
-drop _merge
-
-merge 1:1 code using "$data_processed\units"
-more
-drop if _merge==2 
-drop _merge
-
-drop D C E
-save "$data_processed\metadata_full", replace 
-
-*-----------------------------------merge----------------------------------*
+*-------------------------Add everything to database-------------------*
 use "$data_processed\complete_series_wmetadata", clear
 
-* Add names
-merge m:1 code using "$data_processed\names"
-drop if _merge == 2
+** Add names
+merge m:1 code using "$data_processed\metadata_processed" // FIXME: no debería haber _merge==1
+count if _merge==1
+assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
+*	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.
+*	Los _merge==2 son variables viejas o con codificación no válida...
+drop if _merge != 3
 drop _merge
-more 
 
+* Update names for portal
+clonevar original_name = code 
 replace code = name_portal if name_portal != ""
-drop name_portal source
+drop name_portal
 
-*drop name
+** Add wb county data
 merge m:1 wbcode using "$data_processed\country_class"
-more
-drop if _merge==2 
+drop if _merge!=3 
 drop _merge
-
-merge m:1 code using "$data_processed\metadata_full"
 more
-drop if _merge==2 
-drop _merge
-
-
-*-----------------------------Learning Poverty-----------------------------*
-
-replace name = "Learning Poverty" if code=="se_lpv_prim"
-replace description = "Learning poverty means being unable to read and understand a simple text by age 10. The indicator combines the share of primary-aged children out-of-school who are schooling deprived (SD), and the share of pupils below a minimum proficiency in reading, who are learning deprived (LD)." if code=="se_lpv_prim"
-replace update = "2023, February" if code=="se_lpv_prim"
-*replace source = "World Bank Data Catalog" if code=="se_lpv_prim" // alison - 27 marzo 2023 
-replace source1 = "World Bank Data Catalog" if code=="se_lpv_prim" // alison - 27 marzo 2023 
-*replace download = "https://databank.worldbank.org/source/human-capital-index#" if source=="World Bank Data Catalog" & code!="se_lpv_prim" // alison - 27 marzo 2023 
-
-replace download_link = "https://databank.worldbank.org/source/human-capital-index#" if source1=="World Bank Data Catalog" & code!="se_lpv_prim" // alison - 27 marzo 2023 
 
 *-------------------------------HCI + HCCI---------------------------------*
 
 gen data = "HCI" if code=="eyrs" | code=="hci" | code=="hci_lower" | code=="hci_upper" | code=="nostu" | code=="psurv" | code=="qeyrs" | code=="test" | code=="se_lpv_prim" | code=="asr"
 replace data = "HCCI" if missing(data)
-replace description = "The final index score ranges from zero to one and measures the productivity as a future worker of child born today relative to the benchmark of full health and complete education." if code=="hci"
-* FIXME: This should be a comment, not a description 
 
-replace description = "To track progress over a decade, a version of the HCI was calculated for 103 economies. Data to populate the 2010 HCI was carefully selected to maximize comparability with the 2020 HCI. In particular, only those countries where learning scores measured by the same international assessment in 2010 and 2020 entered the comparison." if code=="hci" & year==2010
-
+* Scales. FIXME: This is probably outdated. Check
 gen scale = ""
 foreach var in asr hci hci_lower hci_upper nostu psurv {
 replace scale = "0 - 1" if code=="`var'"
@@ -324,6 +199,7 @@ destring maxyear, replace
 drop if year<minyear
 	
 *------------------------------Drop if gender------------------------------*
+* FIXME: This code is not good as it has the variables hardcoded. Duplicates tag might do the trick...
 *Drop if no data splitted by gender 
 foreach var in basic_hygiene_health basic_hygiene_schools basic_sanitation_health basic_sanitation_schools basic_water_health basic_water_schools lastnm_afr lastnm_mmrt lastnm_probdeath_ncd uiscr3 uisger01 uisoaepg1 uisoaepg2gpv uisqutp1 uisqutp2t3 uisschbsp1welec uisxgdpfsgov uisxgovexpimf unicef_1524mort unicef_514mort unicef_care unicef_caremother unicef_hygiene unicef_neomort unicef_sanitation unicef_stillbirths unicef_stunting unicef_u5mort unicef_water vacBCG vacDTP1 vacDTP3 vacHEPB3 vacHEPBB vacHIB3 vacIPV1 vacMCV1 vacMCV2 vacPCV3 vacPOL3 vacROTAC {
 drop if code == "`var'" & (gender==1|gender==2)
@@ -333,6 +209,7 @@ drop if code == "`var'" & (gender==1|gender==2)
 
 gen note = ""
 replace note = "This variable is classified in Adulthood and Elderly as stage of life, however it should also include the age group Youth" if code=="asr"
+replace note = "To track progress over a decade, a version of the HCI was calculated for 103 economies. Data to populate the 2010 HCI was carefully selected to maximize comparability with the 2020 HCI. In particular, only those countries where learning scores measured by the same international assessment in 2010 and 2020 entered the comparison." if code=="hci" & year==2010
 
 //FIX ME: AGE NO ESTA
 *replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 
@@ -349,10 +226,9 @@ replace name = name + ", Male" if gender==1
 
 *----------------------------------Save------------------------------------*
 
-rename source1 source
 ren coverage timespan // alison - 27 marzo 2023
 ren wbincomegroup wbincome // alison - 27 marzo 2023
-
+ren dimension topic
 
 lab var wbcode "WB country code"
 lab var year "Year"
@@ -392,7 +268,6 @@ compress
 *export delimited "$data_processed\complete_series_wmd.csv", replace
 *export excel "$data_processed\complete_series_wmd.xlsx", replace firstrow(variables)
 
-replace source = "World Bank DataBank" if source=="WDI"|source=="World Bank Data Catalog"
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
 save "$data_output\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
@@ -401,9 +276,12 @@ save "$data_output\complete_series_wmd_${date}", replace // melanie - 29 marzo 2
 * FIXME: no se puede exportar a excel porque hay demasiadas obs
 /* export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023 */
 
-*-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
-use "$data_output\complete_series_wmd_${date}", clear
+
+
+
+
+*-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
 /* br wbcode wbregion wbincome year code gender value */
 

@@ -15,7 +15,7 @@
 		clear all
 		set more off	
 		set maxvar 32000
-		use "$dhci\data_briefs", replace
+		use "$dhci\data_briefs_allcountries_wprev", replace
 			
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
@@ -44,7 +44,7 @@
 	
 	*--------------------------Local names by country--------------------------*
 		
-		/**** Pegar los locals acá ****/
+		/**** Paste locals from do file 2 here ****/
 		
 		{
 		
@@ -4249,8 +4249,10 @@
 		
 	*----------------------------Loop on countries-----------------------------*
 	
+		/* Loop with all countries */
 		foreach i of local obs {
-		*if (wbcode[`i'] != "AFG") continue 
+		/* Unmute to run only one or some countries */
+		if (wbcode[`i'] != "AFG") continue 
 		
 		local ctry=wbcode in `i'
 		local region=wbregion in `i'
@@ -4260,7 +4262,7 @@
 		
 		*------------------------------First page------------------------------*
 		
-		/* Cuando hay data */
+		/* With available data - automatic */
 		
 		foreach x in c {
 		forvalues m = 1(1)`n`x'' {
@@ -4286,6 +4288,7 @@
 		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+		(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
 		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
 		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
 		graph save graph_`ctry'_`x'`m', replace
@@ -4293,7 +4296,7 @@
 		}	
 		}
 		
-		/* Cuando no hay data */
+		/* With missing data - automatic */
 		
 		foreach x in c {
 		forvalues m = 1(1)`n`x'' {
@@ -4322,28 +4325,42 @@
 		}
 		}
 		}
+			
+		/* Legend */ 
 		
-		/* La leyenda */
 		
 		gen m = 0.1
 		gen f_`ctry' = 1
-		gen g_`ctry' = 1.1 
-		gen h_`ctry' = 1.2
-		gen i_`ctry' = 1.3
-		gen j_`ctry' = 1.4
+		gen g_`ctry' = 1.08 
+		gen h_`ctry' = 1.16
+		gen i_`ctry' = 1.24
+		gen j_`ctry' = 1.32
+		gen k_`ctry' = 1.4
+		
+		/*
+		gen m = 0.1
+		gen f_`ctry' = 1
+		gen g_`ctry' = 1.04 
+		gen h_`ctry' = 1.08
+		gen i_`ctry' = 1.12
+		gen j_`ctry' = 1.16
+		gen k_`ctry' = 1.2
+		*/
 		
 		twoway /// 
 		(scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
 		(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
 		(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
-		(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
-		(scatter j_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(11pt) mlabgap(12pt)), ///
-		graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.21 1.55 "Notes for all figures in this brief:" "represents `country'." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(12pt) linegap(2.25) justification(left)) /*Suggested by Nora*/		
+		(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
+		(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
+		(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(11pt) mlabgap(12pt)), ///
+		graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(12pt) linegap(1.7) justification(left)) 		
 		graph save notes_`ctry', replace	
+		*graph export "$charts\notes_`ctry'.png", replace
 		
 		drop m 
 
-		graph combine graph_`ctry'_c1.gph  graph_`ctry'_c2.gph  graph_`ctry'_c3.gph  graph_`ctry'_c4.gph graph_`ctry'_c5.gph graph_`ctry'_c6.gph graph_`ctry'_c7.gph notes_`ctry'.gph, rows(8) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) /*Suggested by Nora*/
+		graph combine graph_`ctry'_c1.gph  graph_`ctry'_c2.gph  graph_`ctry'_c3.gph  graph_`ctry'_c4.gph graph_`ctry'_c5.gph graph_`ctry'_c6.gph graph_`ctry'_c7.gph notes_`ctry'.gph, rows(8) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
 		graph export "$charts\p1_`ctry'_all.pdf", replace	
 		graph export "$charts\p1_`ctry'_all.png", replace
 		
@@ -4357,7 +4374,6 @@
 		erase notes_`ctry'.gph
 		
 		*------------------------------Second Page-----------------------------*
-		
 		
 		foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
@@ -4384,16 +4400,14 @@
 		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
 		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+		(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
 		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
 		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
 		graph save graph_`ctry'_`x'`m', replace		
 		}
 		}
 		
-/*		
-		graph combine graph_`ctry'_l1.gph graph_`ctry'_l2.gph graph_`ctry'_l3.gph graph_`ctry'_e1.gph graph_`ctry'_e2.gph graph_`ctry'_e3.gph graph_`ctry'_h1.gph graph_`ctry'_h2.gph graph_`ctry'_h3.gph graph_`ctry'_b1.gph graph_`ctry'_b2.gph graph_`ctry'_b3.gph, rows(12) cols(1) xsize(6) ysize(12) graphregion(margin(vsmall) fcolor(black))
-		graph export "$charts\p2_`ctry'.pdf", replace
-*/		
+		/* Combine all graphs by page and export */
 		graph combine graph_`ctry'_l1.gph graph_`ctry'_l2.gph graph_`ctry'_l3.gph, rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Early Childhood", suffix color(black) size(vlarge) linegap(3) pos(11) span)
 		graph save stage_1, replace
 		graph combine graph_`ctry'_e1.gph graph_`ctry'_e2.gph graph_`ctry'_e3.gph, rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("School Age", suffix color(black) size(vlarge) linegap(3) pos(11) span) 
@@ -4424,6 +4438,5 @@
 		erase stage_2.gph 
 		erase stage_3.gph
 		erase stage_4.gph
-			
 	
 		}	

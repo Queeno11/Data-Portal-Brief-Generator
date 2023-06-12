@@ -13,19 +13,22 @@ global data_raw 	  "$portal\Data_Raw"
 global data_processed "$portal\Data_Processed" */
 
 *------------------------Codes and Country names---------------------------*
-import excel "$data_raw\Country codes\wbcodes_equiv_unicef.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unicef.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_unicef", replace
-import excel "$data_raw\Country codes\wbcodes_equiv_FAO.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_FAO.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_FAO", replace
-import excel "$data_raw\Country codes\wbcodes_equiv_who.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_who.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_who", replace
-import excel "$data_raw\Country codes\wbcodes_equiv_UN.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_UN.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_UN", replace
-import excel "$data_raw\Country codes\wbcodes_equiv_unesco.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unesco.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
-import excel "$data_raw\names.xlsx", firstrow clear
-duplicates drop name, force
-save "$data_processed\names", replace
+import excel "$data_raw\country_classification.xlsx", firstrow clear
+save "$data_processed\country_class", replace
+import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
+duplicates drop code, force
+save "$data_processed\metadata_processed", replace
+
 
 *--------------------------------------------------------------------------*
 *----------------------------------UNICEF----------------------------------*
@@ -467,10 +470,10 @@ data_raw = Macro.getGlobal("data_raw")
 data_processed = Macro.getGlobal("data_processed")
  
 complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
-names = pd.read_excel(fr"{data_raw}\names.xlsx")
+names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
 coded_names = names.code.unique()
 variables = pd.Series(complete_series_wmetadata.code.unique())
-assert variables.isin(coded_names).all(), f"There are indicators without metadata in names: {variables[-variables.isin(coded_names)]}"
+assert variables.isin(coded_names).all(), f"There are indicators without metadata: {variables[-variables.isin(coded_names)]}"
 print("####################")
 print("All indicators have the respective metadata")
 print("####################")
