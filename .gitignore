@@ -1,4 +1,3 @@
-!*/Data/Data_Raw/Country codes & metadata/*
 
 *.xls
 *.xlsx
@@ -25,3 +24,5 @@
 *.mkv
 *.mp4
 *.pyc
+
+!Data/Data_Raw/Country codes & metadata/*
