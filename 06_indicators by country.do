@@ -93,16 +93,17 @@
 	rename (v_eip_neet_mf_y_y v_emp_nifl_y_y v_une_2eap_mf_y_y)(vy_eip_neet_mf_y vy_emp_nifl_y vy_une_2eap_mf_y)
 	rename (v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)(v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx) */
 	rename v_*_year vy_*
-	rename v_*_year_prev vy_*_prev
+	rename v_*_year_prev py_* 
+	rename v_*_prev p_*
 
 	* rename (v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx)(v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)
 	rename v_wbcode wbcode
 
-	reshape long v_ vy_, i(wbcode) string
+	reshape long v_ vy_ p_ py_, i(wbcode) string
 	
 	rename _j name
 
-	
+	stop
 	*------------------------Labels, info & rank---------------------------*
 	
 	merge m:1 wbcode name using "$data_processed\metadata_briefs", keep(1 3) nogen
