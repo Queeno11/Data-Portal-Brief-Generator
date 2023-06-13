@@ -34,7 +34,6 @@
 	collapse (mean) year, by(wbcode name lbl age def source rank gender topic stage_life)
 	duplicates drop wbcode name, force // FIXME: Eliminar en un ratito
 	save "$data_processed\metadata_briefs", replace
-	
 
 *-----------------------------Stages of life-------------------------------*	
 	*FIXME: ESTO YA ESTÁ DIRECTAMENTE EN EL EXCEL. CHEQUEAR QUE COINCIDAN CON LAS DE ACÁ UNA POR UNA:
@@ -103,7 +102,6 @@
 	
 	rename _j name
 
-	stop
 	*------------------------Labels, info & rank---------------------------*
 	
 	merge m:1 wbcode name using "$data_processed\metadata_briefs", keep(1 3) nogen
@@ -113,301 +111,96 @@
 	replace category = 4 if stage_life=="Adulthood and Elderly"
 				
 	drop if missing(v_) | v_==0
-	sort wbcode category topic rank 
+	replace rank=. if rank==0 // rank==0 means HCI indicator, that should not be shown in second page brief
+	replace rank=. if vy_<2018 // FIXME: ver de agregar que haya también dato previo para comparar
+	sort wbcode category topic gender rank 
 	bysort wbcode category topic gender: gen arank = _n + rank - rank // (+ rank - rank) to make arank missing when rank is missing
 	
 	*----------------------Selection of indicators-------------------------*
 	
+	* Changes rank for each stage and country to have the arank column set for final reshape. arank between 1 and 3 means that the indicators will be used in the brief for that stage.	
+	
 	/**** Considerar automatizar esto según stage of life & dimension, para evitar asignar cosas manualmente. Desagregar automáticamente por género cuando no hay más indicadores. ****/
 	
-		/*
-		Para cada stage y topic:
-		1) Si tenemos todos los indicadores, entonces elegimos el mejor para ese stage y topic (min(arank))
-		2) Si no hay indicadores, paso el loop al siguiente topic del MISMO STAGE:
-			2.A) Si encuentra para los otros topic del mismo stage, elijo el mejor indicador de entre los otros topic (p. ej. si falta en "Labor", elijo el de menor rank entre "Health" y "Education"). Si empatan, elijo Health que es la que más tiene.
-				3.A) Si siguen faltando indicadores, voy a las aperturas por género.
-			2.B) Si encuentra para solo uno de los otros topic, elige 3 según arank del unico topic disponible
-				3.B) Si siguen faltando indicadores, voy a las aperturas por género.
-			2.C) Si no hay indicadores para el stage. Hago un display en rojo (espero que no pase)
-		*/
-		*--------------------------Category I------------------------------*
-		
-		*Iteration 1*
-		bysort wbcode category topic gender: egen max_indic = max(arank)
-		replace max_indic = 1 if max_indic>1 & max_indic!=.
+	/*
+	Para cada stage y topic:
+	1) Si tenemos todos los indicadores, entonces elegimos el mejor para ese stage y topic (min(arank))
+	2) Si no hay indicadores, paso el loop al siguiente topic del MISMO STAGE:
+		2.A) Si encuentra para los otros topic del mismo stage, elijo el mejor indicador de entre los otros topic (p. ej. si falta en "Labor", elijo el de menor rank entre "Health" y "Education"). Si empatan, elijo Health que es la que más tiene.
+			3.A) Si siguen faltando indicadores, voy a las aperturas por género.
+		2.B) Si encuentra para solo uno de los otros topic, elige 3 según arank del unico topic disponible
+			3.B) Si siguen faltando indicadores, voy a las aperturas por género.
+		2.C) Si no hay indicadores para el stage. Hago un display en rojo (espero que no pase)
+	*/
+	
 
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==1
-		restore
-		
-		tab name if category==1 & max_indic<3
-		
-		/* Condicional a no completar los 3 indicadores, acá se saca el indicador general de la lista, para meter el mismo indicador por género (por lo tanto son 2 en lugar de 1) */
-		gen bygender = 1 if name=="uisger02_f"
-		bysort wbcode: egen bygend = max(bygender)
-		replace rank = . if  max_indic<3 & name=="uisger02" & bygend==1
-		replace rank = 10 if  max_indic<3 & name=="uisger02_f" & bygend==1
-		replace rank = 11 if  max_indic<3 & name=="uisger02_m" & bygend==1
-		drop bygend*
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-		drop max_indic arank2
-		
-		*Iteration 2*
-		/* Acá se chequea si con el cambio que se hizo alcanza, o si hay que seguir reemplazando cosas */
-		
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==1
-		restore 	
-		
-		tab wbcode if category==1 & max_indic<3
-		tab name if category==1 & max_indic<3
-		tab name if !missing(arank) & category==1 & wbcode=="SWZ"
-		tab name if category==1 & max_indic<3 & wbcode=="SWZ"
-		tab name if !missing(arank) & category==1 & wbcode=="MAC"
-		tab name if category==1 & max_indic<3 & wbcode=="MAC"
-		tab name if !missing(arank) & category==1 & wbcode=="HKG"
-		tab name if category==1 & max_indic<3 & wbcode=="HKG"
-		
-		drop max_indic
-		
-		*CRITERIO: si ya tiene algo de education por gender, ponerle otro tipo de indicador. Por ejemplo, MAC y HKG tienen uisger02_f y uisger02_m, entonces le ponemos como missing el siguiente en la lista que es unicef_neomort. En cambio, SWZ tiene unicef_neomort y vacBCG, por lo que se completa con el de education.
-		
-		*Las líneas de acá abajo las copio para una parte de más abajo del do file
-		/*
-		"uisger02" if category==1 & pos==3 & wbcode=="SWZ"
-		"unicef_neomort" if category==1 & pos==3 & wbcode=="MAC"
-		"unicef_neomort" if category==1 & pos==3 & wbcode=="HKG"
-		*/
-		
-		*--------------------------Category II-----------------------------*
-		
-		*Iteration 1*
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==2
-		restore 	
-		
-		tab name if category==2 & max_indic<3	
-		gen bygender = 1 if name=="se_lpv_prim_f"
-		bysort wbcode: egen bygend = max(bygender)
-		/* Agregué este bygender para que solo me reemplace cuando hay por gender. Así, si no tenés la división por género, no perdés un indicador. */
-		replace rank = . if  max_indic<3 & name=="se_lpv_prim" & bygend==1
-		replace rank = 6 if  max_indic<3 & name=="se_lpv_prim_f" & bygend==1
-		replace rank = 7 if  max_indic<3 & name=="se_lpv_prim_m" & bygend==1
-		drop bygend*
-		
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-		drop max_indic arank2
+	* Arank == 1 means that such indicator is the selected one for that country, stage_life and topic (with gender==0).
+	
+	
 
-		*Iteration 2*			
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==2
-		restore 		
-		
-		tab name if category==2 & max_indic<3
-		gen bygender = 1 if name=="uiscr1_f"
-		bysort wbcode: egen bygend = max(bygender)
-		replace rank = . if  max_indic<3 & name=="uiscr1" & bygend==1
-		replace rank = 8 if  max_indic<3 & name=="uiscr1_f"  & bygend==1
-		replace rank = 9 if  max_indic<3 & name=="uiscr1_m"	 & bygend==1
-		drop bygend*
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-					
-		drop max_indic arank2
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		tab wbcode max_indic if category==2 & max_indic<3
-		
-		*1 indicator: AGO GUY IRQ LBN NIC UKR*	
-		*2 indicators: CHN HND NGA SLV TTO*
-		
-		/* Entre lo del bygender y la actualización de la data pasamos de 15 países sin completar 3 indicadores, a solamente 11 países que no llegan a 3 */
-		
-		foreach cod in AGO CHN GUY HND IRQ LBN NGA NIC SLV TTO UKR {	
-		tab wbcode if wbcode=="`cod'"
-		tab name if !missing(arank) & category==2 & wbcode=="`cod'"
-		tab name if category==2 & max_indic<3 & wbcode=="`cod'"
+	* Create duumy to flag selected indicators
+	bysort wbcode category topic gender: gen selected_indicator = 1 if arank==1 & gender==0
+	
+	*Check which countries has indicators for each dimension-topic.
+	bysort wbcode category topic: egen has_indic = min(selected_indicator) // If has_indic==., then such country has no indicator for that dimension-topic pair.
+	
+	gen inv_year = 2500-vy_
+	
+	levelsof(wbcode), local(countries)
+	levelsof(category), local(categories)
+	levelsof(topic), local(topics)
+	foreach country in `countries' {
+		display "`country'"
+		foreach category in `categories' {
+			foreach topic in `topics' {
+				qui count if wbcode=="`country'" & category==`category' & topic=="`topic'" & selected_indicator==1
+				local selected_indicators = r(N)
+				qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
+				local available_indicators = r(N)
+				if `selected_indicators'==0 & `available_indicators'>=1 { 
+					// In this case, the dimension-topic has no indicator and we have other indicators available, 				
+					// therefore we complete the brief with the best ranked indicator of the hole stage
+					sort rank inv_year
+					// Little trick to get the position of the best ranked indicator 
+					//	(best ranked of every other topic, if tie, then the newer)
+					gen position = _n if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
+					egen min_position = min(position) if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
+					replace selected_indicator = 1 if min_position == position & position !=.
+					drop position min_position
+				}
+			}
+			// Verificación sobre si tenemos todo o si siguen faltando indicadores
+			qui count if wbcode=="`country'" & category==`category' & selected_indicator==1
+			local selected_indicators = r(N)
+			qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
+			local available_indicators = r(N)
+			* FIXME: para mi aca no entra nunca
+			if `selected_indicators' !=3 {
+				display in red "Para `country' no hay 3 indicadores para la stage `category'"
+			}
 		}
+	}
 		
-		drop max_indic
-		
-		*CRITERIO: para cada país, miro cuáles son los indicadores que tiene y si es que tiene alguno extra que no metí. Después, si no hay nada que corregir, le meto el primero en prioridad de la lista, siempre que no se repita con los que ya tiene el país.  
-		/*
-		"uiscr1" if category==2 & pos==2 & wbcode=="AGO"
-		"se_lpv_prim" if category==2 & pos==3 & wbcode=="AGO"	
-		"uiscr1" if category==2 & pos==3 & wbcode=="CHN"
-		"uiscr1" if category==2 & pos==2 & wbcode=="GUY"
-		"se_lpv_prim" if category==2 & pos==3 & wbcode=="GUY"		
-		"uiscr1" if category==2 & pos==3 & wbcode=="HND"
-		"uiscr1" if category==2 & pos==2 & wbcode=="IRQ"
-		"se_lpv_prim" if category==2 & pos==3 & wbcode=="IRQ"	
-		"uiscr1" if category==2 & pos==2 & wbcode=="LBN"
-		"se_lpv_prim" if category==2 & pos==3 & wbcode=="LBN"		
-		"uiscr1" if category==2 & pos==3 & wbcode=="NGA"
-		"uiscr1" if category==2 & pos==2 & wbcode=="NIC"
-		"lastnm_sec_ger" if category==2 & pos==3 & wbcode=="NIC"
-		"uiscr1" if category==2 & pos==3 & wbcode=="SLV"	
-		"uiscr1" if category==2 & pos==3 & wbcode=="TTO"
-		"uiscr1" if category==2 & pos==2 & wbcode=="UKR"
-		"se_lpv_prim" if category==2 & pos==3 & wbcode=="UKR"	
-		*/
-		
-		*--------------------------Category III----------------------------*
-		
-		*Iteration 1*
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		bysort category: tab max_indic
-		restore 	
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==3
-		restore 		
-		
-		tab name if category==3 & max_indic<3	
-		gen bygender = 1 if name=="eip_neet_mf_y_f"
-		bysort wbcode: egen bygend = max(bygender)
-		replace rank = . if  max_indic<3 & name=="eip_neet_mf_y" & bygend==1	
-		replace rank = 5 if  max_indic<3 & name=="eip_neet_mf_y_f" & bygend==1
-		replace rank = 6 if  max_indic<3 & name=="eip_neet_mf_y_m" & bygend==1
-		drop bygend*
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-		drop max_indic arank2	
-		
-		*Iteration 2*		
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==3
-		restore 			
-		
-		tab name if category==3 & max_indic<3
-		gen bygender = 1 if name=="une_2eap_mf_y_f"
-		bysort wbcode: egen bygend = max(bygender)
-		replace rank = . if  max_indic<3 & name=="une_2eap_mf_y" & bygend==1	
-		replace rank = 7 if  max_indic<3 & name=="une_2eap_mf_y_f" & bygend==1
-		replace rank = 8 if  max_indic<3 & name=="une_2eap_mf_y_m" & bygend==1
-		drop bygend*
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-		
-		drop max_indic arank2
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		tab wbcode max_indic if category==3 & max_indic<3
-		
-		*1 indicator: ATG FSM KNA*
-		*2 indicators: GRD TUV*	
-		
-		foreach cod in ATG FSM GRD KNA TUV{	
-		tab wbcode if wbcode=="`cod'"
-		tab name if !missing(arank) & category==3 & wbcode=="`cod'"
-		tab name if category==3 & max_indic<3 & wbcode=="`cod'"
-		}	
-		
-		drop max_indic
-
-		/*
-		"eip_neet_mf_y" if category==3 & pos==2 & wbcode=="ATG"
-		"lastnm_ter_ger" if category==3 & pos==3 & wbcode=="ATG"	
-		"eip_neet_mf_y" if category==3 & pos==2 & wbcode=="FSM"
-		"lastnm_ter_ger" if category==3 & pos==3 & wbcode=="FSM"
-		"eip_neet_mf_y" if category==3 & pos==3 & wbcode=="GRD"
-		"eip_neet_mf_y" if category==3 & pos==2 & wbcode=="KNA"
-		"lastnm_afr" if category==3 & pos==3 & wbcode=="KNA"
-		"lastnm_afr" if category==3 & pos==3 & wbcode=="TUV"
-		*/	
-
-		
-		*--------------------------Category IV-----------------------------*
-		
-		*Iteration 1*
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		
-		preserve
-		duplicates drop wbcode category, force
-		tab max_indic if category==4
-		restore 		
-		
-		tab name if category==4 & max_indic<3	
-		gen bygender = 1 if name=="sp_dyn_le00_in_f"
-		bysort wbcode: egen bygend = max(bygender)
-		replace rank = . if  max_indic<3 & name=="sp_dyn_le00_in" & bygend==1	
-		replace rank = 6 if  max_indic<3 & name=="sp_dyn_le00_in_f" & bygend==1
-		replace rank = 7 if  max_indic<3 & name=="sp_dyn_le00_in_m" & bygend==1
-		drop bygend*
-		sort wbcode category rank 
-		bysort wbcode category: gen arank2 = _n
-		replace arank2 = . if missing(rank)	
-		replace arank = arank2 if max_indic<3	
-		drop max_indic arank2		
-
-		bysort wbcode category: egen max_indic = max(arank)
-		replace max_indic = 3 if max_indic>3
-		tab wbcode max_indic if category==4 & max_indic<3
-		
-		*2 indicators: TUV XKX*
-		
-		tab wbcode if category==4 & max_indic<3
-		foreach cod in TUV XKX{	
-		tab wbcode if wbcode=="`cod'"
-		tab name if !missing(arank) & category==4 & wbcode=="`cod'"
-		tab name if category==4 & max_indic<3 & wbcode=="`cod'"
-		}
-		
-		/*
-		"eap_2wap_mf_a_f" if category==4 & pos==3 & wbcode=="TUV"
-		"eap_2wap_mf_a_f" if category==4 & pos==3 & wbcode=="KXK"
-		*/
-		
-		drop max_indic
 		
 	*---------------------------Keep and reshape---------------------------*
 	
 	/**** Si los labels llegan a quedar demasiado largos para los gráficos, ir al principio de este do file y editar (con replace) los labels para que sean más cortos --> no cambiar en la data original del data portal. La gracia es que los labels nuevos queden en el dta metadata, así más adelante cuando mergamos ese dta, nos pasa bien los labels que queremos.  ****/
 	
-	drop if arank>3
-	drop year
+	drop if selected_indicator!=1
+	drop year py_
 	tostring vy_, gen(year)
-	keep wbcode name lbl category arank year age sou def
-	rename (name lbl year age sou def)(name_ lbl_ year_ age_ sou_ def_)
-	reshape wide name_ lbl_ year_ age_ sou_ def_, i(wbcode arank) j(category)
+	
+	* Create show order based on main rank (more relevant indicators shown first)
+	sort rank
+	bysort wbcode category: gen show_order = _n
+
+	
+	keep wbcode name lbl category year age sou def show_order
+	rename (name lbl year  age sou def)(name_ lbl_ year_ age_ sou_ def_)
+	reshape wide name_ lbl_ year_ age_ sou_ def_, i(wbcode show_order) j(category)
 	rename * *_
-	rename (wbcode_ arank_)(wbcode arank)
-	reshape wide name_1_ year_1_ lbl_1_ age_1_ sou_1_ def_1_ name_2_ year_2_ lbl_2_ age_2_ sou_2_ def_2_ name_3_ year_3_ lbl_3_ age_3_ sou_3_ def_3_ name_4_ year_4_ lbl_4_ age_4_ sou_4_ def_4_, i(wbcode) j(arank)	
+	rename (wbcode_ show_order_)(wbcode show_order)
+	reshape wide name_1_ year_1_ lbl_1_ age_1_ sou_1_ def_1_ name_2_ year_2_ lbl_2_ age_2_ sou_2_ def_2_ name_3_ year_3_ lbl_3_ age_3_ sou_3_ def_3_ name_4_ year_4_ lbl_4_ age_4_ sou_4_ def_4_, i(wbcode) j(show_order)	
 	forvalues cat = 1(1)4{
 	forvalues ara = 1(1)3{
 	gen com_`cat'_`ara' = (name_`cat'_`ara'!="")
@@ -434,38 +227,7 @@
 	reshape long name_ lbl_ age_ sou_ def_, i(wbcode pos)	
 	rename _j category
 	rename *_ *
-	
-	replace name = "uisger02" if category==1 & pos==3 & wbcode=="SWZ"
-	replace name = "unicef_neomort" if category==1 & pos==3 & wbcode=="MAC"
-	replace name = "unicef_neomort" if category==1 & pos==3 & wbcode=="HKG"
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="AGO"
-	replace name = "se_lpv_prim" if category==2 & pos==3 & wbcode=="AGO"	
-	replace name = "uiscr1" if category==2 & pos==3 & wbcode=="CHN"
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="GUY"
-	replace name = "se_lpv_prim" if category==2 & pos==3 & wbcode=="GUY"		
-	replace name = "uiscr1" if category==2 & pos==3 & wbcode=="HND"
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="IRQ"
-	replace name = "se_lpv_prim" if category==2 & pos==3 & wbcode=="IRQ"	
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="LBN"
-	replace name = "se_lpv_prim" if category==2 & pos==3 & wbcode=="LBN"		
-	replace name = "uiscr1" if category==2 & pos==3 & wbcode=="NGA"
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="NIC"
-	replace name = "lastnm_sec_ger" if category==2 & pos==3 & wbcode=="NIC"
-	replace name = "uiscr1" if category==2 & pos==3 & wbcode=="SLV"	
-	replace name = "uiscr1" if category==2 & pos==3 & wbcode=="TTO"
-	replace name = "uiscr1" if category==2 & pos==2 & wbcode=="UKR"
-	replace name = "se_lpv_prim" if category==2 & pos==3 & wbcode=="UKR"
-	replace name = "eip_neet_mf_y" if category==3 & pos==2 & wbcode=="ATG"
-	replace name = "lastnm_ter_ger" if category==3 & pos==3 & wbcode=="ATG"	
-	replace name = "eip_neet_mf_y" if category==3 & pos==2 & wbcode=="FSM"
-	replace name = "lastnm_ter_ger" if category==3 & pos==3 & wbcode=="FSM"
-	replace name = "eip_neet_mf_y" if category==3 & pos==3 & wbcode=="GRD"
-	replace name = "eip_neet_mf_y" if category==3 & pos==2 & wbcode=="KNA"
-	replace name = "lastnm_afr" if category==3 & pos==3 & wbcode=="KNA"
-	replace name = "lastnm_afr" if category==3 & pos==3 & wbcode=="TUV"
-	replace name = "eap_2wap_mf_a_f" if category==4 & pos==3 & wbcode=="TUV"
-	replace name = "eap_2wap_mf_a_f" if category==4 & pos==3 & wbcode=="XKX"
-	
+		
 	preserve
 	use "$data_processed\metadata_briefs", clear
 	duplicates drop name lbl, force
@@ -475,6 +237,7 @@
 	tempfile met
 	save `met'
 	restore
+	
 	merge m:1 name using `met'
 	
 	tab wbcode category if _m==1
@@ -486,20 +249,6 @@
 	
 	drop *_met _merge
 	drop if wbcode==""
-	
-	/* Esto pasa con los países a los que les falta una categoría ENTERA */
-	replace name = "unicef_neomort" if category==1 & pos==1 & wbcode=="XKX"
-	replace name = "unicef_mealfreq" if category==1 & pos==2 & wbcode=="XKX"
-	replace name = "uisger02" if category==1 & pos==3 & wbcode=="XKX"	
-	replace name = "uiscr1" if category==2 & pos==1 & inlist(wbcode,"HTI","XKX","ZMB")
-	replace name = "lastnm_sec_ger" if category==2 & pos==2 & inlist(wbcode,"HTI","XKX","ZMB")
-	replace name = "se_lpv_prim" if category==2 & pos==3 & inlist(wbcode,"HTI","XKX","ZMB")
-	replace name = "eip_neet_mf_y" if category==3 & pos==1 & inlist(wbcode,"DMA","NRU","PLW","XKX")
-	replace name = "lastnm_afr" if category==3 & pos==2 & inlist(wbcode,"DMA","NRU","PLW","XKX")
-	replace name = "lastnm_ter_ger" if category==3 & pos==3 & inlist(wbcode,"DMA","NRU","PLW","XKX")
-	replace name = "eap_2wap_mf_a_f" if category==4 & pos==1 & inlist(wbcode,"DMA","KNA","MHL","NRU","PLW")
-	replace name = "eap_2wap_mf_a_m" if category==4 & pos==2 & inlist(wbcode,"DMA","KNA","MHL","NRU","PLW")
-	replace name = "sp_dyn_le00_in" if category==4 & pos==3 & inlist(wbcode,"DMA","KNA","MHL","NRU","PLW")
 
 	preserve
 	use "$data_processed\metadata_briefs", clear
@@ -539,6 +288,9 @@
 	
 	/* Copiar todos los locals y pegar en el siguiente do file */ 
 			
+* FIXME: Este análisis guardarlo aparte para que corra más prolijo.
+			
+/*			
 			
 ***************************************3) YEARS*********************************	
 

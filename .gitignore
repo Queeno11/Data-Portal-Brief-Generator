@@ -24,5 +24,6 @@
 *.mkv
 *.mp4
 *.pyc
-
+*.gph
+*.pdf
 !Data/Data_Raw/Country codes & metadata/*

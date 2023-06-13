@@ -65,7 +65,6 @@
 	rename value* * 
 	rename pv* *_prev
 		
-	
 	/* Hago reshape por género */ 
 	* Seteo variable genero para tener el sufijo despues del reshape
 	gen gend = "_t" if gender==0
@@ -84,12 +83,7 @@
 	rename *_prev_f *_f_prev
 	rename *_prev_m *_m_prev
 	
-	foreach var of varlist _all {
-		capture assert mi(`var')
-		if !_rc {
-		drop `var'
-		}
-	}
+
 
 	* Genero lista con las variables "prev" y "nselect" (no prev)
 	global prev ""
@@ -126,6 +120,7 @@
 	/* Así me queda solo 1 obs por cada wbcode wbcountryname wbregion wbincome */
 	collapse (max) $all_indicators_years, by(wbcode wbcountryname wbregion wbincome)
 
+
 *---------------------------Replace country name---------------------------*
 	// FIXME: this can be probably corrected directly on the countries data
 	replace wbcountryname = "Democratic Republic of the Congo" if wbcode=="COD"
@@ -154,6 +149,15 @@
 	foreach var in $nselect { // FIXME:check if this works
 	bysort wbincome: egen `var'_inc = mean(`var')
 	bysort wbregion: egen `var'_reg = mean(`var')
+	}
+
+*------------------------------Clean redundant variables------------------------------*
+* Dropeo todas las variables que tienen todo missing
+	foreach var of varlist _all {
+		capture assert mi(`var')
+		if !_rc {
+		drop `var'
+		}
 	}
 	
 *---------------------------------keep if----------------------------------*
