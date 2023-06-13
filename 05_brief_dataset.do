@@ -157,9 +157,9 @@
 	}
 	
 *---------------------------------keep if----------------------------------*
-	save "$data_output\data_briefs_allcountries_wprev", replace
+	save "$data_output\data_briefs_allcountries", replace
 	
 *--------------------------------save data---------------------------------*
 	keep if hci!=.
 	
-	save "$data_output\data_briefs_wprev", replace
+	save "$data_output\data_briefs", replace
