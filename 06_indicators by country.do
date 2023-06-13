@@ -119,21 +119,29 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 	/**** Agregar vars nuevas acá ****/
 	
 	use "$data_output\data_briefs", clear
-	gl indic unicef_neomort unicef_mealfreq uisger02 lastnm_mmrt unicef_care lastnm_birth_reg unicef_breastf unicef_diarrhoea vacBCG uiscr1 lastnm_sec_ger se_lpv_prim uiscr2 vacHEPBB eip_neet_mf_y lastnm_afr lastnm_ter_ger une_2eap_mf_y emp_nifl_y eap_2wap_mf_a_f eap_2wap_mf_a_m sp_dyn_le00_in lastnm_probdeath_ncd une_2eap_mf_a emp_nifl_a uisger02_f uisger02_m vacDTP1 vacDTP3 vacHEPB3 vacHIB3 vacIPV1 vacMCV1 vacMCV2 vacPCV3 vacPOL3 vacROTAC uiscr1_f uiscr1_m se_lpv_prim_f se_lpv_prim_m eip_neet_mf_y_f eip_neet_mf_y_m une_2eap_mf_y_f une_2eap_mf_y_m emp_nifl_y_f emp_nifl_y_m sp_dyn_le00_in_f sp_dyn_le00_in_m une_2eap_mf_a_f une_2eap_mf_a_m emp_nifl_a_f emp_nifl_a_m
-	gl indicyear unicef_neomort_y unicef_mealfreq_y uisger02_y lastnm_mmrt_y unicef_care_y lastnm_birth_reg_y unicef_breastf_y unicef_diarrhoea_y vacBCG_y uiscr1_y lastnm_sec_ger_y se_lpv_prim_y uiscr2_y vacHEPBB_y eip_neet_mf_y_y lastnm_afr_y lastnm_ter_ger_y une_2eap_mf_y_y emp_nifl_y_y eap_2wap_mf_a_f_y eap_2wap_mf_a_m_y sp_dyn_le00_in_y lastnm_probdeath_ncd_y une_2eap_mf_a_y emp_nifl_a_y uisger02_f_y uisger02_m_y vacDTP1_y vacDTP3_y vacHEPB3_y vacHIB3_y vacIPV1_y vacMCV1_y vacMCV2_y vacPCV3_y vacPOL3_y vacROTAC_y uiscr1_f_y uiscr1_m_y se_lpv_prim_f_y se_lpv_prim_m_y eip_neet_mf_y_f_y eip_neet_mf_y_m_y une_2eap_mf_y_f_y une_2eap_mf_y_m_y emp_nifl_y_f_y emp_nifl_y_m_y sp_dyn_le00_in_f_y sp_dyn_le00_in_m_y une_2eap_mf_a_f_y une_2eap_mf_a_m_y emp_nifl_a_f_y emp_nifl_a_m_y
-	gl indicnew basic_hygiene_health basic_hygiene_schools basic_sanitation_health basic_sanitation_schools basic_water_health basic_water_schools eap_2wap_mf_a lastnm_birth_reg_f lastnm_birth_reg_m lastnm_sec_ger_f lastnm_sec_ger_m lastnm_ter_ger_f lastnm_ter_ger_m uiscr2_f uiscr2_m uiscr3 uisoaepg1 uisoaepg2gpv uisqutp1 uisqutp2t3 uisschbsp1welec uisxgdpfsgov uisxgovexpimf unicef_1524mort unicef_514mort unicef_breastf_f unicef_breastf_m unicef_caremother unicef_diarrhoea_f unicef_diarrhoea_m unicef_hygiene unicef_mealfreq_f unicef_mealfreq_m unicef_sanitation unicef_stillbirths unicef_water
-	gl indicnewyear basic_hygiene_health_y basic_hygiene_schools_y basic_sanitation_health_y basic_sanitation_schools_y basic_water_health_y basic_water_schools_y eap_2wap_mf_a_y lastnm_birth_reg_f_y lastnm_birth_reg_m_y lastnm_sec_ger_f_y lastnm_sec_ger_m_y lastnm_ter_ger_f_y lastnm_ter_ger_m_y uiscr2_f_y uiscr2_m_y uiscr3_y uisoaepg1_y uisoaepg2gpv_y uisqutp1_y uisqutp2t3_y uisschbsp1welec_y uisxgdpfsgov_y uisxgovexpimf_y unicef_1524mort_y unicef_514mort_y unicef_breastf_f_y unicef_breastf_m_y unicef_caremother_y unicef_diarrhoea_f_y unicef_diarrhoea_m_y unicef_hygiene_y unicef_mealfreq_f_y unicef_mealfreq_m_y unicef_sanitation_y unicef_stillbirths_y unicef_water_y
-	keep wbcode $indic $indicyear $indicnew $indicnewyear  	 
+
+	* Genero lista con las variables "indicadores" y "indicadores_year" 
+	global indicyear ""
+	global indic ""
+	foreach var of varlist * {
+		if strpos("`var'", "_year") > 0 {
+			global indicyear "$indicyear `var'" // Adds to prev global
+			local var_no_year : subinstr local var "_year" "" // Removes _prev from name
+			global indic "$indic `var_no_year'" // Adds to nselect global
+		}
+	}
+
+	keep wbcode $indic $indicyear
 
 	rename * v_*
-	/* Para 3 variables lo hago manualmente, porque el codigo del indicador termina en _y, y se confunde con el _y del año */
+	/* Para 3 variables lo hago manualmente, porque el codigo del indicador termina en _y, y se confunde con el _y del año
 	rename (v_eip_neet_mf_y_y v_emp_nifl_y_y v_une_2eap_mf_y_y)(vy_eip_neet_mf_y vy_emp_nifl_y vy_une_2eap_mf_y)
-	rename (v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)(v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx)
-	rename v_*_y vy_*
-	rename (v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx)(v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)
+	rename (v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)(v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx) */
+	* rename v_*_y vy_*
+	* rename (v_eip_neet_mf_xx v_emp_nifl_xx v_une_2eap_mf_xx)(v_eip_neet_mf_y v_emp_nifl_y v_une_2eap_mf_y)
 	rename v_wbcode wbcode
 	
-	reshape long v_ vy_, i(wbcode) string
+	reshape long v_, i(wbcode) string
 	rename _j name
 
 	*-----------------------Generate stage of life-------------------------*
