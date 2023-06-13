@@ -46,4 +46,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Briefs
 
 ** 05 - Create Briefs Dataset
-do "$root\05_save dataset - w series.do"
+// do "$root\05_brief_dataset.do"
+
+** 06 - Create pool of indicator for each country
+do "$root\06_indicators by country.do"

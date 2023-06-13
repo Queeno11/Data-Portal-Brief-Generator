@@ -2,7 +2,9 @@
 
 ## Description
 
-Codes for creating WB HCP Data Portal and WB HCP Briefs. Most data is directly downloaded from relevant International organizations' portals, except from UNICEF that is accesed via API. Data_Raw contains dowloaded data requiered to run everything, without it, you wont be able to run the code.
+This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. However, data from UNICEF is accessed via API. 
+
+The 'Data_Raw' directory contains the downloaded data required to run all the code. Please note that without this data, the code will not be executable.
 
 ## Getting Started
 
@@ -35,7 +37,7 @@ With this changes, the final output will be:
 
 ## Adding indicators
 
-In order to add indicators to the Data Portal database, it is required to include the indicator in the metadata.xlsx file.
+In order to add indicators to the Data Portal database, it is required to include the indicator in the metadata.xlsx file. To add it to the briefs, a rank, dimension and stage of life are required. 
 
 
 <!-- ## Help
