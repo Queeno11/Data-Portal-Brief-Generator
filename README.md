@@ -2,7 +2,7 @@
 
 <h1 align="center">Data Portal & Brief Generator</h1>
 
-<p align="center"><i>Unnoficial repo for the WB HCP Data Portal & Two-page Briefs.</i></p>
+<p align="center"><i>Unnoficial repo for the WB HCP Data Portal & Two-page Briefs</i></p>
 
 <div align="center">
 <a href="https://www.worldbank.org/en/publication/human-capital">
@@ -76,6 +76,14 @@ Dominique Pizzie
 
 ## Version History
 
+* 0.2
+    * Added many new indicators to briefs 
+    * Automation of the indicator selection for the briefs by adding a ranking in the metadata file
+    * Briefs indicator selection ranking based on both stage of life and dimension (before this, the selection was only made by stage of life) 
+    * Data from UNICEF accesed via API
+    * Unified metadata file
+    * Comparison with previous indicator (~5 years before) for the Briefs
+    * Full pipeline unification (not fully implemented)
 * 0.1
     * Initial Release
 
