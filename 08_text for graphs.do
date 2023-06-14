@@ -16,7 +16,7 @@
 		clear all
 		set more off	
 		set maxvar 32000
-		use "$data_output\data_briefs_wprev", replace
+		use "$data_output\data_briefs", replace
 	
 	*------------------------------Keep vars-----------------------------------*
 	

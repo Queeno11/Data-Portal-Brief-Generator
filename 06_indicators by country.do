@@ -118,10 +118,6 @@
 	
 	*----------------------Selection of indicators-------------------------*
 	
-	* Changes rank for each stage and country to have the arank column set for final reshape. arank between 1 and 3 means that the indicators will be used in the brief for that stage.	
-	
-	/**** Considerar automatizar esto según stage of life & dimension, para evitar asignar cosas manualmente. Desagregar automáticamente por género cuando no hay más indicadores. ****/
-	
 	/*
 	Para cada stage y topic:
 	1) Si tenemos todos los indicadores, entonces elegimos el mejor para ese stage y topic (min(arank))
@@ -134,18 +130,19 @@
 	*/
 	
 
-	* Arank == 1 means that such indicator is the selected one for that country, stage_life and topic (with gender==0).
+	*** Selecting main indicator for each stage and dimension
+	**Arank == 1 means that such indicator is the selected one for that country, stage_life and topic (with gender==0).	
 	
-	
-
 	* Create duumy to flag selected indicators
 	bysort wbcode category topic gender: gen selected_indicator = 1 if arank==1 & gender==0
 	
 	*Check which countries has indicators for each dimension-topic.
-	bysort wbcode category topic: egen has_indic = min(selected_indicator) // If has_indic==., then such country has no indicator for that dimension-topic pair.
+	bysort wbcode category topic: egen has_indic = min(selected_indicator) 
+	// If has_indic==., then such country has no indicator for that dimension-topic pair.
 	
 	gen inv_year = 2500-vy_
-	
+
+	*** Selecting second best indicator for each stage (taking from other dimensions of the same stage)
 	levelsof(wbcode), local(countries)
 	levelsof(category), local(categories)
 	levelsof(topic), local(topics)
@@ -174,9 +171,10 @@
 			local selected_indicators = r(N)
 			qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
 			local available_indicators = r(N)
-			* FIXME: para mi aca no entra nunca
+
 			if `selected_indicators' !=3 {
 				display in red "Para `country' no hay 3 indicadores para la stage `category'"
+				// FIXME: solve this cases by opening the indicator by gender
 			}
 		}
 	}
