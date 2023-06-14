@@ -27,3 +27,4 @@
 *.gph
 *.pdf
 !Data/Data_Raw/Country codes & metadata/*
+!UML long.png
