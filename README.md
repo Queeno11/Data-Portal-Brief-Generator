@@ -6,7 +6,7 @@
 
 <div align="center">
 <a href="https://www.worldbank.org/en/publication/human-capital">
-    <img src="https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/dbf0e3bf626258b10b32becce86424e36b5ade47/HCP_logo.png" alt="Logo" width="100" height="100">
+    <img src="https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/dbf0e3bf626258b10b32becce86424e36b5ade47/HCP_logo.png" alt="Logo" width="auto" height="100">
 </a>
 </div>
 
