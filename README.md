@@ -1,13 +1,16 @@
-<div align="center">
-<a href="https://www.worldbank.org/en/publication/human-capital">
-    <img src="https://www.worldbank.org/content/dam/photos/200x200/2020/nov/HCP-logo-circle-EN-grey.png" alt="Logo" width="100" height="100">
-</a>
-</div>
 
 
 <h1 align="center">Data Portal & Brief Generator</h1>
 
 <p align="center"><i>Unnoficial repo for the WB HCP Data Portal & Two-page Briefs.</i></p>
+
+<div align="center">
+<a href="https://www.worldbank.org/en/publication/human-capital">
+    <img src="https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/dbf0e3bf626258b10b32becce86424e36b5ade47/HCP_logo.png" alt="Logo" width="100" height="100">
+</a>
+</div>
+
+
 ## Description
 This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. However, data from UNICEF is accessed via API. 
 
