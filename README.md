@@ -1,8 +1,12 @@
-# Data Portal & Brief Generator
+<h1 align="center">Data Portal & Brief Generator</h1>
+
+<p align="center"><i>Unnoficial repo for the WB HCP Data Portal & Two-page Briefs.</i></p>
+<a align="center" href="https://github.com/othneildrew/Best-README-Template">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+</a>
 
 ## Description
-
-Unnoficial repo for the WB HCP Data Portal & Two-page Briefs. This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. However, data from UNICEF is accessed via API. 
+This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. However, data from UNICEF is accessed via API. 
 
 The 'Data_Raw' directory contains the downloaded data required to run all the code. Please note that without this data, the code will not be executable.
 
@@ -44,7 +48,8 @@ In order to add new indicators to the Data Portal Database, it is requiered to i
 
 For indicators to be included also in the Briefs, it is requiered to include a rank for the indicator, and both the corresponing dimension (i.e. Education, Health or Labor) and the stage of life. 
 
-## Summary of the code
+## Code Structure - What each script does
+
 
 ![Pipeline of the code](https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/1669a35351cdce29aa46b0da9b08fbbe152f4070/UML%20long.png)
 
@@ -75,3 +80,4 @@ This project is licensed under the [NAME HERE] License - see the LICENSE.md file
 ## Relevant links
 
 * [World Bank Human Capital Project](https://www.worldbank.org/en/publication/human-capital)
+* [Briefs and Data Portal](https://www.worldbank.org/en/publication/human-capital#Data)
