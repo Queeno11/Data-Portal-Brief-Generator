@@ -46,7 +46,7 @@ For indicators to be included also in the Briefs, it is requiered to include a r
 
 ## Summary of the code
 
-![Pipeline of the code](UML long.png)
+![Pipeline of the code](https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/1669a35351cdce29aa46b0da9b08fbbe152f4070/UML%20long.png)
 
 
 <!-- ## Help
