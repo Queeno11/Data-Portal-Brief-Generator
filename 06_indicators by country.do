@@ -270,8 +270,8 @@
 	tostring pos, gen(rank)
 	
 	drop if wbcode==""
-	gen lc = "local "
-	gen lcl = "local l"
+	gen lc = ""
+	gen lcl = "l"
 	gen esp = " "
 	gen equ = "="
 	gen uss = "_"
@@ -284,6 +284,7 @@
 	reshape long l, i(wbcode category pos) 
 	sort wbcode category pos _j
 	keep l
+	rename l locals
 	save "$data_output\new_locals", replace
 	br 
 	
