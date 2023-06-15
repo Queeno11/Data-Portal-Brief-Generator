@@ -146,7 +146,7 @@
 	
 *---------------------------------Averages---------------------------------*
 	
-	foreach var in $nselect { // FIXME:check if this works
+	foreach var in $nselect { 
 	bysort wbincome: egen `var'_inc = mean(`var')
 	bysort wbregion: egen `var'_reg = mean(`var')
 	}

@@ -32,7 +32,6 @@
 	rename description def
 	
 	collapse (mean) year, by(wbcode name lbl age def source rank gender topic stage_life)
-	duplicates drop wbcode name, force // FIXME: Eliminar en un ratito
 	save "$data_processed\metadata_briefs", replace
 
 *-----------------------------Stages of life-------------------------------*	
@@ -178,7 +177,11 @@
 			}
 		}
 	}
-		
+	
+	* FIXME: Reemplazar por columna en metadata que tenga esta info...
+	replace name = "Child labor (%), ages 5-17" if name=="child_labor"
+	replace name = "Minimum meal frequency (%), 6-23 months" if name=="mealfreq"
+
 		
 	*---------------------------Keep and reshape---------------------------*
 	

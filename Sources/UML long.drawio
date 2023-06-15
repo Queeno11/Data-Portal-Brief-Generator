@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-06-14T19:05:37.896Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="ptX9KLuXuxbDQ71sxixj" version="21.3.8" type="device">
+<mxfile host="app.diagrams.net" modified="2023-06-14T21:58:14.228Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="bcaKyJoKZ10ZC7C8EuB2" version="21.3.8" type="device">
   <diagram name="Página-1" id="nF6iOulG578xqtXxONi5">
     <mxGraphModel dx="2514" dy="876" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -212,7 +212,7 @@
         <mxCell id="fUDfj7uWCVOUMnSfH1Hj-106" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fUDfj7uWCVOUMnSfH1Hj-99" target="fUDfj7uWCVOUMnSfH1Hj-105">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fUDfj7uWCVOUMnSfH1Hj-99" value="06_indicators_by_country.do" style="fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="fUDfj7uWCVOUMnSfH1Hj-99" value="06_indicators_by_country.do" style="fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="160" y="954" width="171" height="30" as="geometry" />
         </mxCell>
         <mxCell id="fUDfj7uWCVOUMnSfH1Hj-101" value="&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Selects indicators to be displayed in the briefs for each country based on indicators ranking.&lt;/span&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
