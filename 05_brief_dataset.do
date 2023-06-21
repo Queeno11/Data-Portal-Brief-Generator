@@ -83,8 +83,6 @@
 	rename *_prev_f *_f_prev
 	rename *_prev_m *_m_prev
 	
-
-
 	* Genero lista con las variables "prev" y "nselect" (no prev)
 	global prev ""
 	global nselect ""
@@ -120,7 +118,6 @@
 	/* Así me queda solo 1 obs por cada wbcode wbcountryname wbregion wbincome */
 	collapse (max) $all_indicators_years, by(wbcode wbcountryname wbregion wbincome)
 
-
 *---------------------------Replace country name---------------------------*
 	// FIXME: this can be probably corrected directly on the countries data
 	replace wbcountryname = "Democratic Republic of the Congo" if wbcode=="COD"
@@ -153,12 +150,15 @@
 
 *------------------------------Clean redundant variables------------------------------*
 * Dropeo todas las variables que tienen todo missing
-	foreach var of varlist _all {
-		capture assert mi(`var')
-		if !_rc {
-		drop `var'
-		}
+foreach var of varlist $nselect {
+	capture assert mi(`var')
+	if !_rc {
+	drop `var'
+	drop `var'_prev
+	drop `var'_year
+	drop `var'_year_prev
 	}
+}
 	
 *---------------------------------keep if----------------------------------*
 	save "$data_output\data_briefs_allcountries", replace

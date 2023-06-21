@@ -1,78 +1,86 @@
 *------------------------------------------------------------------------------*
 *--------------------------------------Graphs----------------------------------*
 *------------------------------------------------------------------------------*
-	clear all
-	set more off	
-	set maxvar 32000
 
-	*--------------------------Local for page 2--------------------------*
-	* This locals are the selected indicators for each country based on the availability of data
-	* and the indicators ranking. They come from the previous do file.
-	use "$data_output\new_locals", clear
-	local n_locals = _N
-	forvalues i  = 1(1)`n_locals' {
-		local locals[i] 
+clear all
+set more off	
+set maxvar 32000
+
+*--------------------------Local for page 2--------------------------*
+* This locals are the selected indicators for each country based on the availability of data
+* and the indicators ranking. They come from the previous do file.
+use "$data_output\new_locals", clear
+local n_locals = _N
+split locals, limit(1) // Create a column with only the local names
+forvalues i  = 1(1)`n_locals' {
+	preserve
+	keep if _n==`i' 
+	local name = locals1
+	replace locals = subinstr(locals, "`name'", "", .) 
+	local value = locals
+	local `name' `value'
+	display "``name''"
+	restore
+}
+
+*------------------------------------------------------------------------------*
+*-----------------------------------GRAPHS-------------------------------------*
+*------------------------------------------------------------------------------*
+use "$data_output\data_briefs_allcountries", replace
+
+sort wbcode
+count
+numlist "1/`r(N)'"
+local obs = "`r(numlist)'"
+display "`obs'"
+
+local nb 3
+local ne 3
+local nh 3
+local nl 3
+local no 3
+local nc 7
+
+*---------------------------Graphs configuration---------------------------*
+
+local date: disp %tdCY-m-D date("`c(current_date)'", "DMY")
+disp "`date'"
+local notetext "Data are preliminary and subject to revision (as of `date')."
+graph set window fontface "Baskerville Old Face"
+set scheme s2color
+sort wbregion wbcode
+gen onesvec=1
+
+*--------------------------Locals for page 1--------------------------*
+
+levelsof wbcode, local(wb_country_codes) 
+foreach c in `wb_country_codes' {
+	
+	local c1_`c' hci
+	local c2_`c' psurv
+	local c3_`c' eyrs
+	local c4_`c' test
+	local c5_`c' qeyrs
+	local c6_`c' asr
+	local c7_`c' nostu
+	
+	local lc1_`c' "Human Capital Index"
+	local lc2_`c' "Probability of Survival to Age 5"
+	local lc3_`c' "Expected Years of School"
+	local lc4_`c' "Harmonized Test Scores"
+	local lc5_`c' "Learning-adjusted Years of School"
+	local lc6_`c' "Adult Survival Rate"
+	local lc7_`c' "Fraction of Children Under 5 Not Stunted"
+	
 	}
+	
+*----------------------------Loop on countries-----------------------------*
 
-	
-	*------------------------------------------------------------------------------*
-	*-----------------------------------GRAPHS-------------------------------------*
-	*------------------------------------------------------------------------------*
-	use "$data_output\data_briefs_allcountries", replace
-
-	sort wbcode
-	count
-	numlist "1/`r(N)'"
-	local obs = "`r(numlist)'"
-	display "`obs'"
-	
-	local nb 3
-	local ne 3
-	local nh 3
-	local nl 3
-	local no 3
-	local nc 7
-	
-	*---------------------------Graphs configuration---------------------------*
-
-	local date: disp %tdCY-m-D date("`c(current_date)'", "DMY")
-	disp "`date'"
-	local notetext "Data are preliminary and subject to revision (as of `date')."
-	graph set window fontface "Baskerville Old Face"
-	set scheme s2color
-	sort wbregion wbcode
-	gen onesvec=1
-
-	*--------------------------Locals for page 1--------------------------*
-	
-	levelsof wbcode, local(wb_country_codes) 
-	foreach c in `wb_country_codes' {
-		
-		local c1_`c' hci
-		local c2_`c' psurv
-		local c3_`c' eyrs
-		local c4_`c' test
-		local c5_`c' qeyrs
-		local c6_`c' asr
-		local c7_`c' nostu
-		
-		local lc1_`c' "Human Capital Index"
-		local lc2_`c' "Probability of Survival to Age 5"
-		local lc3_`c' "Expected Years of School"
-		local lc4_`c' "Harmonized Test Scores"
-		local lc5_`c' "Learning-adjusted Years of School"
-		local lc6_`c' "Adult Survival Rate"
-		local lc7_`c' "Fraction of Children Under 5 Not Stunted"
-		
-		}
-		
-	*----------------------------Loop on countries-----------------------------*
-	
-	/* Loop with all countries */
+/* Loop with all countries */
 foreach i of local obs {
-	capture {
+	/* capture { */
 	/* Unmute to run only one or some countries */
-// 		if (wbcode[`i'] != "ARG") continue 
+	/* if (wbcode[`i'] != "GUM") continue  */
 	
 	local ctry=wbcode in `i'
 	local region=wbregion in `i'
@@ -83,71 +91,63 @@ foreach i of local obs {
 	*------------------------------First page------------------------------*
 	
 	/* With available data - automatic */
-	
-qui foreach x in c {
-	forvalues m = 1(1)`n`x'' {
-	qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
-	gen obs_``x'`m''_`i' = 1 if `=scalar(r(N))'>0
-	replace obs_``x'`m''_`i' = 0 if `=scalar(r(N))'==0
-	replace obs_``x'`m''_`i' = 0 if ``x'`m'_`ctry''[`i']==0
-	if obs_``x'`m''_`i' == 0 continue
-	drop obs_``x'`m''_`i'
-	qui su ``x'`m'_`ctry'', d
-	scalar m1``x'`m'_`ctry'' = `=scalar(r(max))'
-	scalar m2``x'`m'_`ctry'' = `=scalar(r(min))'
-	scalar m25``x'`m'_`ctry'' = `=scalar(r(p25))'
-	scalar m50``x'`m'_`ctry'' = `=scalar(r(p50))'
-	scalar m75``x'`m'_`ctry'' = `=scalar(r(p75))'
-	scalar m100``x'`m'_`ctry'' = `=scalar(r(p100))'
-	scalar dif``x'`m'_`ctry'' = `=scalar(m1``x'`m'_`ctry'')' - `=scalar(m2``x'`m'_`ctry'')'
-	scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
-	scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
-	scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
-	
-	twoway ///
-	(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
-	(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
-	(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-	(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
-	(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
-	, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
-	graph save "$charts\graph_`ctry'_`x'`m'.gph", replace
 
-}	
-}
+	forvalues m = 1(1)`nc' {
 	
-	/* With missing data - automatic */
-	
-foreach x in c {
-forvalues m = 1(1)`n`x'' {
-	if ``x'`m'_`ctry''[`i']==. {
-	qui su ``x'`m'_`ctry'', d
-	scalar m1``x'`m'_`ctry'' = `=scalar(r(max))'
-	scalar m2``x'`m'_`ctry'' = `=scalar(r(min))'
-	scalar m25``x'`m'_`ctry'' = `=scalar(r(p25))'
-	scalar m50``x'`m'_`ctry'' = `=scalar(r(p50))'
-	scalar m75``x'`m'_`ctry'' = `=scalar(r(p75))'
-	scalar m100``x'`m'_`ctry'' = `=scalar(r(p100))'
-	scalar dif``x'`m'_`ctry'' = `=scalar(m1``x'`m'_`ctry'')' - `=scalar(m2``x'`m'_`ctry'')'
-	scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
-	scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
-	scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
-	twoway ///
-	(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
-	(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
-	(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-	, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
-	graph save "$charts\graph_`ctry'_`x'`m'.gph", replace
-	drop obs_``x'`m''_`i'
-	}
-	else {
-	
-	}
-	}
-	}
+		display "obs_`c`m'_`ctry'' c`m'_`ctry'"
+		display "local c`m'_`ctry' `c`m'_`ctry''"
+		qui tab `c`m'_`ctry'' if wbcode=="`ctry'"		
+		gen obs_`c`m'_`ctry'' = 1 if `=scalar(r(N))'>0
+		replace obs_`c`m'_`ctry'' = 0 if `=scalar(r(N))'==0
+		replace obs_`c`m'_`ctry'' = 0 if `c`m'_`ctry''[`i']==0
+		if obs_`c`m'_`ctry'' == 0 {
+			* If we have data for the hci
+			drop obs_`c`m'_`ctry''
+			qui su `c`m'_`ctry'', d
+			scalar m1`c`m'_`ctry'' = `=scalar(r(max))'
+			scalar m2`c`m'_`ctry'' = `=scalar(r(min))'
+			scalar m25`c`m'_`ctry'' = `=scalar(r(p25))'
+			scalar m50`c`m'_`ctry'' = `=scalar(r(p50))'
+			scalar m75`c`m'_`ctry'' = `=scalar(r(p75))'
+			scalar m100`c`m'_`ctry'' = `=scalar(r(p100))'
+			scalar dif`c`m'_`ctry'' = `=scalar(m1`c`m'_`ctry'')' - `=scalar(m2`c`m'_`ctry'')'
+			scalar max`c`m'_`ctry'' = 20 * ceil(`=scalar(m1`c`m'_`ctry'')'/20) 	
+			scalar min`c`m'_`ctry'' = 20 * floor(`=scalar(m2`c`m'_`ctry'')'/20) 
+			scalar inter`c`m'_`ctry'' = (`=scalar(max`c`m'_`ctry'')'-`=scalar(min`c`m'_`ctry'')')/2
+			
+			twoway ///
+			(scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
+			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
+			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+			(scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
+			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(solid) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
+			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
+			graph save "$charts\graph_`ctry'_c`m'.gph", replace
+		}
+		else {
+			* If we dont have data, then plot only regional data
+			qui su `c`m'_`ctry'', d
+			scalar m1`c`m'_`ctry'' = `=scalar(r(max))'
+			scalar m2`c`m'_`ctry'' = `=scalar(r(min))'
+			scalar m25`c`m'_`ctry'' = `=scalar(r(p25))'
+			scalar m50`c`m'_`ctry'' = `=scalar(r(p50))'
+			scalar m75`c`m'_`ctry'' = `=scalar(r(p75))'
+			scalar m100`c`m'_`ctry'' = `=scalar(r(p100))'
+			scalar dif`c`m'_`ctry'' = `=scalar(m1`c`m'_`ctry'')' - `=scalar(m2`c`m'_`ctry'')'
+			scalar max`c`m'_`ctry'' = 20 * ceil(`=scalar(m1`c`m'_`ctry'')'/20) 	
+			scalar min`c`m'_`ctry'' = 20 * floor(`=scalar(m2`c`m'_`ctry'')'/20) 
+			scalar inter`c`m'_`ctry'' = (`=scalar(max`c`m'_`ctry'')'-`=scalar(min`c`m'_`ctry'')')/2
+			twoway ///
+			(scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
+			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
+			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
+			graph save "$charts\graph_`ctry'_c`m'.gph", replace
+			drop obs_`c`m'_`ctry''
+		}
+	}	
 		
 	/* Legend */ 
-	
 	
 	gen m = 0.1
 	gen f_`ctry' = 1
@@ -192,52 +192,51 @@ forvalues m = 1(1)`n`x'' {
 	erase "$charts\graph_`ctry'_c6.gph"
 	erase "$charts\graph_`ctry'_c7.gph"
 	erase "$charts\notes_`ctry'.gph"
-	
+
 	*------------------------------Second Page-----------------------------*
 	
-foreach x in e b h l {
-forvalues m = 1(1)`n`x'' {
-	qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
-	gen obs_``x'`m''_`i' = 1 if `=scalar(r(N))'>0
-	replace obs_``x'`m''_`i' = 0 if `=scalar(r(N))'==0
-	replace obs_``x'`m''_`i' = 0 if ``x'`m'_`ctry''[`i']==0
-	replace obs_``x'`m''_`i' = 1 if ``x'`m'_`ctry''[`i']==.
-	if obs_``x'`m''_`i' == 0 continue
-	drop obs_``x'`m''_`i'
-	qui su ``x'`m'_`ctry'', d
-	scalar m1``x'`m'_`ctry'' = `=scalar(r(max))'
-	scalar m2``x'`m'_`ctry'' = `=scalar(r(min))'
-	scalar m25``x'`m'_`ctry'' = `=scalar(r(p25))'
-	scalar m50``x'`m'_`ctry'' = `=scalar(r(p50))'
-	scalar m75``x'`m'_`ctry'' = `=scalar(r(p75))'
-	scalar m100``x'`m'_`ctry'' = `=scalar(r(p100))'
-	scalar dif``x'`m'_`ctry'' = `=scalar(m1``x'`m'_`ctry'')' - `=scalar(m2``x'`m'_`ctry'')'
-	scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
-	scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
-	scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
+	foreach x in e b h l {
+		forvalues m = 1(1)`n`x'' {
+			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
+			qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
+			gen obs_``x'`m''_`i' = 1 if `=scalar(r(N))'>0
+			replace obs_``x'`m''_`i' = 0 if `=scalar(r(N))'==0
+			replace obs_``x'`m''_`i' = 0 if ``x'`m'_`ctry''[`i']==0
+			replace obs_``x'`m''_`i' = 1 if ``x'`m'_`ctry''[`i']==.
+			if obs_``x'`m''_`i' == 0 continue
+			drop obs_``x'`m''_`i'
+			qui su ``x'`m'_`ctry'', d
+			scalar m1``x'`m'_`ctry'' = `=scalar(r(max))'
+			scalar m2``x'`m'_`ctry'' = `=scalar(r(min))'
+			scalar m25``x'`m'_`ctry'' = `=scalar(r(p25))'
+			scalar m50``x'`m'_`ctry'' = `=scalar(r(p50))'
+			scalar m75``x'`m'_`ctry'' = `=scalar(r(p75))'
+			scalar m100``x'`m'_`ctry'' = `=scalar(r(p100))'
+			scalar dif``x'`m'_`ctry'' = `=scalar(m1``x'`m'_`ctry'')' - `=scalar(m2``x'`m'_`ctry'')'
+			scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
+			scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
+			scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
 
-	capture {
-		twoway ///
-		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
-		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
-		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-		(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
-		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
-		graph save "$charts\graph_`ctry'_`x'`m'.gph", replace		
+		// 	capture {
+			twoway ///
+			(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
+			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
+			(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
+			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
+			, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
+			graph save "$charts\graph_`ctry'_`x'`m'.gph", replace		
+		}
+		
+	// 	if _rc != 0 { 
+	// 		twoway ///
+	// 		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
+	// 		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
+	// 		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+	// 		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
+	// 		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
+	// 		graph save "$charts\graph_`ctry'_`x'`m'.gph", replace	
 	}
-	
-	if _rc != 0 { 
-		twoway ///
-		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
-		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
-		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
-		graph save "$charts\graph_`ctry'_`x'`m'.gph", replace	
-	}
-}
-}
 	
 	/* Combine all graphs by page and export */
 	graph combine "$charts\graph_`ctry'_l1.gph" "$charts\graph_`ctry'_l2.gph" "$charts\graph_`ctry'_l3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Early Childhood", suffix color(black) size(vlarge) linegap(3) pos(11) span)
@@ -271,5 +270,5 @@ forvalues m = 1(1)`n`x'' {
 	erase "$charts\stage_3.gph"
 	erase "$charts\stage_4.gph"
 
-	}
-}	
+}
+/* }	 */

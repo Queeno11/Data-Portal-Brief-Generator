@@ -34,6 +34,23 @@
 	collapse (mean) year, by(wbcode name lbl age def source rank gender topic stage_life)
 	save "$data_processed\metadata_briefs", replace
 
+	
+*---------------------------Best ranked indicators------------------------------*	
+
+	frame create top_ranked_indicators
+	frame change top_ranked_indicators
+	use "$data_processed\metadata_processed", replace
+
+	keep if rank==1 | (stage_life=="Adulthood and Elderly" & dimension=="Labor" & rank==2)  | (stage_life=="Prenatal and Early Childhood" & dimension=="Health" & rank==2)
+	duplicates drop name_portal, force
+	gen category = 1 if stage_life == "Prenatal and Early Childhood"
+	replace category = 2 if stage_life == "School-aged Children"
+	replace category = 3 if stage_life == "Youth"
+	replace category = 4 if stage_life == "Adulthood and Elderly"
+	save "$data_processed\top_ranked_indicators", replace
+
+	frame change default
+	
 *-----------------------------Stages of life-------------------------------*	
 	*FIXME: ESTO YA ESTÁ DIRECTAMENTE EN EL EXCEL. CHEQUEAR QUE COINCIDAN CON LAS DE ACÁ UNA POR UNA:
 
@@ -71,7 +88,7 @@
 	
 	/**** Agregar vars nuevas acá ****/
 	
-	use "$data_output\data_briefs", clear
+	use "$data_output\data_briefs_allcountries", clear
 
 	* Genero lista con las variables "indicadores" y "indicadores_year" 
 	global indicyear ""
@@ -140,8 +157,23 @@
 	// If has_indic==., then such country has no indicator for that dimension-topic pair.
 	
 	gen inv_year = 2500-vy_
-
+	
 	*** Selecting second best indicator for each stage (taking from other dimensions of the same stage)
+	* Create dataset to store the countries not fulfilling the 3 indicators per stage_life
+	frame create no_data_countries  
+	frame change no_data_countries
+	set obs 1
+	gen wbcode = ""
+	gen stage_of_life = .
+	gen selected_indicators = .
+	frame change default
+
+	
+	* Loop for each country and stage. 
+	* Explanaiton: The loop tries to get the top ranked indicator for each dimension in a stage of life (for a certain country). If the
+	*	country doesnt have any indicator for that dimension, then select the best ranked indicator for that stage of life among the other
+	*	dimensions. If no result comes from that, adds the top indicator for the dimension with a missing value (no country value will be 
+	*	shown in the graphs)
 	levelsof(wbcode), local(countries)
 	levelsof(category), local(categories)
 	levelsof(topic), local(topics)
@@ -153,34 +185,81 @@
 				local selected_indicators = r(N)
 				qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
 				local available_indicators = r(N)
-				if `selected_indicators'==0 & `available_indicators'>=1 { 
+				if `selected_indicators'==0 & `available_indicators'>=1 {
 					// In this case, the dimension-topic has no indicator and we have other indicators available, 				
 					// therefore we complete the brief with the best ranked indicator of the hole stage
-					sort rank inv_year
+
 					// Little trick to get the position of the best ranked indicator 
 					//	(best ranked of every other topic, if tie, then the newer)
+					sort rank inv_year
 					gen position = _n if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
 					egen min_position = min(position) if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
 					replace selected_indicator = 1 if min_position == position & position !=.
 					drop position min_position
 				}
 			}
-			// Verificación sobre si tenemos todo o si siguen faltando indicadores
+			// Verificación sobre si tenemos todo o si sigubeen faltando indicadores
 			qui count if wbcode=="`country'" & category==`category' & selected_indicator==1
 			local selected_indicators = r(N)
 			qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
 			local available_indicators = r(N)
 
 			if `selected_indicators' !=3 {
+				// When not enought indicators store the country name and the stage with lack of data in an alternative dataframe - only for reporting
 				display in red "Para `country' no hay 3 indicadores para la stage `category'"
-				// FIXME: solve this cases by opening the indicator by gender
+
+				frame change no_data_countries
+				expand 2 in 1
+				replace wbcode = "`country'" in 1
+				replace stage_of_life = `category' in 1 
+				replace selected_indicators = `selected_indicators' in 1
+				frame change default
+	
 			}
+
+			local i = 1
+
+			while `selected_indicators' <3  {
+				// Create observation with one of the best ranked indicators for the dimension	
+				// FIXME: now it only choses one arbitrarily, but it should chose an indicator from the other dimensions of the same stage
+				frame change top_ranked_indicators
+				use "$data_processed\top_ranked_indicators", clear
+				keep if category==`category'
+			
+				sort rank
+				local name = name_portal[`i']
+				local lbl = name[`i']
+				local rank = rank[`i']
+				frame change default
+				display "`name' `lbl' `rank'"
+
+				count
+				local new_q_obs   = r(N) + 1
+				set obs `new_q_obs'
+				replace name = "`name'" if _n==_N
+				replace lbl = "`lbl'" if _n==_N
+				replace rank = `rank' if _n==_N
+				replace gender = 0 if _n==_N
+				replace wbcode = "`country'" if _n==_N
+				replace year = 2023 if _n==_N
+				replace category = `category' if _n==_N
+				replace selected_indicator = 1 if _n==_N
+				display "`name' `lbl' `rank'"
+				local i = `i' + 1
+				local selected_indicators = `selected_indicators' + 1
+			}	
 		}
 	}
 	
+	* Save report on data scarcity
+	frame change no_data_countries
+	drop if selected_indicators == .
+	save "${data_output}\briefs_countries_with_no_data_${date}", replace
+	frame change default
+
 	* FIXME: Reemplazar por columna en metadata que tenga esta info...
-	replace name = "Child labor (%), ages 5-17" if name=="child_labor"
-	replace name = "Minimum meal frequency (%), 6-23 months" if name=="mealfreq"
+	replace lbl = "Child labor (%), ages 5-17" if name=="child_labor"
+	replace lbl = "Minimum meal frequency (%), 6-23 months" if name=="mealfreq"
 
 		
 	*---------------------------Keep and reshape---------------------------*
