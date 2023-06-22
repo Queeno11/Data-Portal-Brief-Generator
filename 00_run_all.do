@@ -48,10 +48,10 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-do "$root\06_indicators by country.do"
+// do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-do "$root\07_graphs - w series.do"
+// do "$root\07_graphs - w series.do"
 
 ** 07 - Generates text for the briefs
-/* do "$root\08_text for graphs.do" */
+do "$root\08_text for graphs new.do" 

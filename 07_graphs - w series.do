@@ -12,17 +12,19 @@ set maxvar 32000
 use "$data_output\new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
+gen is_local = .
 forvalues i  = 1(1)`n_locals' {
-	preserve
-	keep if _n==`i' 
+	gen selected = .
+	replace selected = 1 if _n==`i'
+	sort selected is_local
 	local name = locals1
-	replace locals = subinstr(locals, "`name'", "", .) 
+	replace locals = subinstr(locals, "`name'", "", .) if selected==1 
 	local value = locals
 	local `name' `value'
-	display "``name''"
-	restore
+	replace is_local = 1 if selected==1
+	drop selected
 }
-
+assert mi(is_local)==0
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
 *------------------------------------------------------------------------------*
@@ -176,13 +178,13 @@ foreach i of local obs {
 	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(11pt) mlabgap(12pt)), ///
 	graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(12pt) linegap(1.7) justification(left)) 		
 	graph save "$charts\notes_`ctry'.gph", replace	
-	*graph export "$charts\notes_`ctry'.png", replace
+	*graph export "$charts\notes_`ctry'.eps", replace
 	
 	drop m 
 
 	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\notes_`ctry'.gph", rows(8) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
-	graph export "$charts\p1_`ctry'_all.png", replace
+	graph export "$charts\p1_`ctry'_all.eps", replace
 	
 	erase "$charts\graph_`ctry'_c1.gph"
 	erase "$charts\graph_`ctry'_c2.gph"
@@ -250,7 +252,7 @@ foreach i of local obs {
 	
 	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(margin(vsmall) fcolor(black))
 	graph export "$charts\p2_`ctry'_stages.pdf", replace
-	graph export "$charts\p2_`ctry'_stages.png", replace
+	graph export "$charts\p2_`ctry'_stages.eps", replace
 	
 	erase "$charts\graph_`ctry'_l1.gph"
 	erase "$charts\graph_`ctry'_l2.gph"
