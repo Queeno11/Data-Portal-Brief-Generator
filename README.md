@@ -75,14 +75,14 @@ Dominique Pizzie
 [@DomPizzie](https://twitter.com/dompizzie) -->
 
 ## Version History
-* 0.3. jun-23-23
+* 0.3. *jun-23-23*
     * Added new indicators based on GP's comments.
     * New text generation algorithm (testing). The code 08_text_for_graphs was mostly rewritten to include the new indicators.
     * New file briefs_texts.xlsx that allows a unique sentence for each indicator presentation in the briefs.
     * Fixed bug that prevented graphs from generating when no data was available.
     * Full pipeline unification update: Locals after code 6 are now fully integrated, so there's no need for copy-paste. Still missing R section and pdfs heading and footer.
     * Fixed minor metadata bugs. It still needs to work on the integration of comp_series.dta, but probably will work on it when we integrate all inputs in APIs.
-* 0.2. jun-16-23
+* 0.2. *jun-16-23*
     * Added many new indicators to briefs 
     * Automation of the indicator selection for the briefs by adding a ranking in the metadata file
     * Briefs indicator selection ranking based on both stage of life and dimension (before this, the selection was only made by stage of life) 
@@ -90,7 +90,7 @@ Dominique Pizzie
     * Unified metadata file
     * Comparison with previous indicator (~5 years before) for the Briefs
     * Full pipeline unification (not fully implemented)
-* 0.1. may-23-23
+* 0.1. *may-23-23*
     * Initial Release
 
 <!-- ## License

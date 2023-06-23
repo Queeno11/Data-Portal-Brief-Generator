@@ -19,6 +19,7 @@ use "$data_output\new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
+display "Generating indicator locals, please wait..."
 qui forvalues i  = 1(1)`n_locals' {
 	gen selected = .
 	replace selected = 1 if _n==`i'
@@ -31,10 +32,11 @@ qui forvalues i  = 1(1)`n_locals' {
 	drop selected
 }
 assert mi(is_local)==0
-
+display "Done!"
 *-------------------------- text briefs to dta -----------------------------*
 
 import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
+drop d_*
 save "$data_processed\briefs_texts", replace
 
 *--------------------------------Load data---------------------------------*
@@ -228,7 +230,8 @@ local nl = 3
 local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
-foreach ctry in `wb_country_codes' {
+display "Generating texts, please wait..."
+qui foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
@@ -317,6 +320,8 @@ foreach ctry in `wb_country_codes' {
 		}
 	}
 }
+drop start_text *_time_text  *_reginc_text 
+display "Text correctly generated!"
 stop
 *-----------------Round values in hci variables for tables-----------------* 
 /*	
