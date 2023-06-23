@@ -54,4 +54,4 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\07_graphs - w series.do"
 
 ** 07 - Generates text for the briefs
-do "$root\08_text for graphs new.do" 
+do "$root\08_text_for_graphs.do" 

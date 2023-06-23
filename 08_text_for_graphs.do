@@ -19,7 +19,7 @@ use "$data_output\new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
-forvalues i  = 1(1)`n_locals' {
+qui forvalues i  = 1(1)`n_locals' {
 	gen selected = .
 	replace selected = 1 if _n==`i'
 	sort selected is_local
@@ -32,12 +32,17 @@ forvalues i  = 1(1)`n_locals' {
 }
 assert mi(is_local)==0
 
+*-------------------------- text briefs to dta -----------------------------*
+
+import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
+save "$data_processed\briefs_texts", replace
+
 *--------------------------------Load data---------------------------------*
 
-	clear all
-	set more off	
-	set maxvar 32000
-	use "$data_output\data_briefs", replace
+clear all
+set more off	
+set maxvar 32000
+use "$data_output\data_briefs", replace
 
 *------------------------------Keep vars-----------------------------------*
 
@@ -208,6 +213,8 @@ gen hcci_text = "Due to the slow moving nature of the HCI, an additional set of 
 frame create metadata
 frame change metadata
 use "$data_processed/metadata_processed"
+duplicates drop name_portal, force
+merge 1:1 name_portal using "$data_processed/briefs_texts", keep(match) nogen
 frame change default
 
 *** Names of stages
@@ -225,18 +232,27 @@ foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
+			gen selected = 1 if wbcode=="`ctry'"
+			sort selected // Put current country first so locals are from the current country
 			local indicator ``x'`m'_`ctry''
-			
-			* Get indicator metadata as locals
-			frame change metadata
-			preserve
-			keep if name_portal == "`indicator'"
-			local ind_name = name // FIXME: check if its not better to create two new columns for the metadata with the text and units for the briefs
-			local ind_scale = units
-			restore
-			frame change default
-			
-			* Comparisons with regional and income group averages
+
+			** Generate locals for text
+			* Text locals
+			local ind_value = strofreal(round(`indicator',1))
+			local ind_year = strofreal(`indicator'_year)
+			local ind_value_prev = strofreal(round(`indicator'_prev,1))
+			local ind_year_prev = strofreal(`indicator'_year_prev)
+			local diff_year = strofreal(`indicator'_year - `indicator'_year_prev)
+			local diff_value = strofreal(abs(round(`indicator' - `indicator'_prev,1)))
+			local reg_avg = strofreal(round(`indicator'_reg,1))
+			local inc_avg = strofreal(round(`indicator'_inc,1))
+
+			* Time locals
+			local lower_than_prev = (round(`indicator')<round(`indicator'_prev))
+			local higher_than_prev = (round(`indicator')>round(`indicator'_prev))
+			local similar_than_prev = (round(`indicator')==round(`indicator'_prev))
+
+			* Comparisons with regional and income group averages locals
 			local lower_than_regional = (round(`indicator')<round(`indicator'_reg))
 			local higher_than_regional = (round(`indicator')>round(`indicator'_reg))
 			local similar_than_regional = (round(`indicator')==round(`indicator'_reg))
@@ -244,40 +260,64 @@ foreach ctry in `wb_country_codes' {
 			local higher_than_income = (round(`indicator')>round(`indicator'_inc))
 			local similar_than_income = (round(`indicator')==round(`indicator'_inc))
 
-			* Text locals
-			local ind_value = strofreal(round(`indicator',1))
-			local ind_year = strofreal(`indicator'_year)
-			local reg_avg = strofreal(round(`indicator'_reg,1))
-			local inc_avg = strofreal(round(`indicator'_inc,1))
-			local main_text "The `ind_name' is **`ind_value' `ind_scale'** *(`ind_year')*"
-			display "`main_text'"
+			* Indicator metadata locals
+			frame change metadata
+			preserve
+			keep if name_portal == "`indicator'"
+			local ind_name = name // FIXME: check if its not better to create two new columns for the metadata with the text and units for the briefs
+			local ind_scale = units
+			local start_text = start_text
+			local unit_time = unit_time
+			local unit_reginc = unit_reginc
+			restore
+			frame change default
 
-			* Add regional comparison text and store in variable
-			capture gen `x'`m'_text = ""
-			replace `x'`m'_text = ///
+			** Generate texts 
+			* Generate main text
+			capture gen start_text = ""
+			replace start_text = "`start_text'" if wbcode=="`ctry'"
+
+			* Generate time text:
+			local time_comparison_text "Compared to `diff_year' years ago, the indicator has"
+			capture gen `x'`m'_time_text = ""
+			replace `x'`m'_time_text = ///
+			cond(`lower_than_prev', "`time_comparison_text' decreased by `diff_value'`unit_time'.", ///
+			cond(`higher_than_prev', "`time_comparison_text' improved by `diff_value'`unit_time'.", ///
+			cond(`similar_than_prev', "`time_comparison_text' remained unchanged.", ///
+			""))) if `indicator'!=. & wbcode=="`ctry'"
+
+			* Generate region and income text:
+			local reginc_text "The indicator is"
+			capture gen `x'`m'_reginc_text = ""
+			replace `x'`m'_reginc_text = ///
 			cond(`lower_than_regional'   & `lower_than_income', /// 
-			"`main_text', lower than both the regional average (`reg_avg') and the income group average (`inc_avg'). ", ///
+			"`reginc_text' lower than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`higher_than_regional'  & `higher_than_income', ///
-			"`main_text', higher than both the regional average (`reg_avg') and the income group average (`inc_avg'). ", ///
+			"`reginc_text' higher than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`higher_than_regional'  & `lower_than_income', ///
-			"`main_text', higher than the regional average (`reg_avg') but lower than the income group average (`inc_avg'). ", ///
+			"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') but lower than the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`lower_than_regional'   & `higher_than_income', ///
-			"`main_text', lower than the regional average (`reg_avg') but higher than the income group average (`inc_avg'). ", ///
+			"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') but higher than the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`similar_than_regional' & `similar_than_income', ///
-			"`main_text', similar to both the regional average (`reg_avg') and the income group average (`inc_avg'). ", ///
+			"`reginc_text' similar to both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`similar_than_regional' & `higher_than_income', ///
-			"`main_text', similar to the regional average (`reg_avg') and higher than the income group average (`inc_avg'). ", ///
+			"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and higher than the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`similar_than_regional' & `lower_than_income', ///
-			"`main_text', similar to the regional average (`reg_avg') and lower than the income group average (`inc_avg'). ", ///
+			"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and lower than the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`higher_than_regional'  & `similar_than_income', ///
-			"`main_text', higher than the regional average (`reg_avg') and similar to the income group average (`inc_avg'). ", ///
+			"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
 			cond(`lower_than_regional'   & `similar_than_income', ///
-			"`main_text', lower than the regional average (`reg_avg') and similar to the income group average (`inc_avg'). ", ///
+			"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
 			""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+			drop selected
+
+			* Generate final text
+			capture gen `x'`m'_text = ""
+			replace `x'`m'_text = start_text + " " + `x'`m'_time_text + " " +`x'`m'_reginc_text
 		}
 	}
 }
-
+stop
 *-----------------Round values in hci variables for tables-----------------* 
 /*	
 foreach var in hci_m hci_f hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test {
