@@ -78,7 +78,7 @@ Dominique Pizzie
 * 0.3. *jun-23-23*
     * Added new indicators based on GP's comments.
     * New text generation algorithm (testing). The code 08_text_for_graphs was mostly rewritten to include the new indicators.
-    * New file briefs_texts.xlsx that allows a unique sentence for each indicator presentation in the briefs.
+    * New file briefs_texts.xlsx that allows a unique sentence for each indicator presentation in the briefs. ~60% of indicators has text for now.
     * Fixed bug that prevented graphs from generating when no data was available.
     * Full pipeline unification update: Locals after code 6 are now fully integrated, so there's no need for copy-paste. Still missing R section and pdfs heading and footer.
     * Fixed minor metadata bugs. It still needs to work on the integration of comp_series.dta, but probably will work on it when we integrate all inputs in APIs.
