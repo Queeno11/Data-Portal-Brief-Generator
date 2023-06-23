@@ -589,7 +589,7 @@ import excel "$data_raw\UN_family_planning.xlsx", clear firstrow
 keep if IndicatorName=="Demand for family planning satisfied by any method (Percent)"
 
 *---------------------------------all UN-----------------------------------*
-use "$data_processed\UNHCR_Forced_Displacement"
+use "$data_processed\UNHCR_Forced_Displacement", clear
 merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
 save "$data_processed\all_UN", replace
 
@@ -620,6 +620,7 @@ save "$data_processed\ILO_highskill", replace
 
 *---------------------------------all ILO-----------------------------------*
 use "$data_processed\ILO_highskill"
+destring year, replace
 save "$data_processed\all_ILO", replace
 
 *--------------------------------Merge all---------------------------------*

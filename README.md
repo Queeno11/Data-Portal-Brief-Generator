@@ -1,18 +1,13 @@
-
-
 <h1 align="center">Data Portal & Brief Generator</h1>
-
 <p align="center"><i>Unnoficial repo for the WB HCP Data Portal & Two-page Briefs</i></p>
-
 <div align="center">
 <a href="https://www.worldbank.org/en/publication/human-capital">
     <img src="https://github.com/Queeno11/Data-Portal-Brief-Generator/blob/dbf0e3bf626258b10b32becce86424e36b5ade47/HCP_logo.png" alt="Logo" width="auto" height="100">
 </a>
 </div>
 
-
 ## Description
-This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. However, data from UNICEF is accessed via API. 
+This repository contains the scripts for generating the WB HCP Data Portal dataset and generating the WB HCP Briefs (data and pdfs). Most of the data is obtained by directly downloading from the portals of relevant international organizations. Data from UNICEF is accessed via API. 
 
 The 'Data_Raw' directory contains the downloaded data required to run all the code. Please note that without this data, the code will not be executable.
 
@@ -45,7 +40,7 @@ With this changes, the main outputs are:
 00_run_all.do executes everything you need for creating the Data Portal Dataset and the Briefs pdfs. You can either mute the sections of Data Portal or Briefs in order to run only a subsection of the code:
 
 * Scripts 01 to 04 creates the Data Portal Dataset (complete_series_wmd)
-* Scripts 05 to 08 generates the Datasets and Charts required for creating the Briefs
+* Scripts 05 to 08 generates the Datasets and Charts required for creating the Briefs (ordered_texts.dta and Graphs folder)
 * Scripts 09 to 11 creates the Briefs PDFs (not implemented yet in run_all, just run the file run_briefs.R)
 
 ## Adding Indicators to the Data Portal Database

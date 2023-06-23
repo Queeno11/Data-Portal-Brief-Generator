@@ -231,8 +231,9 @@ local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
 display "Generating texts, please wait..."
-qui foreach ctry in `wb_country_codes' {
+foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
+		local i = 1 // Counter for texts
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
 			gen selected = 1 if wbcode=="`ctry'"
@@ -241,12 +242,13 @@ qui foreach ctry in `wb_country_codes' {
 
 			** Generate locals for text
 			* Text locals
+			local countryname = wbcountrynameb
 			local ind_value = strofreal(round(`indicator',1))
 			local ind_year = strofreal(`indicator'_year)
 			local ind_value_prev = strofreal(round(`indicator'_prev,1))
 			local ind_year_prev = strofreal(`indicator'_year_prev)
 			local diff_year = strofreal(`indicator'_year - `indicator'_year_prev)
-			local diff_value = strofreal(abs(round(`indicator' - `indicator'_prev,1)))
+			local diff_value = strofreal(abs(round(`indicator')-round(`indicator'_prev)))
 			local reg_avg = strofreal(round(`indicator'_reg,1))
 			local inc_avg = strofreal(round(`indicator'_inc,1))
 
@@ -275,52 +277,126 @@ qui foreach ctry in `wb_country_codes' {
 			restore
 			frame change default
 
-			** Generate texts 
-			* Generate main text
-			capture gen start_text = ""
-			replace start_text = "`start_text'" if wbcode=="`ctry'"
+			*** Generate texts 
+			** Generate main text
+			capture gen `x'`m'_start_text = ""
+			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
-			* Generate time text:
-			local time_comparison_text "Compared to `diff_year' years ago, the indicator has"
-			capture gen `x'`m'_time_text = ""
-			replace `x'`m'_time_text = ///
-			cond(`lower_than_prev', "`time_comparison_text' decreased by `diff_value'`unit_time'.", ///
-			cond(`higher_than_prev', "`time_comparison_text' improved by `diff_value'`unit_time'.", ///
-			cond(`similar_than_prev', "`time_comparison_text' remained unchanged.", ///
-			""))) if `indicator'!=. & wbcode=="`ctry'"
+			** Generate time text:
+			if `m'==1 {
+				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
+				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
+				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
+				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
+			if `m'==2 {
+				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
+				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
+				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
+				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
+			if `m'==3 {
+				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
+				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
+				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
+				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
 
-			* Generate region and income text:
-			local reginc_text "The indicator is"
-			capture gen `x'`m'_reginc_text = ""
-			replace `x'`m'_reginc_text = ///
-			cond(`lower_than_regional'   & `lower_than_income', /// 
-			"`reginc_text' lower than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`higher_than_regional'  & `higher_than_income', ///
-			"`reginc_text' higher than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`higher_than_regional'  & `lower_than_income', ///
-			"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') but lower than the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`lower_than_regional'   & `higher_than_income', ///
-			"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') but higher than the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`similar_than_regional' & `similar_than_income', ///
-			"`reginc_text' similar to both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`similar_than_regional' & `higher_than_income', ///
-			"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and higher than the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`similar_than_regional' & `lower_than_income', ///
-			"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and lower than the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`higher_than_regional'  & `similar_than_income', ///
-			"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
-			cond(`lower_than_regional'   & `similar_than_income', ///
-			"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
-			""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+			** Generate region and income text:
+			if mod(`i',2)==1 { // If i is odd
+				* Version 1. Example: "The indicator is lower than both the regional average (83 percent) and the income group average (79 percent)."
+				local reginc_text ". The indicator is"
+				capture gen `x'`m'_reginc_text = ""
+				replace `x'`m'_reginc_text = ///
+				cond(`lower_than_regional'   & `lower_than_income', /// 
+				"`reginc_text' lower than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `higher_than_income', ///
+				"`reginc_text' higher than both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `lower_than_income', ///
+				"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') but lower than the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`lower_than_regional'   & `higher_than_income', ///
+				"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') but higher than the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `similar_than_income', ///
+				"`reginc_text' similar to both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `higher_than_income', ///
+				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and higher than the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `lower_than_income', ///
+				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') and lower than the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `similar_than_income', ///
+				"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`lower_than_regional'   & `similar_than_income', ///
+				"`reginc_text' lower than the regional average (`reg_avg'`unit_reginc') and similar to the income group average (`inc_avg'`unit_reginc'). ", ///
+				""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+			}
+			if mod(`i',2)==0 { // If i is even
+				* Version 2. Example: "The indicator is below the regional average (32%) but above the income group average (42%)."
+				local reginc_text ". The indicator is"
+				capture gen `x'`m'_reginc_text = ""
+				replace `x'`m'_reginc_text = ///
+				cond(`lower_than_regional'   & `lower_than_income', ///
+				"`reginc_text' both below the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `higher_than_income', ///
+				"`reginc_text' both above the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `lower_than_income', ///
+				"`reginc_text' above the regional average (`reg_avg'`unit_reginc') but below the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`lower_than_regional'   & `higher_than_income', ///
+				"`reginc_text' below the regional average (`reg_avg'`unit_reginc') but above the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `similar_than_income', ///
+				"`reginc_text' similar to both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `higher_than_income', ///
+				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') but above the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional' & `lower_than_income', ///
+				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') but below the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional'  & `similar_than_income', ///
+				"`reginc_text' above the regional average (`reg_avg'`unit_reginc') but similar to the income group average (`inc_avg'`unit_reginc'). ", ///
+				cond(`lower_than_regional'   & `similar_than_income', ///
+				"`reginc_text' below the regional average (`reg_avg'`unit_reginc') but similar to the income group average (`inc_avg'`unit_reginc'). ", ///
+				""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+			}
 			drop selected
+			
+			local no_data_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc', while within the income group, this indicator is `inc_avg'`unit_reginc'."
 
-			* Generate final text
+			** Generate final text
 			capture gen `x'`m'_text = ""
-			replace `x'`m'_text = start_text + " " + `x'`m'_time_text + " " +`x'`m'_reginc_text
+			* Full text when all data is there
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
+				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* No time text when previous data is not available
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
+				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* No regional/income text when regional data is not available
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
+				if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+			* No time nor regional/income text when previous data is not available
+			replace `x'`m'_text = `x'`m'_start_text ///
+				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+			* No local text when local data is not available
+			replace `x'`m'_text = "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* Only no_data_text when no data is available
+			replace `x'`m'_text = "`no_data_text'"  ///
+				if `indicator'==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+
+			* increase counter
+			local i = `i' + 1
 		}
 	}
 }
-drop start_text *_time_text  *_reginc_text 
+
+drop *_start_text *_time_text  *_reginc_text 
 display "Text correctly generated!"
 stop
 *-----------------Round values in hci variables for tables-----------------* 
