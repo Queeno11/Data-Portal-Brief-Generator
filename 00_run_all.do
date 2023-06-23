@@ -4,8 +4,8 @@
 cls
 set more off
 *----------------------------------Set up---------------------------------*
-global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-*global root "C:\Users\llohi\Documents\WB\Data Portal"
+*global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 global date			  	"08_jun_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
@@ -33,7 +33,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // python script "$root\01_API_access.py"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
-// do "$root\02_clean_data"
+do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
 // do "$root\03_clean_metadata"
@@ -54,4 +54,8 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\07_graphs - w series.do"
 
 ** 07 - Generates text for the briefs
+<<<<<<< Updated upstream
 do "$root\08_text for graphs new.do" 
+=======
+// do "$root\08_text for graphs.do"
+>>>>>>> Stashed changes
