@@ -587,10 +587,23 @@ save "$data_processed\UN_population", replace
 *Family planning:
 import excel "$data_raw\UN_family_planning.xlsx", clear firstrow
 keep if IndicatorName=="Demand for family planning satisfied by any method (Percent)"
-
+keep if Variant=="Median"
+gen gender=.
+replace gender=2 if Sex=="Female"
+replace gender=1 if Sex=="Male"
+replace gender=0 if Sex=="Total"
+rename Location UNname
+rename Value met_fam_plan
+rename Time year
+save "$data_processed\UN_family_planning", replace
+use "$data_processed\Country codes\wbcodes_equiv_UN", clear
+merge 1:m UNname using "$data_processed\UN_family_planning", nogen keep(3)
+keep wbcode gender met_fam_plan year
+save "$data_processed\UN_family_planning", replace
 *---------------------------------all UN-----------------------------------*
 use "$data_processed\UNHCR_Forced_Displacement", clear
 merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
+merge 1:m wbcode year gender using "$data_processed\UN_family_planning", nogen keep(3)
 save "$data_processed\all_UN", replace
 
 *-----------------------------------------------------------------------*
@@ -616,6 +629,7 @@ save "$data_processed\ILO_highskill", replace
 use "$data_processed\Country codes\wbcodes", clear
 merge m:m wbcountryname using "$data_processed\ILO_highskill", nogen keep(3)
 keep wbcode year gender high_skill
+destring year
 save "$data_processed\ILO_highskill", replace
 
 *---------------------------------all ILO-----------------------------------*
