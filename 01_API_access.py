@@ -39,7 +39,7 @@ indicators_for_briefs = [
     'MNCH_DEMAND_FP',   # Demand for family planning satisfied with modern methods - percentage of women(aged 15-49 years)
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
-
+    'MNCH_BIRTH18', # Early childbearing - percentage of women (aged 20-24 years) who gave birth before age 18
     ## Vaccines
     'IM_BCG',
     'IM_DTP1', 
@@ -53,12 +53,17 @@ indicators_for_briefs = [
     'IM_PCV3', 
     'IM_POL3', 
     'IM_ROTAC',
+    'IM_HPV',
     ## Child mortality
     'CME_MRY0T4', #04mort
     'CME_MRY5T14', #514mort
     'CME_MRY15T24', #1512mort
     ## Caremother
     'MNCH_PNCNB', #Postnatal care for newborns within 2 days of birth
+    ## Childs on track
+    'ECD_CHLD_36-59M_LMPSL', # Proportion of children aged 24-59 months of age who are developmentally on track in health, learning and psychosocial well-being, by sex
+    ## Organized learning pre-primary
+    'C040202',
     ## Stilbirth
     ######
     ## WASH
@@ -130,7 +135,7 @@ def get_list_of_unicef_indicators():
 def query_indicator(indicator, database):
     unicef = sdmx.Request('UNICEF')  # Queries the UNICEF database
     key = dict(INDICATOR=[indicator])  # Pneumococcal conjugate vaccine, 3rd dose
-    params = dict(startPeriod='2016')  # Start period
+    params = dict(startPeriod='2010')  # Start period
     data_msg = unicef.data(database, key=key, params=params)  # Gets the data
 
     df = sdmx.writer.pandas.write_datamessage(data_msg, dtype='str').to_frame()
@@ -245,7 +250,11 @@ if __name__ == '__main__':
                 selected_ind_parent = 'WASH_SCHOOLS'
             elif selected_ind in wash_indicators_health:
                 selected_ind_parent = 'WASH_HEALTHCARE_FACILITY'
-
+            elif selected_ind == 'ECD_CHLD_36-59M_LMPSL':
+                selected_ind_parent = 'ECD'
+            elif selected_ind == 'C040202':
+                selected_ind_parent == 'SDG_PROG_ASSESSMENT'
+                
             df = query_indicator(selected_ind_code, selected_ind_parent)
             datasets[selected_ind_code] = format_dataframe(df, cl_ref_areas)
             
