@@ -139,7 +139,7 @@ save "$data_processed\metadata_processed", replace
 use "$data_processed\complete_series_wmetadata", clear
 
 ** Add names
-merge m:1 code using "$data_processed\metadata_processed" // FIXME: no debería haber _merge==1
+merge m:1 code using "$data_processed\metadata_processed"
 count if _merge==1
 assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
 *	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.
@@ -156,14 +156,14 @@ drop name_portal
 merge m:1 wbcode using "$data_processed\country_class"
 drop if _merge!=3 
 drop _merge
-more
+
 
 *-------------------------------HCI + HCCI---------------------------------*
 
 gen data = "HCI" if code=="eyrs" | code=="hci" | code=="hci_lower" | code=="hci_upper" | code=="nostu" | code=="psurv" | code=="qeyrs" | code=="test" | code=="se_lpv_prim" | code=="asr"
 replace data = "HCCI" if missing(data)
 
-* Scales. FIXME: This is probably outdated. Check
+* Scales. FIXME: This is outdated... Should include scale column in metadata
 gen scale = ""
 foreach var in asr hci hci_lower hci_upper nostu psurv {
 replace scale = "0 - 1" if code=="`var'"
@@ -191,20 +191,25 @@ destring maxyear, replace
 drop if year<minyear
 	
 *------------------------------Drop if gender------------------------------*
-* FIXME: This code is not good as it has the variables hardcoded. Duplicates tag might do the trick...
-*Drop if no data splitted by gender 
-foreach var in basic_hygiene_health basic_hygiene_schools basic_sanitation_health basic_sanitation_schools basic_water_health basic_water_schools lastnm_afr lastnm_mmrt lastnm_probdeath_ncd uiscr3 uisger01 uisoaepg1 uisoaepg2gpv uisqutp1 uisqutp2t3 uisschbsp1welec uisxgdpfsgov uisxgovexpimf unicef_1524mort unicef_514mort unicef_care unicef_caremother unicef_hygiene unicef_neomort unicef_sanitation unicef_stillbirths unicef_stunting unicef_u5mort unicef_water vacBCG vacDTP1 vacDTP3 vacHEPB3 vacHEPBB vacHIB3 vacIPV1 vacMCV1 vacMCV2 vacPCV3 vacPOL3 vacROTAC {
-drop if code == "`var'" & (gender==1|gender==2)
+*Drop if no data splitted by gender: if an indicator has missing for all countries in both genders, then it doesnt have any gender opening.
+gen gender_not_total = 0
+replace gender_not_total = 1 if gender==1|gender==2
+
+levelsof code, local(indicators)
+foreach ind in `indicators' {
+	count if code=="`ind'" & gender_not_total==1
+	if r(N)==0 {
+	   	drop if code == "`ind'" & gender_not_total==1 
+		display "Indicator `ind' has no gender disaggregation"
+	}
 }
+drop gender_not_total	
 
 *----------------------------Add note to variable -------------------------*// alison - 27 marzo 2023
 
 gen note = ""
 replace note = "This variable is classified in Adulthood and Elderly as stage of life, however it should also include the age group Youth" if code=="asr"
 replace note = "To track progress over a decade, a version of the HCI was calculated for 103 economies. Data to populate the 2010 HCI was carefully selected to maximize comparability with the 2020 HCI. In particular, only those countries where learning scores measured by the same international assessment in 2010 and 2020 entered the comparison." if code=="hci" & year==2010
-
-//FIX ME: AGE NO ESTA
-*replace age = "ages 15-60" if code=="asr" // melanie - 3 mayo 2023 
 
 *---------Add column for type of graph  TO CONFIRM WITH GERMAN AND RYTHIA-----------*// alison - 29 marzo 2023
 
@@ -262,11 +267,11 @@ compress
 
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
-save "$data_output\complete_series_wmd_${date}", replace // melanie - 29 marzo 2023
-*use "$data_output\complete_series_wmd_${date}", clear
+save "$data_output\complete_series_wmd_${date}", replace
 
-* FIXME: no se puede exportar a excel porque hay demasiadas obs
-/* export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables) // melanie - 3 mayo 2023 */
+* FIXME: i have to drop the missing in order to export the excel file as it supports only 1 million rows. Check with portal team...
+drop if value==.
+export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables)
 
 
 

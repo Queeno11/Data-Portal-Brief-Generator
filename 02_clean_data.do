@@ -82,26 +82,6 @@ foreach oldvar of varlist i_* {
 	destring `var', replace
 	drop `var'_str
 } 
-		* FIXME: Rename a todos o a ninguno...
-		/* rename ED_MAT_G23 ed_mat_g23
-		rename ED_READ_G23 ed_read_g23
-		rename HVA_EPI_DTH_ANN_15_24 AID_deaths_1524
-		rename HVA_EPI_DTH_RT_0_14 AID_deaths_014
-		rename HVA_EPI_INF_RT_0_14 HIV_inc_014
-		rename HVA_EPI_INF_RT_10_19 HIV_inc_1019
-		rename HVA_PMTCT_MTCT HIV_mother_child
-		rename MNCH_ANC1 antenatal_care_1
-		rename MNCH_ANC4 antenatal_care_4
-		rename MNCH_ITN ITN_children
-		rename MNCH_ITNPREG ITN_pregnant
-		rename MNCH_MLRCARE care_febrile_children
-		rename NT_ANT_HAZ_NE2 stunting
-		rename NT_ANT_WHZ_NE2 wasting
-		rename NT_ANT_WHZ_NE3 severe_wasting
-		rename NT_ANT_WHZ_PO2 overweight
-		rename PT_CHLD_5_17_LBR_ECON child_labor
-		rename MNCH_ORS ORS_children */
-
 
 * Adds wbcode
 merge m:1 unicef_code using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)

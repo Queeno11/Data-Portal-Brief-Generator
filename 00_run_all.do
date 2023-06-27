@@ -7,7 +7,7 @@ set more off
 global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 *global root "C:\Users\llohi\Documents\WB\Data Portal"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
-global date			  	"08_jun_2023" // Date when the full process is run
+global date			  	"27_jun_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *----------------------------------Globals---------------------------------*
@@ -30,16 +30,16 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Data Portal
 
 ** 01 - Collects indicators via APIs
-// python script "$root\01_API_access.py"
+python script "$root\01_API_access.py"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
-// do "$root\02_clean_data"
+do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
 do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
-do "$root\04_missing_data"
+// do "$root\04_missing_data"
 
 
 ***** Briefs
@@ -51,7 +51,7 @@ do "$root\05_brief_dataset.do"
 do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-do "$root\07_graphs - w series.do"
+// do "$root\07_graphs - w series.do"
 
 ** 07 - Generates text for the briefs
 do "$root\08_text_for_graphs.do" 

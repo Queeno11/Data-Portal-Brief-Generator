@@ -51,34 +51,6 @@
 
 	frame change default
 	
-*-----------------------------Stages of life-------------------------------*	
-	*FIXME: ESTO YA ESTÁ DIRECTAMENTE EN EL EXCEL. CHEQUEAR QUE COINCIDAN CON LAS DE ACÁ UNA POR UNA:
-
-	*replace stage_life = "Adulthood and Elderly" if strpos(code,"sp_dyn")
-	*replace stage_life = "Adulthood and Elderly" if strpos(code,"ncd")
-	*replace stage_life = "Prenatal and Early Childhood " if strpos(code,"uisger02")
-	*replace stage_life = "School-aged Children" if strpos(code,"uisxg")
-	*replace stage_life = "Youth" if strpos(code,"caremother")
-	*replace stage_life = "Youth" if strpos(code,"mmrt")
-	*replace stage_life = "Youth" if strpos(code,"uiscr3")
-	*replace stage_life = "Adulthood and Elderly" if strpos(code,"_health") & strpos(code,"basic_")
-	*replace stage_life = "Prenatal and Early Childhood " if code=="unicef_sanitation"|code=="unicef_water"|code=="unicef_hygiene"
-	
-	*replace topic = "Health" if strpos(code,"_school") & strpos(code,"basic_")
-	
-	*replace name = "Teachers with at least minimum academic qualifications, primary (%)" if code=="uisqutp1"
-	*replace name = "Teachers with at least minimum academic qualifications, secondary (%)" if code=="uisqutp2t3"
-	
-	*--Eliminar los que no quedaron seleccionados en la lista--*
-	*drop if inlist(code,"uisger01","unicef_stunting","unicef_u5mort","psurv")
-	*drop if inlist(code,"test","qeyrs","eyrs","test_m","test_f","qeyrs_m","qeyrs_f","eyrs_m","eyrs_f")
-	*drop if inlist(code,"nostu","psruv","nostu_m","nostu_f","psurv_m","psurv_f")
-	*drop if inlist(code,"eip_2wap_y","eip_2wap_y_m","eip_2wap_y_f","eip_2plf_y","eip_2plf_y_m","eip_2plf_y_f","luu_2lu4_mf_y","luu_2lu4_mf_y_m","luu_2lu4_mf_y_f")
-	*drop if inlist(code,"eip_2wap_a","eip_2wap_a_m","eip_2wap_a_f","eip_2plf_a","eip_2plf_a_m","eip_2plf_a_f","luu_2lu4_mf_a","luu_2lu4_mf_a_m","luu_2lu4_mf_a_f")
-	*drop if inlist(code,"asr","asr_m","asr_f","hci","hci_m","hci_f")
-	*drop if inlist(code,"hci_upper","hci_upper_m","hci_upper_f","hci_lower","hci_lower_m","hci_lower_f")
-	
-	
 
 	**********************************2) INDICATORS*********************************
 
@@ -257,11 +229,6 @@
 	save "${data_output}\briefs_countries_with_no_data_${date}", replace
 	frame change default
 
-	* FIXME: Reemplazar por columna en metadata que tenga esta info...
-	replace lbl = "Child labor (%), ages 5-17" if name=="child_labor"
-	replace lbl = "Minimum meal frequency (%), 6-23 months" if name=="mealfreq"
-
-		
 	*---------------------------Keep and reshape---------------------------*
 	
 	/**** Si los labels llegan a quedar demasiado largos para los gráficos, ir al principio de este do file y editar (con replace) los labels para que sean más cortos --> no cambiar en la data original del data portal. La gracia es que los labels nuevos queden en el dta metadata, así más adelante cuando mergamos ese dta, nos pasa bien los labels que queremos.  ****/
@@ -273,7 +240,14 @@
 	* Create show order based on main rank (more relevant indicators shown first)
 	sort rank
 	bysort wbcode category: gen show_order = _n
-
+	stop
+		*** Export liststing for data_portal
+		preserve
+		keep if show_order==1
+		keep wbcode name stage_life
+		reshape wide 
+		restore
+		****************************************
 	
 	keep wbcode name lbl category year age sou def show_order
 	rename (name lbl year  age sou def)(name_ lbl_ year_ age_ sou_ def_)
@@ -369,7 +343,7 @@
 	
 	/* Copiar todos los locals y pegar en el siguiente do file */ 
 			
-* FIXME: Este análisis guardarlo aparte para que corra más prolijo.
+* FIXME: Este análisis pasarlo a un do aparte para que corra más prolijo.
 			
 /*			
 			
