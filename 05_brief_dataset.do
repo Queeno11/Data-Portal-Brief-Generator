@@ -118,14 +118,6 @@
 	/* Así me queda solo 1 obs por cada wbcode wbcountryname wbregion wbincome */
 	collapse (max) $all_indicators_years, by(wbcode wbcountryname wbregion wbincome)
 
-/* *---------------------------Replace country name---------------------------*
-	// FIXME: this can be probably corrected directly on the countries data
-	replace wbcountryname = "Democratic Republic of the Congo" if wbcode=="COD"
-	replace wbcountryname = "Republic of the Congo" if wbcode=="COG"
-	replace wbcountryname = "Arab Republic of Egypt" if wbcode=="EGY"
-	replace wbcountryname = "Islamic Republic of Iran" if wbcode=="IRN"
-	replace wbcountryname = "Republic of Korea" if wbcode=="KOR" */
-
 *---------------------------Replace income name----------------------------*
 	
 	rename wbincome wbincomegroup
