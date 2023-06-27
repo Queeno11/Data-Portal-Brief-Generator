@@ -616,6 +616,7 @@ gen gender=.
 replace gender=2 if sexlabel=="Sex: Female"
 replace gender=1 if sexlabel=="Sex: Male"
 replace gender=0 if sexlabel=="Sex: Total"
+drop if gender==. // There are sex==other that are stated as unreliable
 rename ref_arealabel wbcountryname
 rename classif2label name
 rename time year
@@ -629,7 +630,7 @@ save "$data_processed\ILO_highskill", replace
 use "$data_processed\Country codes\wbcodes", clear
 merge m:m wbcountryname using "$data_processed\ILO_highskill", nogen keep(3)
 keep wbcode year gender high_skill
-destring year
+destring year, replace
 save "$data_processed\ILO_highskill", replace
 
 *youth/adult unemployment

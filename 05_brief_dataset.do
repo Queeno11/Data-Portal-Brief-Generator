@@ -118,13 +118,13 @@
 	/* Así me queda solo 1 obs por cada wbcode wbcountryname wbregion wbincome */
 	collapse (max) $all_indicators_years, by(wbcode wbcountryname wbregion wbincome)
 
-*---------------------------Replace country name---------------------------*
+/* *---------------------------Replace country name---------------------------*
 	// FIXME: this can be probably corrected directly on the countries data
 	replace wbcountryname = "Democratic Republic of the Congo" if wbcode=="COD"
 	replace wbcountryname = "Republic of the Congo" if wbcode=="COG"
 	replace wbcountryname = "Arab Republic of Egypt" if wbcode=="EGY"
 	replace wbcountryname = "Islamic Republic of Iran" if wbcode=="IRN"
-	replace wbcountryname = "Republic of Korea" if wbcode=="KOR"
+	replace wbcountryname = "Republic of Korea" if wbcode=="KOR" */
 
 *---------------------------Replace income name----------------------------*
 	
@@ -136,7 +136,6 @@
 	replace incomegroup = "Low Income countries" if incomegroup == "Low income"
 	
 *------------------------------Rename&recode-------------------------------*
-	// FIXME: check if this can be done without hardcoding
 	foreach var in asr asr_m asr_f hci hci_m hci_f hci_lower hci_lower_f hci_lower_m hci_upper hci_upper_m hci_upper_f nostu nostu_f nostu_m psurv psurv_m psurv_f asr_prev asr_m_prev asr_f_prev hci_prev hci_m_prev hci_f_prev hci_lower_prev hci_lower_f_prev hci_lower_m_prev hci_upper_prev hci_upper_m_prev hci_upper_f_prev nostu_prev nostu_f_prev nostu_m_prev psurv_prev psurv_m_prev psurv_f_prev {
 		replace `var' = `var'*100
 	}

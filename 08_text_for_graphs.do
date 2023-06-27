@@ -214,7 +214,7 @@ gen hcci_text = "Due to the slow moving nature of the HCI, an additional set of 
 /* Tal vez conviene hace un texto genérico con valor del indicador + valor hace aprox 5 años y después hacer el if para region e ingreso. Pero para eso habría que partir este if. */ 
 frame create metadata
 frame change metadata
-use "$data_processed/metadata_processed"
+use "$data_processed/metadata_processed", clear
 duplicates drop name_portal, force
 merge 1:1 name_portal using "$data_processed/briefs_texts", keep(match) nogen
 frame change default
@@ -398,7 +398,7 @@ foreach ctry in `wb_country_codes' {
 
 drop *_start_text *_time_text  *_reginc_text 
 display "Text correctly generated!"
-stop
+
 *-----------------Round values in hci variables for tables-----------------* 
 /*	
 foreach var in hci_m hci_f hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test {
@@ -439,7 +439,7 @@ replace `var' = `var'*100
 
 *---------------------------------Save-------------------------------------*	
 	
-keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t
+/* keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t */
 	
 destring hci_t, replace
 replace hci_t = hci_t/100
@@ -447,11 +447,9 @@ replace hci_t = hci_t/100
 gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
-br hci_t	
 
-
-save "$data_processed\ordered_text", replace
-
+save "$data_output\ordered_text", replace
+exit
 *--------------------------Merge to original base--------------------------*
 * FIXME: que onda esto??
 /**** Esto se hace porque nos habían pedido agregar algunos valores de indicadores, a parte de los name, lab y text para cada stage y orden ****/

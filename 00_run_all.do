@@ -30,28 +30,28 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Data Portal
 
 ** 01 - Collects indicators via APIs
-python script "$root\01_API_access.py"
-stop
+// python script "$root\01_API_access.py"
+
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
 // do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
-// do "$root\03_clean_metadata"
+do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
-// do "$root\04_missing_data"
+do "$root\04_missing_data"
 
 
 ***** Briefs
 
 ** 05 - Create Briefs Dataset
-// do "$root\05_brief_dataset.do"
+do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-// do "$root\06_indicators by country.do"
+do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-// do "$root\07_graphs - w series.do"
+do "$root\07_graphs - w series.do"
 
 ** 07 - Generates text for the briefs
 do "$root\08_text_for_graphs.do" 
