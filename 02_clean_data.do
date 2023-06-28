@@ -591,7 +591,7 @@ save "$data_processed\all_UN", replace
 *-----------------------------------------------------------------------*	
 *Employment high skill
 import excel "$data_raw\employment_high_skill.xlsx", clear firstrow
-keep if classif1label=="Age (Aggregate bands): Total"
+keep if classif1label=="Age (Youth, adults): 15-64"
 gen gender=.
 replace gender=2 if sexlabel=="Sex: Female"
 replace gender=1 if sexlabel=="Sex: Male"
@@ -613,8 +613,8 @@ keep wbcode year gender high_skill
 destring year, replace
 save "$data_processed\ILO_highskill", replace
 
-*youth/adult unemployment
-*FIXME
+*Youth/adult unemployment
+
 
 *---------------------------------all ILO-----------------------------------*
 use "$data_processed\ILO_highskill"
