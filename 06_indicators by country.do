@@ -61,7 +61,7 @@
 	/**** Agregar vars nuevas acá ****/
 	
 	use "$data_output\data_briefs_allcountries", clear
-
+		
 	* Genero lista con las variables "indicadores" y "indicadores_year" 
 	global indicyear ""
 	global indic ""
@@ -238,14 +238,17 @@
 	tostring vy_, gen(year)
 	
 	* Create show order based on main rank (more relevant indicators shown first)
-	sort rank
-	bysort wbcode category: gen show_order = _n
-	stop
+	gen is_missing = (v_==.)
+	sort wbcode category is_missing rank 
+	by wbcode category: gen show_order = _n
+	
 		*** Export liststing for data_portal
 		preserve
 		keep if show_order==1
-		keep wbcode name stage_life
-		reshape wide 
+		keep wbcode name category
+		reshape wide name, i(wbcode) j(category)
+		rename (name1 name2 name3 name4) (Prenatal_and_Early_Childhood Schoolaged_Children Youth Adulthood_and_Elderly)
+		export excel "$path_output/list_bycountry_share.xlsx", replace
 		restore
 		****************************************
 	
@@ -339,7 +342,6 @@
 	keep l
 	rename l locals
 	save "$data_output\new_locals", replace
-	br 
 	
 	/* Copiar todos los locals y pegar en el siguiente do file */ 
 			

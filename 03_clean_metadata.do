@@ -163,7 +163,7 @@ drop _merge
 gen data = "HCI" if code=="eyrs" | code=="hci" | code=="hci_lower" | code=="hci_upper" | code=="nostu" | code=="psurv" | code=="qeyrs" | code=="test" | code=="se_lpv_prim" | code=="asr"
 replace data = "HCCI" if missing(data)
 
-* Scales. FIXME: This is outdated... Should include scale column in metadata
+* Scales. FIXME: This is outdated...
 gen scale = ""
 foreach var in asr hci hci_lower hci_upper nostu psurv {
 replace scale = "0 - 1" if code=="`var'"
@@ -201,7 +201,7 @@ foreach ind in `indicators' {
 	if r(N)==0 {
 	   	drop if code == "`ind'" & gender_not_total==1 
 		display "Indicator `ind' has no gender disaggregation"
-	}
+}
 }
 drop gender_not_total	
 
@@ -272,10 +272,6 @@ save "$data_output\complete_series_wmd_${date}", replace
 * FIXME: i have to drop the missing in order to export the excel file as it supports only 1 million rows. Check with portal team...
 drop if value==.
 export excel "$data_output\complete_series_wmd_${date}.xlsx", replace firstrow(variables)
-
-
-
-
 
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023

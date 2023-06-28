@@ -621,6 +621,21 @@ use "$data_processed\ILO_highskill"
 destring year, replace
 save "$data_processed\all_ILO", replace
 
+*------------------------ Utilization of HC (UHCI) ------------------------------*
+import excel "$data_raw\UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
+gen gender = .
+replace gender = 0 if Gender=="Total"
+replace gender = 1 if Gender=="Male"
+replace gender = 2 if Gender=="Female"
+keep Countrycode gender UHCIbasic Year
+rename (Countrycode UHCIbasic Year) (wbcode uhci year)
+
+drop if uhci ==.
+sort year
+replace year = round(year)
+duplicates drop wbcode year gender, force
+save "$data_processed\UHCI", replace
+
 *--------------------------------Merge all---------------------------------*
 
 use "$data_processed\comp_series", clear // FIXME: ¿De donde sale este DTA? No es reproducible porque me falta lo que genera este archivo
@@ -631,6 +646,7 @@ merge 1:1 wbcode year gender using "$data_processed\all_unesco", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_ILO", nogen
+merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
 lab var wbcode "WB country code"
