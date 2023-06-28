@@ -128,7 +128,7 @@
 	replace incomegroup = "Low Income countries" if incomegroup == "Low income"
 	
 *------------------------------Rename&recode-------------------------------*
-	foreach var in asr asr_m asr_f hci hci_m hci_f hci_lower hci_lower_f hci_lower_m hci_upper hci_upper_m hci_upper_f nostu nostu_f nostu_m psurv psurv_m psurv_f asr_prev asr_m_prev asr_f_prev hci_prev hci_m_prev hci_f_prev hci_lower_prev hci_lower_f_prev hci_lower_m_prev hci_upper_prev hci_upper_m_prev hci_upper_f_prev nostu_prev nostu_f_prev nostu_m_prev psurv_prev psurv_m_prev psurv_f_prev {
+	foreach var in asr asr_m asr_f hci hci_m hci_f hci_lower hci_lower_f hci_lower_m hci_upper hci_upper_m hci_upper_f nostu nostu_f nostu_m psurv psurv_m psurv_f asr_prev asr_m_prev asr_f_prev hci_prev hci_m_prev hci_f_prev hci_lower_prev hci_lower_f_prev hci_lower_m_prev hci_upper_prev hci_upper_m_prev hci_upper_f_prev nostu_prev nostu_f_prev nostu_m_prev psurv_prev psurv_m_prev psurv_f_prev uhci_f uhci_m uhci uhci_f_prev uhci_m_prev uhci_prev {
 		replace `var' = `var'*100
 	}
 	

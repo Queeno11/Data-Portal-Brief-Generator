@@ -13,7 +13,8 @@ use "$data_output\new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
-forvalues i  = 1(1)`n_locals' {
+display "Generating indicator locals, please wait..."
+qui forvalues i  = 1(1)`n_locals' {
 	gen selected = .
 	replace selected = 1 if _n==`i'
 	sort selected is_local
@@ -25,6 +26,8 @@ forvalues i  = 1(1)`n_locals' {
 	drop selected
 }
 assert mi(is_local)==0
+display "Done!"
+
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
 *------------------------------------------------------------------------------*
@@ -41,7 +44,7 @@ local ne 3
 local nh 3
 local nl 3
 local no 3
-local nc 7
+local nc 8
 
 *---------------------------Graphs configuration---------------------------*
 
@@ -57,7 +60,10 @@ gen onesvec=1
 
 levelsof wbcode, local(wb_country_codes) 
 foreach c in `wb_country_codes' {
-	
+	* Note: if you change the number of indicators (for example, add c9) you also need to:
+	*	1) Add the label on lc9
+	*	2) Add to the graph combine the new chart
+	*	3) Add the erase
 	local c1_`c' hci
 	local c2_`c' psurv
 	local c3_`c' eyrs
@@ -65,6 +71,7 @@ foreach c in `wb_country_codes' {
 	local c5_`c' qeyrs
 	local c6_`c' asr
 	local c7_`c' nostu
+	local c8_`c' uhci
 	
 	local lc1_`c' "Human Capital Index"
 	local lc2_`c' "Probability of Survival to Age 5"
@@ -73,6 +80,7 @@ foreach c in `wb_country_codes' {
 	local lc5_`c' "Learning-adjusted Years of School"
 	local lc6_`c' "Adult Survival Rate"
 	local lc7_`c' "Fraction of Children Under 5 Not Stunted"
+	local lc8_`c' "Utilization of Human Capital Index"
 	
 	}
 	
@@ -102,7 +110,7 @@ foreach i of local obs {
 		gen obs_`c`m'_`ctry'' = 1 if `=scalar(r(N))'>0
 		replace obs_`c`m'_`ctry'' = 0 if `=scalar(r(N))'==0
 		replace obs_`c`m'_`ctry'' = 0 if `c`m'_`ctry''[`i']==0
-		if obs_`c`m'_`ctry'' == 0 {
+		if obs_`c`m'_`ctry'' != 0 {
 			* If we have data for the hci
 			drop obs_`c`m'_`ctry''
 			qui su `c`m'_`ctry'', d
@@ -127,6 +135,7 @@ foreach i of local obs {
 			graph save "$charts\graph_`ctry'_c`m'.gph", replace
 		}
 		else {
+			stop
 			* If we dont have data, then plot only regional data
 			qui su `c`m'_`ctry'', d
 			scalar m1`c`m'_`ctry'' = `=scalar(r(max))'
@@ -182,7 +191,7 @@ foreach i of local obs {
 	
 	drop m 
 
-	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\notes_`ctry'.gph", rows(8) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
+	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph" "$charts\notes_`ctry'.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
 	
@@ -193,6 +202,7 @@ foreach i of local obs {
 	erase "$charts\graph_`ctry'_c5.gph"
 	erase "$charts\graph_`ctry'_c6.gph"
 	erase "$charts\graph_`ctry'_c7.gph"
+	erase "$charts\graph_`ctry'_c8.gph"
 	erase "$charts\notes_`ctry'.gph"
 
 	*------------------------------Second Page-----------------------------*

@@ -248,7 +248,7 @@
 		keep wbcode name category
 		reshape wide name, i(wbcode) j(category)
 		rename (name1 name2 name3 name4) (Prenatal_and_Early_Childhood Schoolaged_Children Youth Adulthood_and_Elderly)
-		export excel "$path_output/list_bycountry_share.xlsx", replace
+		export excel "$data_output/list_bycountry_share.xlsx", replace
 		restore
 		****************************************
 	
