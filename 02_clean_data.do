@@ -1,5 +1,5 @@
 *------------------------------------------------------------------------------*
-*				Series UNICEF, WID, WHO, UNESCO, FAO, UN
+*			   Series UNICEF, WID, WHO, UNESCO, FAO, UN, ILO
 *------------------------------------------------------------------------------*
 cls
 set more off
@@ -432,6 +432,33 @@ merge 1:m UNESCO_countryname using "$data_processed\unesco_outschool", nogen kee
 keep wbcode year gender out_school
 save "$data_processed\unesco_outschool", replace
 
+*Net enrolment rates:
+import excel "$data_raw\uis_netenrolment.xlsx", clear firstrow
+drop FlagCodes Flags
+drop TIME
+rename NATMON_IND code
+rename Time year
+drop if (code=="NERT_1_GPI"|code=="NERT_2_GPI"|code=="NERT_3_GPI")
+gen gender=0
+replace gender=1 if (code=="NERT_1_M_CP"|code=="NERT_2_M_CP"|code=="NERT_3_M_CP")
+replace gender=2 if (code=="NERT_1_F_CP"|code=="NERT_2_F_CP"|code=="NERT_3_F_CP")
+replace Indicator="netenrolment_prim" if (code=="NERT_1_M_CP"|code=="NERT_1_F_CP"|code=="NERT_1_CP")
+replace Indicator="netenrolment_lowersec" if (code=="NERT_2_M_CP"|code=="NERT_2_F_CP"|code=="NERT_2_CP")
+replace Indicator="netenrolment_uppersec" if (code=="NERT_3_M_CP"|code=="NERT_3_F_CP"|code=="NERT_3_CP")
+drop code
+bysort Country LOCATION year gender: gen n = _n
+reshape wide Value, i(Country LOCATION year gender n) j(Indicator) string
+rename Valuenetenrolment_prim netenrolment_prim
+rename Valuenetenrolment_lowersec netenrolment_lowersec
+rename Valuenetenrolment_uppersec netenrolment_uppersec
+collapse (firstnm) netenrolment_lowersec netenrolment_prim netenrolment_uppersec, by(Country LOCATION year gender)
+rename Country UNESCO_countryname
+rename LOCATION UNESCO_code
+save "$data_processed\uis_netenrolment", replace
+use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+merge 1:m UNESCO_countryname using "$data_processed\uis_netenrolment", nogen keep(3)
+keep wbcode year gender netenrolment_lowersec netenrolment_prim netenrolment_uppersec
+save "$data_processed\uis_netenrolment", replace
 *-----------------------------all UNESCO---------------------------------*
 use "$data_processed\unesco_ECedu", clear
 merge 1:1 wbcode year gender using "$data_processed\unesco_repetition", nogen
@@ -443,6 +470,7 @@ merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_endprim", n
 merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_lowsec", nogen
 merge 1:1 wbcode year gender using "$data_processed\unesco_youthlit", nogen
 merge 1:1 wbcode year gender using "$data_processed\unesco_outschool", nogen
+merge 1:1 wbcode year gender using "$data_processed\uis_netenrolment", nogen
 save "$data_processed\all_unesco", replace
 
 *-----------------------------------------------------------------------*
