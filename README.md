@@ -70,6 +70,19 @@ Dominique Pizzie
 [@DomPizzie](https://twitter.com/dompizzie) -->
 
 ## Version History
+* 0.4. *jun-30-23*
+    * Improved text generation algorithm.
+    * comp_series database fully integrated with pipeline. Those datasets are now up to date.
+    * New desing changes:
+      * Added UHCI chart to the first page.
+      * Table with decomposition of HCI by gender replaced with comparison between HCI and UHCI.
+      * Added paragraph concerning UHCI (awaiting for design team for the content).
+      * Graph legend moved to top of the chart.
+      * Ensured way to generate word files from the pdfs using (online2pdf)[https://online2pdf.com/en/pdf2word] (not preserving fonts correctly, this might be an issue).
+      * Fixed latex table design bug that showed incorrectly the column widths.
+      * (not included in this version, testing) Rmd to generate word file directly instead of using LATEX. 
+    * Rscripts fully integrated with Stata pipeline via shell commands.
+    * Restructured Briefs outputs folder to match design team reqs. Now it generates a folder for each country and generates the PDF file and the EPS graphs
 * 0.3. *jun-23-23*
     * Added new indicators based on GP's comments.
     * New text generation algorithm (testing). The code 08_text_for_graphs was mostly rewritten to include the new indicators.
