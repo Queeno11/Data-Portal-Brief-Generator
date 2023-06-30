@@ -91,12 +91,101 @@ drop wbcountryname unicef_countryname unicef_code
 merge 1:1 wbcode year gender using "$data_processed\unicef_stillbirths", nogen keep(3)
 
 save "$data_processed\all_unicef", replace
-	
+
+*UNICEF MARCOS 
+*BCG vaccine
+import excel using "$data_raw\vacbcg.xlsx", clear firstrow	
+reshape long val, i(wbcode)
+rename _j year
+rename val vacbcg
+lab var vacbcg "BCG vaccination (%)"
+gen gender = 0
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+save "$data_processed/all_unicef", replace 
+*HEPBB vaccine
+import excel using "$data_raw\vachepbb.xlsx", clear firstrow	
+reshape long val, i(wbcode)
+rename _j year
+rename val vachepbb
+lab var vachepbb "Hepatitis B vaccination (%)"
+gen gender = 0
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+save "$data_processed/all_unicef", replace 
+*Meal frequency
+import excel using "$data_raw\unicef_mealfreq", clear firstrow
+rename (National Male Female)(unicef_mealfreq0 unicef_mealfreq1 unicef_mealfreq2)
+duplicates drop wbcode year, force
+reshape long unicef_mealfreq, i(wbcode year)
+rename _j gender
+lab var unicef_mealfreq "Children receiving minimum meal frequency (%)"	
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+save "$data_processed/all_unicef", replace 
+*Postnatal care
+import excel using "$data_raw\unicef_care", clear firstrow	
+replace year = "2021" if year=="2021-06"
+destring year val, replace
+gen gender = 0
+rename val unicef_care
+duplicates drop wbcode year, force
+lab var unicef_care "Postnatal contact with health provider (%)"
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+save "$data_processed/all_unicef", replace 
+*Breastfeeding
+import excel using "$data_raw\unicef_breastf", clear firstrow	
+rename (national male female)(unicef_breastf0 unicef_breastf1 unicef_breastf2)
+duplicates drop wbcode year, force
+reshape long unicef_breastf, i(wbcode year)
+rename _j gender
+lab var unicef_breastf "Infants fed exclusively with breast milk (%)"
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+save "$data_processed/all_unicef", replace 
+*Diarrhoea
+import excel using "$data_raw\unicef_diarrhoea", clear firstrow		
+gen gender = .
+replace gender = 0 if sex=="_T"
+replace gender = 1 if sex=="M"
+replace gender = 2 if sex=="F"
+rename val unicef_diarrhoea
+duplicates drop wbcode gender year, force
+keep wbcode gender year unicef_diarrhoea
+lab var unicef_diarrhoea "Children with diarrhea who attended health facility (%)"	
+merge 1:1 wbcode gender year using "$data_processed/all_unicef", nogen keep(2 3) 
+drop wbname
+save "$data_processed/all_unicef", replace 
 
 *--------------------------------------------------------------------------*
 *--------------------------------WDI online--------------------------------*
 *--------------------------------------------------------------------------*
+*Marcos:	
+import excel using "$data_raw/wdi_1972-2022.xlsx", firstrow clear sheet(Data)
+bysort ind_lab: tab ind_code
+gen gender = .
+gen name = ""
+replace name = "lastnm_afr" if ind_code=="SP_ADO_TFRT"	
+replace name = "lastnm_probdeath_ncd" if ind_code=="SH_DTH_NCOM_ZS"
+replace name = "lastnm_birth_reg" if (ind_code=="SP_REG_BRTH_ZS" | ind_code=="SP_REG_BRTH_MA_ZS" | ind_code=="SP_REG_BRTH_FE_ZS")
+replace name = "sp_dyn_le00_in" if (ind_code=="SP_DYN_LE00_IN" | ind_code=="SP_DYN_LE00_MA_IN" | ind_code=="SP_DYN_LE00_FE_IN") 
+replace name = "uiscr2" if (ind_code=="SE_SEC_CMPT_LO_ZS" | ind_code=="SE_SEC_CMPT_LO_MA_ZS" | ind_code=="SE_SEC_CMPT_LO_FE_ZS")
+replace name = "lastnm_mmrt" if ind_code=="SH_STA_MMRT_NE"
+replace name = "unicef_neomort" if ind_code=="SH_DYN_NMRT"
+replace name = "uiscr1" if (ind_code=="SE_PRM_CMPT_ZS" | ind_code=="SE_PRM_CMPT_MA_ZS" | ind_code=="SE_PRM_CMPT_FE_ZS")
+replace name = "uisger02" if (ind_code=="SE_PRE_ENRR" | ind_code=="SE_PRE_ENRR_MA" | ind_code=="SE_PRE_ENRR_FE")
+replace name = "lastnm_sec_ger" if (ind_code=="SE_SEC_ENRR" | ind_code=="SE_SEC_ENRR_MA" | ind_code=="SE_SEC_ENRR_FE")	
+replace name = "lastnm_ter_ger" if (ind_code=="SE_TER_ENRR" | ind_code=="SE_TER_ENRR_MA" | ind_code=="SE_TER_ENRR_FE")
+replace gender = 0 if inlist(ind_code,"SP_ADO_TFRT","SH_DTH_NCOM_ZS","SP_REG_BRTH_ZS","SP_DYN_LE00_IN","SE_SEC_CMPT_LO_ZS","SH_STA_MMRT_NE")
+replace gender = 0 if inlist(ind_code,"SH_DYN_NMRT","SE_PRM_CMPT_ZS","SE_PRE_ENRR","SE_SEC_ENRR","SE_TER_ENRR")
+replace gender = 1 if inlist(ind_code,"SP_REG_BRTH_MA_ZS","SP_DYN_LE00_MA_IN","SE_SEC_CMPT_LO_MA_ZS","SE_PRM_CMPT_MA_ZS","SE_PRE_ENRR_MA","SE_SEC_ENRR_MA","SE_TER_ENRR_MA")
+replace gender = 2 if inlist(ind_code,"SP_REG_BRTH_FE_ZS","SP_DYN_LE00_FE_IN","SE_SEC_CMPT_LO_FE_ZS","SE_PRM_CMPT_FE_ZS","SE_PRE_ENRR_FE","SE_SEC_ENRR_FE","SE_TER_ENRR_FE")
+order wbcode name gender
+keep wbcode name gender v*
+reshape long v, i(wbcode name gender)
+rename _j year
+rename v v_
+reshape wide v_, i(wbcode gender year) j(name) string
+rename v_* *
+save "$data_processed/wdi", replace
 
+*HCI
 import excel "$data_raw\hci_web.xlsx", clear firstrow
 bysort name code wbcode: gen n = _n
 reshape long y, i(name code wbcode n) j(year)
@@ -109,6 +198,7 @@ replace gender = 0 if missing(gender)
 rename y value
 save "$data_processed\hci_web", replace
 
+*New indicators: health and education expenditure
 import excel "$data_raw\education_expenditure.xlsx", clear firstrow
 rename IndicatorName name
 rename CountryCode wbcode
@@ -135,10 +225,11 @@ gen gender = 0
 rename y value
 save "$data_processed\health_exp", replace
 
-*all WDI:
+*--------------------------------all WDI------------------------------*
 use "$data_processed\hci_web", clear
 merge m:m wbcode using "$data_processed\educ_exp", nogen keep(3)
 merge m:m wbcode using "$data_processed\health_exp", nogen keep(3)
+merge m:m wbcode using "$data_processed\wdi", nogen keep(3)
 save "$data_processed\wdi", replace
 
 *---------------------------------------------------------------------*
@@ -617,6 +708,136 @@ save "$data_processed\all_UN", replace
 *-----------------------------------------------------------------------*
 *----------------------------------ILO----------------------------------*
 *-----------------------------------------------------------------------*	
+*Youth NEET:
+import delimited using "$data_raw/EIP_NEET_SEX_AGE_RT_A.csv", clear				
+rename obs_value eip_neet_	
+rename *_area wbcode 
+keep if classif1=="AGE_5YRBANDS_TOTAL"
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"
+rename(time eip_neet)(year eip_neet_mf_y)
+keep wbcode gender year eip_neet_mf_y	
+lab var eip_neet_mf_y "Youth NEET (%)"
+save "$data_processed/neet", replace 
+	
+*Labor force participation	
+import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear		
+rename (time obs_value)(year eap_2wap_mf_a)
+rename *_area wbcode 
+keep if classif1=="AGE_YTHADULT_YGE25"
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"
+keep wbcode gender year eap_2wap_mf_a
+lab var eap_2wap_mf_a "Labor force participation (%)"	
+save "$data_processed/laborforce", replace 
+
+*Unemployment
+import delimited using "$data_raw/UNE_2EAP_SEX_AGE_RT_A.csv", clear		
+rename obs_value une_2eap_
+rename *_area wbcode 	
+gen ya = . 
+replace ya = 1 if classif1=="AGE_YTHADULT_Y15-24"
+replace ya = 2 if classif1=="AGE_YTHADULT_YGE25"	
+keep if ya!=.
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"		
+rename time year
+keep wbcode year gender une_2eap_ ya
+reshape wide une_2eap_, i(wbcode gender year) j(ya)
+rename (une_2eap_1 une_2eap_2)(une_2eap_mf_y une_2eap_mf_a)
+gen y_a_unemp=une_2eap_mf_y/une_2eap_mf_a
+lab var une_2eap_mf_y "Youth unemployment (%)"
+lab var une_2eap_mf_a "Adult unemployment (%)"
+lab var y_a_unemp "Youth/adult unemployment rate"
+save "$data_processed/unemployment", replace 	
+
+*Labor underutilization
+import delimited using "$data_raw/LUU_2LU4_SEX_AGE_RT_A.csv", clear		
+rename obs_value luu_2lu4_
+rename *_area wbcode 	
+gen ya = . 
+replace ya = 1 if classif1=="AGE_YTHADULT_Y15-24"
+replace ya = 2 if classif1=="AGE_YTHADULT_YGE25"	
+keep if ya!=.
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"		
+rename time year
+keep wbcode year gender luu_2lu4_ ya	
+reshape wide luu_2lu4_, i(wbcode gender year) j(ya)
+rename (luu_2lu4_1 luu_2lu4_2)(luu_2lu4_mf_y luu_2lu4_mf_a)	
+lab var luu_2lu4_mf_y "Youth composite measure of labour underutilization"
+lab var luu_2lu4_mf_a "Adult composite measure of labour underutilization"
+save "$data_processed/laborunderut", replace 		
+
+*Inactivity	rate
+import delimited using "$data_raw/EIP_2WAP_SEX_AGE_RT_A.csv", clear		
+rename obs_value eip_2wap_
+rename *_area wbcode 	
+gen ya = . 
+replace ya = 1 if classif1=="AGE_YTHADULT_Y15-24"
+replace ya = 2 if classif1=="AGE_YTHADULT_YGE25"	
+keep if ya!=.
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"		
+rename time year
+keep wbcode year gender eip_2wap_ ya
+reshape wide eip_2wap_, i(wbcode gender year) j(ya)
+rename (eip_2wap_1 eip_2wap_2)(eip_2wap_y eip_2wap_a)
+lab var eip_2wap_y "Youth inactivity rate (%)"
+lab var eip_2wap_a "Adult inactivity rate (%)"
+save "$data_processed/inactivityrate", replace 		
+
+*Potential labor	
+import delimited using "$data_raw/EIP_2PLF_SEX_AGE_RT_A.csv", clear		
+rename obs_value eip_2plf_
+rename *_area wbcode 	
+gen ya = . 
+replace ya = 1 if classif1=="AGE_YTHADULT_Y15-24"
+replace ya = 2 if classif1=="AGE_YTHADULT_YGE25"	
+keep if ya!=.
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"		
+rename time year
+keep wbcode year gender eip_2plf_ ya
+reshape wide eip_2plf_, i(wbcode gender year) j(ya)
+rename (eip_2plf_1 eip_2plf_2)(eip_2plf_y eip_2plf_a)
+lab var eip_2plf_y "Youth potential labor force rate (%)"
+lab var eip_2plf_a "Adult potential labor force rate (%)"
+save "$data_processed/potential_labor", replace 		
+
+*Informal employment
+import delimited using "$data_raw/EMP_NIFL_SEX_AGE_RT_A.csv", clear		
+rename obs_value emp_nifl_
+rename *_area wbcode	
+gen ya = . 
+replace ya = 1 if classif1=="AGE_YTHADULT_Y15-24"
+replace ya = 2 if classif1=="AGE_YTHADULT_YGE25"	
+keep if ya!=.
+gen gender = . 
+replace gender = 0 if sex=="SEX_T"
+replace gender = 1 if sex=="SEX_M"
+replace gender = 2 if sex=="SEX_F"		
+rename time year
+keep wbcode year gender emp_nifl_ ya
+reshape wide emp_nifl_, i(wbcode gender year) j(ya)
+rename (emp_nifl_1 emp_nifl_2)(emp_nifl_y emp_nifl_a)
+lab var emp_nifl_y "Youth informal employment rate (%)"
+lab var emp_nifl_a "Adult informal employment rate (%)"	
+save "$data_processed/informal_employment", replace 		
+
+
 *Employment high skill
 import excel "$data_raw\employment_high_skill.xlsx", clear firstrow
 keep if classif1label=="Age (Youth, adults): 15-64"
@@ -641,14 +862,30 @@ keep wbcode year gender high_skill
 destring year, replace
 save "$data_processed\ILO_highskill", replace
 
-*Youth/adult unemployment
-
-
 *---------------------------------all ILO-----------------------------------*
 use "$data_processed\ILO_highskill"
 destring year, replace
+merge m:m wbcode using "$data_processed/neet", nogen keep(3)
+merge m:m wbcode using "$data_processed/laborforce", nogen keep(3)
+merge m:m wbcode using "$data_processed/youthunemp", nogen keep(3)
+merge m:m wbcode using "$data_processed/laborunderut", nogen keep(3)
+merge m:m wbcode using "$data_processed/inactivityrate", nogen keep(3)
+merge m:m wbcode using "$data_processed/potential_labor", nogen keep(3)
+merge m:m wbcode using "$data_processed/informal_employment", nogen keep(3)
 save "$data_processed\all_ILO", replace
 
+*--------------------------------World Bank--------------------------------*	
+import excel using "$data_raw\WB_lp.xls", clear firstrow		
+keep if inlist(name,"se_lpv_prim","se_lpv_prim_fe","se_lpv_prim_ma")
+gen gender = . 
+replace gender = 0 if name=="se_lpv_prim"
+replace gender = 1 if name=="se_lpv_prim_ma"
+replace gender = 2 if name=="se_lpv_prim_fe"			
+rename v_ se_lpv_prim
+rename country wbcode 
+keep wbcode year gender se_lpv_prim
+save "$data_processed/worldbank", replace 	
+stop
 *------------------------ Utilization of HC (UHCI) ------------------------------*
 import excel "$data_raw\UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
 gen gender = .
@@ -674,6 +911,7 @@ merge 1:1 wbcode year gender using "$data_processed\all_unesco", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_ILO", nogen
+merge 1:1 wbcode year gender using "$data_processed\worldbank", nogen
 merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
