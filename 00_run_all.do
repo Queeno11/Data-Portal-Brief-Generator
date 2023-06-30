@@ -53,5 +53,8 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ** 07 - Generates graphs
 do "$root\07_graphs - w series.do"
 
-** 07 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do" 
+** 08 - Generates text for the briefs
+do "$root\08_text_for_graphs.do"
+
+** 09 - Generate the PDFs with RMarkdown
+shell Rscript "$root\11_Run_Briefs_June23.R"

@@ -27,6 +27,7 @@
 *.gph
 *.pdf
 *.eps
+*.log
 !Data/Data_Raw/Country codes & metadata/*
 !UML long.png
 !HCP_logo.png

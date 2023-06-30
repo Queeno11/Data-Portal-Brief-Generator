@@ -191,7 +191,7 @@ foreach i of local obs {
 	
 	drop m 
 
-	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph" "$charts\notes_`ctry'.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
+	graph combine "$charts\notes_`ctry'.gph" "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
 	
