@@ -4,8 +4,8 @@
 cls
 set more off
 *----------------------------------Set up---------------------------------*
-global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-*global root "C:\Users\llohi\Documents\WB\Data Portal"
+*global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 global date			  	"27_jun_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
