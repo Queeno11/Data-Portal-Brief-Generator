@@ -20,6 +20,8 @@ indicators_for_briefs = [
     'NT_ANT_WHZ_NE2', # Wasting
     'NT_ANT_WHZ_NE3', # Severe wasting
     'NT_ANT_WHZ_PO2', # Overweight
+    'NT_BF_EXBF', # (Exclusive breastfeeding)
+    'NT_CF_MMF', # (Minimum meal frequency)
     'MNCH_ANC1', # Antenatal care coverage at least one visit
     'MNCH_ANC4', # Antenatal care coverage at least four visits
     'PT_CHLD_5-17_LBR_ECON', # Child labour
@@ -40,6 +42,9 @@ indicators_for_briefs = [
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
     'MNCH_BIRTH18', # Early childbearing - percentage of women (aged 20-24 years) who gave birth before age 18
+    'MNCH_PNCNB', # (Postnatal care for newborns)
+    'MNCH_DIARCARE', # (Careseeking for diarrhoea (%))
+
     ## Vaccines
     'IM_BCG',
     'IM_DTP1', 
@@ -54,6 +59,7 @@ indicators_for_briefs = [
     'IM_POL3', 
     'IM_ROTAC',
     'IM_HPV',
+    
     ## Child mortality
     'CME_MRY0T4', #04mort
     'CME_MRY5T14', #514mort
