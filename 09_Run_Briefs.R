@@ -1,9 +1,11 @@
 library(rmarkdown)
 
-setwd('D:/Laboral/World Bank/Data-Portal-Brief-Generator')
+path <- commandArgs(trailingOnly = TRUE)
+print(path)
+setwd(path)
 
 # Run setup for database and functions
-source("09_HC_2page_Func.R")
+source("HC_2page_functions.R")
 
 # Loop over each country
 for (i in seq_along(countrynamet)) {
@@ -16,7 +18,7 @@ for (i in seq_along(countrynamet)) {
   
   ## Render Rmd to PDF
   render(
-    input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/10_AM_june23tex.Rmd", output_format="pdf_document", #(keep_md=TRUE, keep_tex=TRUE),
+    input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd", output_format="pdf_document", #(keep_md=TRUE, keep_tex=TRUE),
      output_file = output_file, 
      params = list(countrynamet = country),
      clean = TRUE

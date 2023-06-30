@@ -135,7 +135,6 @@ foreach i of local obs {
 			graph save "$charts\graph_`ctry'_c`m'.gph", replace
 		}
 		else {
-			stop
 			* If we dont have data, then plot only regional data
 			qui su `c`m'_`ctry'', d
 			scalar m1`c`m'_`ctry'' = `=scalar(r(max))'
