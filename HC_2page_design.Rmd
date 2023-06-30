@@ -83,31 +83,29 @@ This 2-page brief provides the 2020 Human Capital Index (HCI) released in Septem
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
 
+### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
+
+* **Placeholder text.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+
 \vspace{-1mm}
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
-\begin{tabular}{lcccccccccccccccc}
-\\\textbf{     }   &    & & & & & & & & & & & & & &             &  \\ \hline
-                         &      & & & & & & & & & & & & & &              & \\
-\textbf{ HCI and its components   } & & & & & & & & & & & & & & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
+\begin{tabular}{m{0.305\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}}
+\\\textbf{     }   &    &             &  \\ \hline
+                         &      &              & \\
+\textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
 \vspace{-1mm} \\
-HCI & & & & & & & & & & & & & &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_t"]`\\
-Survival to Age 5 & & & & & & & & & & & & & & `r x[which(x$wbcountryname == params$countrynamet),"psurv_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"psurv_f_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"psurv_t"]` \\
-Expected Years of School & & & & & & & & & & & & & &  `r x[which(x$wbcountryname == params$countrynamet),"eyrs_m_t"]`   &  `r x[which(x$wbcountryname == params$countrynamet),"eyrs_f_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"eyrs_t"]` \\
-Harmonized Test Scores & & & & & & & & & & & & & &  `r x[which(x$wbcountryname == params$countrynamet),"test_m_t"]` &  `r x[which(x$wbcountryname == params$countrynamet),"test_f_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"test_t"]` \\
-Learning-adjusted Years of School & & & & & & & & & & & & & &  `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_f_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_t"]`\\
-Adult Survival Rate & & & & & & & & & & & & & & `r x[which(x$wbcountryname == params$countrynamet),"asr_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"asr_f_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"asr_t"]`\\
-Not Stunted Rate & & & & & & & & & & & & & & `r x[which(x$wbcountryname == params$countrynamet),"nostu_m_t"]`  & `r x[which(x$wbcountryname == params$countrynamet),"nostu_f_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"nostu_t"]`\\
-                         & & & & & & & & & & & & & & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
+Human Capital Index (HCI) &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_table_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_table_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_table_t"]`\\
+Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_table_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_table_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_table_t"]` \\
+                         & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
 \end{tabular}
 \vspace{1mm} 
 \end{table}
 
-
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("p1/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
+gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
 knitr::include_graphics(gr2)
 ```
 
@@ -161,7 +159,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("p2/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
+gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
 knitr::include_graphics(gr3)
 ```
 

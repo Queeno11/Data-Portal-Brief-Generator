@@ -406,16 +406,20 @@ drop `var'_t
 }	
 */
 
-gen hci_table = hci/100
+foreach var in hci uhci hci_f uhci_f hci_m uhci_m {
+gen `var'_table = `var'/100
+}
+
 
 foreach var in nostu asr psurv{
 replace `var' = `var'/100
 }
 
-foreach var in hci_m hci_f hci_table hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu{
+foreach var in hci_table uhci_table hci_f_table uhci_f_table hci_m_table uhci_m_table hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu {
 gen `var'_t = strofreal(`var',"%04.2f")
 }
 
+* FIXME: ¿Esto se usa?
 foreach var in eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs{
 gen `var'_t = strofreal(`var',"%4.1f")
 }
@@ -424,14 +428,10 @@ foreach var in test_m test_f test{
 gen `var'_t = strofreal(`var',"%4.0f")
 }
 
-foreach var in hci_m hci_f hci psurv_m psurv_f psurv asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test{
-replace `var'_t = "-" if `var'_t=="."
+foreach var of varlist *_t {
+replace `var' = "-" if `var'=="."
+tab `var'
 }
-
-
-foreach var in hci_m hci_f hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test{
-tab `var'_t
-}	
 
 foreach var in nostu asr psurv{
 replace `var' = `var'*100

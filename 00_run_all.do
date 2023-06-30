@@ -4,9 +4,8 @@
 cls
 set more off
 *----------------------------------Set up---------------------------------*
-*global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
-*global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
+global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+// global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"27_jun_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
@@ -53,5 +52,8 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ** 07 - Generates graphs
 do "$root\07_graphs - w series.do"
 
-** 07 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do" 
+** 08 - Generates text for the briefs
+do "$root\08_text_for_graphs.do"
+
+** 09 - Generate the PDFs with RMarkdown
+shell Rscript "$root\09_Run_Briefs.R" "$root"

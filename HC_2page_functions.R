@@ -1,8 +1,8 @@
 #install.packages('haven')
 rm(list = ls())
 library(haven)
-setwd('C:/Users/llohi/Documents/WB/Briefs')
-x <- read_dta('C:/Users/llohi/Documents/WB/Briefs/ordered_text.dta')
+
+x <- read_dta('Data/Data_Output/ordered_text.dta')
 
 
 #----------------------------------------------------------
@@ -49,6 +49,7 @@ rows_lab <- function(){
 }
 
 countrynamet <- x[["wbcountryname"]]
+countrycodes <- x[["wbcode"]]
 
 # Color assignment -------------------------------------------------------------
 
