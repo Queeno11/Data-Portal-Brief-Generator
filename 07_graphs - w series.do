@@ -190,7 +190,7 @@ foreach i of local obs {
 	
 	drop m 
 
-	graph combine "$charts\notes_`ctry'.gph" "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
+	graph combine "$charts\notes_`ctry'.gph" "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
 	
@@ -259,7 +259,7 @@ foreach i of local obs {
 	graph combine "$charts\graph_`ctry'_b1.gph" "$charts\graph_`ctry'_b2.gph" "$charts\graph_`ctry'_b3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Adults & Elderly", suffix color(black) size(vlarge) linegap(3) pos(11) span)
 	graph save "$charts\stage_4.gph", replace	
 	
-	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(margin(vsmall) fcolor(black))
+	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	graph export "$charts\p2_`ctry'_stages.pdf", replace
 	graph export "$charts\p2_`ctry'_stages.eps", replace
 	
