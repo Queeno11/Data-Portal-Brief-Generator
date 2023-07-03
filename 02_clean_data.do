@@ -885,7 +885,26 @@ rename v_ se_lpv_prim
 rename country wbcode 
 keep wbcode year gender se_lpv_prim
 save "$data_processed/worldbank", replace 	
-stop
+
+*------------------------------------UIS-----------------------------------*			
+import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
+drop if value==.
+drop magnitude qualifier
+split indicator_id, p(".")
+gen indic = ""
+replace indic = indicator_id1+indicator_id2 if indic=="" & indicator_id3==""
+replace indic = indicator_id1+indicator_id2+indicator_id3 if indic=="" & indicator_id4==""
+replace indic = indicator_id1+indicator_id2+indicator_id3+indicator_id4 if indic=="" & indicator_id5==""
+replace indic = indicator_id1+indicator_id2+indicator_id3+indicator_id4+indicator_id5 if indic=="" & indicator_id6==""
+replace indic = indicator_id1+indicator_id2+indicator_id3+indicator_id4+indicator_id5+indicator_id6 if indic==""
+replace indic = lower(indic)
+keep if indic=="cr3" | indic=="ger01" | indic=="oaepg1" | indic=="oaepg2gpv" | indic=="qutp1" | indic=="qutp2t3" | indic=="schbsp1welec" | indic=="xgdpfsgov" | indic=="xgovexpimf"
+rename (country_id value)(wbcode uis)
+keep wbcode uis year indic
+reshape wide uis, i(wbcode year) j(indic) string
+gen gender = 0
+merge 1:m wbcode gender year using "$data_raw\Country codes & metadata\wbcodes_equiv_unesco.xlsx", nogen keep(2 3) 
+save "$data_processed/all_uis", replace 
 *------------------------ Utilization of HC (UHCI) ------------------------------*
 import excel "$data_raw\UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
 gen gender = .
@@ -912,6 +931,7 @@ merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_ILO", nogen
 merge 1:1 wbcode year gender using "$data_processed\worldbank", nogen
+merge 1:1 wbcode year gender using "$data_processed/all_uis", nogen
 merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
