@@ -90,7 +90,7 @@ This 2-page brief provides the 2020 Human Capital Index (HCI) released in Septem
 \vspace{-1mm}
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
-\begin{tabular}{m{0.305\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}}
+\begin{tabular}{m{0.3\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
 \\\textbf{     }   &    &             &  \\ \hline
                          &      &              & \\
 \textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
