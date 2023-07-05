@@ -193,7 +193,8 @@ foreach i of local obs {
 	graph combine "$charts\notes_`ctry'.gph" "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
-	
+	graph export "$charts\p1_`ctry'_all.jpg", replace width(1600)
+
 	erase "$charts\graph_`ctry'_c1.gph"
 	erase "$charts\graph_`ctry'_c2.gph"
 	erase "$charts\graph_`ctry'_c3.gph"
@@ -262,7 +263,8 @@ foreach i of local obs {
 	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	graph export "$charts\p2_`ctry'_stages.pdf", replace
 	graph export "$charts\p2_`ctry'_stages.eps", replace
-	
+	graph export "$charts\p2_`ctry'_stages.jpg", replace width(1600)
+
 	erase "$charts\graph_`ctry'_l1.gph"
 	erase "$charts\graph_`ctry'_l2.gph"
 	erase "$charts\graph_`ctry'_l3.gph"		

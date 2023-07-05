@@ -1,12 +1,19 @@
 import pandasdmx as sdmx
 import pandas as pd
-from sfi import Macro
 
-portal = Macro.getGlobal("portal")
-data_raw = Macro.getGlobal("data_raw")
-data_processed = Macro.getGlobal("data_processed")
-date = Macro.getGlobal("date") # Date when the full process is run
-extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+try:
+    from sfi import Macro
+    portal = Macro.getGlobal("portal")
+    data_raw = Macro.getGlobal("data_raw")
+    data_processed = Macro.getGlobal("data_processed")
+    date = Macro.getGlobal("date") # Date when the full process is run
+    extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+
+except:
+    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    data_raw = rf"{portal}\Data\Data_Raw"
+    data_processed = rf"{portal}\Data\Data_Processed"
+    date = "27_jun_2023"
 
 indicators_for_briefs = [
     'MNCH_MLRACT', # Percentage of febrile children (under age 5) who had a finger or heel stick for malaria testing
@@ -65,7 +72,7 @@ indicators_for_briefs = [
     'CME_MRY5T14', #514mort
     'CME_MRY15T24', #1512mort
     ## Caremother
-    'MNCH_PNCNB', #Postnatal care for newborns within 2 days of birth
+    'MNCH_PNCMOM',
     ## Childs on track
     'ECD_CHLD_36-59M_LMPSL', # Proportion of children aged 24-59 months of age who are developmentally on track in health, learning and psychosocial well-being, by sex
     ## Organized learning pre-primary
