@@ -4,8 +4,8 @@
 cls
 set more off
 *----------------------------------Set up---------------------------------*
-global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-// global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+// global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"27_jun_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
@@ -29,7 +29,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Data Portal
 
 ** 01 - Collects indicators via APIs
-// python script "$root\01_API_access.py"
+python script "$root\01_API_access.py"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
 // do "$root\02_clean_data"

@@ -878,16 +878,10 @@ merge m:m wbcode using "$data_processed/informal_employment", nogen keep(3)
 save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	
-import excel using "$data_raw\WB_lp.xls", clear firstrow		
-keep if inlist(name,"se_lpv_prim","se_lpv_prim_fe","se_lpv_prim_ma")
-gen gender = . 
-replace gender = 0 if name=="se_lpv_prim"
-replace gender = 1 if name=="se_lpv_prim_ma"
-replace gender = 2 if name=="se_lpv_prim_fe"			
-rename v_ se_lpv_prim
-rename country wbcode 
-keep wbcode year gender se_lpv_prim
-save "$data_processed/worldbank", replace 	
+wbopendata, indicator(SE.LPV.PRIM) latest long clear
+rename countrycode wbcode se_lpv_prim gender
+keep year wbcode 
+save"$data_processed/learning_poverty", replace 
 
 *------------------------------------UIS-----------------------------------*			
 import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
@@ -933,7 +927,7 @@ merge 1:1 wbcode year gender using "$data_processed\all_unesco", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_ILO", nogen
-merge 1:1 wbcode year gender using "$data_processed\worldbank", nogen
+merge 1:1 wbcode year gender using "$data_processed\learningpoverty", nogen
 merge 1:1 wbcode year gender using "$data_processed/all_uis", nogen
 merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
@@ -948,13 +942,11 @@ save "$data_processed\complete_series", replace
 *---------------------------------dataset----------------------------------*
 
 use "$data_processed\complete_series", clear
-*rename NUTRITION_ANAEMIA_CHILDREN_PREV NUTRITION_ANAEMIA_CHILDREN
 rename * a_*
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
 append using "$data_processed\hci_web"
-*replace code="NUTRITION_ANAEMIA_CHILDREN_PREV" if code=="NUTRITION_ANAEMIA_CHILDREN"
 drop name
 
 save "$data_processed\complete_series_wmetadata", replace
