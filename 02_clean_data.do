@@ -722,10 +722,12 @@ lab var eip_neet_mf_y "Youth NEET (%)"
 save "$data_processed/neet", replace 
 	
 *Labor force participation	
-import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear		
+*FIXME: Cambié la source acá: la data que se estaba importando antes es employment-to-population ratio. Ahora importa labor force participation rate. 
+*import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear		
 rename (time obs_value)(year eap_2wap_mf_a)
 rename *_area wbcode 
-keep if classif1=="AGE_YTHADULT_YGE25"
+*keep if classif1=="AGE_YTHADULT_YGE25"
+keep if classif1.label=="Age (Youth, adults): 25+"
 gen gender = . 
 replace gender = 0 if sex=="SEX_T"
 replace gender = 1 if sex=="SEX_M"
@@ -757,7 +759,8 @@ lab var y_a_unemp "Youth/adult unemployment rate"
 save "$data_processed/unemployment", replace 	
 
 *Labor underutilization
-import delimited using "$data_raw/LUU_2LU4_SEX_AGE_RT_A.csv", clear		
+*import delimited using "$data_raw/LUU_2LU4_SEX_AGE_RT_A.csv", clear	
+import delimited using "$data_raw/LUU_XLU4_SEX_AGE_RT_A.csv", clear		
 rename obs_value luu_2lu4_
 rename *_area wbcode 	
 gen ya = . 
@@ -838,7 +841,8 @@ save "$data_processed/informal_employment", replace
 
 
 *Employment high skill
-import excel "$data_raw\employment_high_skill.xlsx", clear firstrow
+*import excel "$data_raw\employment_high_skill.xlsx", clear firstrow
+import delimited using "$data_raw/EMP_TEMP_SEX_AGE_OCU_NB_A.csv", clear		
 keep if classif1label=="Age (Youth, adults): 15-64"
 gen gender=.
 replace gender=2 if sexlabel=="Sex: Female"
