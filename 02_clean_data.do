@@ -185,6 +185,7 @@ rename _j year
 rename v v_
 reshape wide v_, i(wbcode gender year) j(name) string
 rename v_* *
+destring (lastnm_afr lastnm_probdeath_ncd lastnm_birth_reg sp_dyn_le00_in uiscr2 lastnm_mmrt uiscr1 uisger02 lastnm_sec_ger lastnm_ter_ger), replace
 save "$data_processed/wdi", replace
 
 *HCI
@@ -211,7 +212,7 @@ reshape long y, i(name code wbcode gender n) j(year)
 drop n
 drop code
 reshape wide y, i(wbcode year gender) j(name) string
-rename (yasr yeyrs yhci yhci_lower yhci_upper ynostu yqeyrs ytest) (asr eyrs hci hci_lower hci_upper nostu qeyrs test)
+rename (yasr yeyrs yhci yhci_lower yhci_upper ynostu yqeyrs ytest ypsurv) (asr eyrs hci hci_lower hci_upper nostu qeyrs test psurv)
 save "$data_processed\hci_web", replace
 
 *New indicators: health and education expenditure
@@ -225,7 +226,8 @@ reshape long y, i(name code wbcode n) j(year)
 drop n
 drop if missing(name)
 gen gender = 0
-rename y value
+rename y educ_exp
+keep wbcode year gender educ_exp
 save "$data_processed\educ_exp", replace
 
 import excel "$data_raw\health_expenditure.xlsx", clear firstrow
@@ -238,15 +240,16 @@ reshape long y, i(name code wbcode n) j(year)
 drop n
 drop if missing(name)
 gen gender = 0
-rename y value
+rename y health_exp
+keep wbcode year gender health_exp
 save "$data_processed\health_exp", replace
 
 *--------------------------------all WDI------------------------------*
 use "$data_processed\hci_web", clear
-merge m:m wbcode using "$data_processed\educ_exp", nogen keep(3)
-merge m:m wbcode using "$data_processed\health_exp", nogen keep(3)
-merge m:m wbcode using "$data_processed\wdi", nogen keep(3)
-save "$data_processed\wdi", replace
+merge 1:1 wbcode year gender using "$data_processed\educ_exp", nogen
+merge 1:1 wbcode year gender using "$data_processed\health_exp", nogen
+merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
+save "$data_processed\all_wdi", replace
 
 *---------------------------------------------------------------------*
 *---------------------------------WHO---------------------------------*	
@@ -959,7 +962,7 @@ merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
 merge 1:1 wbcode year gender using "$data_processed\learning_poverty", nogen
 merge 1:1 wbcode year gender using "$data_processed/all_uis", nogen
 merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
-merge 1:m wbcode year gender using "$data_processed\hci_web", nogen
+merge 1:m wbcode year gender using "$data_processed\all_wdi", nogen
 merge m:m wbcode year gender using "$data_processed\all_ILO", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
@@ -977,8 +980,6 @@ rename * a_*
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
-*append using "$data_processed\hci_web"
-}drop name
 
 save "$data_processed\complete_series_wmetadata", replace
 
@@ -989,10 +990,10 @@ from sfi import Macro
 data_raw = Macro.getGlobal("data_raw")
 data_processed = Macro.getGlobal("data_processed")
  
-*complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
-complete_series_wmetadata = pd.read_stata(fr"C:\Users\llohi\Documents\WB\complete_series_wmetadata.dta")
-*names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
-names = pd.read_excel(fr"C:\Users\llohi\Documents\WB\metadata.xlsx")
+complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
+*complete_series_wmetadata = pd.read_stata(fr"C:\Users\llohi\Documents\WB\complete_series_wmetadata.dta")
+names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
+*names = pd.read_excel(fr"C:\Users\llohi\Documents\WB\metadata.xlsx")
 coded_names = names.code.unique()
 variables = pd.Series(complete_series_wmetadata.code.unique())
 assert variables.isin(coded_names).all(), f"There are indicators without metadata: {variables[-variables.isin(coded_names)]}"
