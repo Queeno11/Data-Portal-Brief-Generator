@@ -4,9 +4,9 @@
 cls
 set more off
 *----------------------------------Set up---------------------------------*
-// global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
-global date			  	"27_jun_2023" // Date when the full process is run
+global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+// global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+global date			  	"05_jul_2023" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *----------------------------------Globals---------------------------------*
@@ -36,28 +36,28 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
-// do "$root\03_clean_metadata"
+do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
-// do "$root\04_missing_data"
+do "$root\04_missing_data"
 
 
 ***** Briefs
 
 ** 05 - Create Briefs Dataset
-// do "$root\05_brief_dataset.do"
+do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-// do "$root\06_indicators by country.do"
+do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
 // do "$root\07_graphs - w series.do"
 
 ** 08 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do"
+do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
-// shell Rscript "$root\09_create_Briefs.R" "$root"
+shell Rscript "$root\09_create_Briefs.R" "$root"
 
 ** 10 - Generate the Excels --Datasheet for each country
 // do "$root\10_create_excels.py"

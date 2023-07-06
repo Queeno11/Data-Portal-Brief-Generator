@@ -68,6 +68,7 @@ indicators_for_briefs = [
     'IM_HPV',
     
     ## Child mortality
+    'CME_MRM0', #Neonatal
     'CME_MRY0T4', #04mort
     'CME_MRY5T14', #514mort
     'CME_MRY15T24', #1512mort
