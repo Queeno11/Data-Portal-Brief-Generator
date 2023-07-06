@@ -189,19 +189,29 @@ save "$data_processed/wdi", replace
 
 *HCI
 import excel "$data_raw\hci_web.xlsx", clear firstrow
-rename IndicatorName names
+rename IndicatorName name
 rename IndicatorCode code
 rename CountryCode wbcode
-drop CountryName
-bysort name code wbcode: gen n = _n
-reshape long y, i(name code wbcode n) j(year)
-drop n
-drop if missing(name)
 gen gender = . 
 replace gender = 1 if strpos(name,"Male")
 replace gender = 2 if strpos(name,"Female")
 replace gender = 0 if missing(gender)
-rename y value
+replace name="eyrs" if (code=="HD.HCI.EYRS"|code=="HD.HCI.EYRS.FE"|code=="HD.HCI.EYRS.MA")
+replace name="nostu" if (code=="HD.HCI.STNT"|code=="HD.HCI.STNT.FE"|code=="HD.HCI.STNT.MA")
+replace name="test" if (code=="HD.HCI.HLOS"|code=="HD.HCI.HLOS.FE"|code=="HD.HCI.HLOS.MA")
+replace name="hci" if (code=="HD.HCI.OVRL"|code=="HD.HCI.OVRL.FE"|code=="HD.HCI.OVRL.MA")
+replace name="hci_lower" if (code=="HD.HCI.OVRL.LB"|code=="HD.HCI.OVRL.LB.FE"|code=="HD.HCI.OVRL.LB.MA")
+replace name="hci_upper" if (code=="HD.HCI.OVRL.UB"|code=="HD.HCI.OVRL.UB.FE"|code=="HD.HCI.OVRL.UB.MA")
+replace name="qeyrs" if (code=="HD.HCI.LAYS"|code=="HD.HCI.LAYS.FE"|code=="HD.HCI.LAYS.MA")
+replace name="psurv" if (code=="HD.HCI.MORT"|code=="HD.HCI.MORT.FE"|code=="HD.HCI.MORT.MA")
+replace name="asr" if (code=="HD.HCI.AMRT"|code=="HD.HCI.AMRT.FE"|code=="HD.HCI.AMRT.MA")
+drop CountryName
+bysort name code wbcode: gen n = _n
+reshape long y, i(name code wbcode gender n) j(year)
+drop n
+drop code
+reshape wide y, i(wbcode year gender) j(name) string
+rename (yasr yeyrs yhci yhci_lower yhci_upper ynostu yqeyrs ytest) (asr eyrs hci hci_lower hci_upper nostu qeyrs test)
 save "$data_processed\hci_web", replace
 
 *New indicators: health and education expenditure
@@ -693,6 +703,8 @@ save "$data_processed\UN_population", replace
 import excel "$data_raw\UN_family_planning.xlsx", clear firstrow
 keep if IndicatorName=="Demand for family planning satisfied by any method (Percent)"
 keep if Variant=="Median"
+keep if Category=="All women"
+keep if EstimateMethod=="Interpolation"
 gen gender=.
 replace gender=2 if Sex=="Female"
 replace gender=1 if Sex=="Male"
@@ -708,7 +720,7 @@ save "$data_processed\UN_family_planning", replace
 *---------------------------------all UN-----------------------------------*
 use "$data_processed\UNHCR_Forced_Displacement", clear
 merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
-merge 1:m wbcode year gender using "$data_processed\UN_family_planning", nogen keep(3)
+merge m:1 wbcode year gender using "$data_processed\UN_family_planning", nogen
 save "$data_processed\all_UN", replace
 
 *-----------------------------------------------------------------------*
@@ -881,15 +893,15 @@ destring year, replace
 save "$data_processed\ILO_highskill", replace
 
 *---------------------------------all ILO-----------------------------------*
-use "$data_processed\ILO_highskill"
+use "$data_processed\ILO_highskill", clear
 destring year, replace
-merge m:m wbcode using "$data_processed/neet", nogen keep(3)
-merge m:m wbcode using "$data_processed/laborforce", nogen keep(3)
-merge m:m wbcode using "$data_processed/youthunemp", nogen keep(3)
-merge m:m wbcode using "$data_processed/laborunderut", nogen keep(3)
-merge m:m wbcode using "$data_processed/inactivityrate", nogen keep(3)
-merge m:m wbcode using "$data_processed/potential_labor", nogen keep(3)
-merge m:m wbcode using "$data_processed/informal_employment", nogen keep(3)
+merge 1:1 wbcode year gender using "$data_processed/neet", nogen
+merge m:m wbcode year gender using "$data_processed/laborforce", nogen
+merge m:m wbcode year gender using "$data_processed/youthunemp", nogen
+merge m:m wbcode year gender using "$data_processed/laborunderut", nogen
+merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen
+merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
+merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	
@@ -917,6 +929,7 @@ keep wbcode uis year indic
 reshape wide uis, i(wbcode year) j(indic) string
 gen gender = 0
 merge m:m wbcode using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
+drop UNESCO_code UNESCO_countryname wbcountryname
 save "$data_processed/all_uis", replace 
 
 *------------------------ Utilization of HC (UHCI) ------------------------------*
@@ -936,17 +949,18 @@ save "$data_processed\UHCI", replace
 
 *--------------------------------Merge all---------------------------------*
 
-use "$data_processed\comp_series", clear // FIXME: ¿De donde sale este DTA? No es reproducible porque me falta lo que genera este archivo
-drop vacbcg	vachepbb // Ya están en UNICEF API
-merge 1:1 wbcode year gender using "$data_processed\all_unicef", nogen
+*use "$data_processed\comp_series", clear // FIXME: ¿De donde sale este DTA? No es reproducible porque me falta lo que genera este archivo
+*drop vacbcg	vachepbb // Ya están en UNICEF API
+use "$data_processed\all_unicef", clear
 merge 1:1 wbcode year gender using "$data_processed\all_who", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_unesco", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
 merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
-merge 1:1 wbcode year gender using "$data_processed\all_ILO", nogen
-merge 1:1 wbcode year gender using "$data_processed\learningpoverty", nogen
+merge 1:1 wbcode year gender using "$data_processed\learning_poverty", nogen
 merge 1:1 wbcode year gender using "$data_processed/all_uis", nogen
 merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
+merge 1:m wbcode year gender using "$data_processed\hci_web", nogen
+merge m:m wbcode year gender using "$data_processed\all_ILO", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
 lab var wbcode "WB country code"
@@ -963,8 +977,8 @@ rename * a_*
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
-append using "$data_processed\hci_web"
-drop name
+*append using "$data_processed\hci_web"
+}drop name
 
 save "$data_processed\complete_series_wmetadata", replace
 
@@ -975,8 +989,10 @@ from sfi import Macro
 data_raw = Macro.getGlobal("data_raw")
 data_processed = Macro.getGlobal("data_processed")
  
-complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
-names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
+*complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
+complete_series_wmetadata = pd.read_stata(fr"C:\Users\llohi\Documents\WB\complete_series_wmetadata.dta")
+*names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
+names = pd.read_excel(fr"C:\Users\llohi\Documents\WB\metadata.xlsx")
 coded_names = names.code.unique()
 variables = pd.Series(complete_series_wmetadata.code.unique())
 assert variables.isin(coded_names).all(), f"There are indicators without metadata: {variables[-variables.isin(coded_names)]}"
