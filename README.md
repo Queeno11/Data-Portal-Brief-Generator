@@ -78,7 +78,7 @@ Dominique Pizzie
 [@DomPizzie](https://twitter.com/dompizzie) -->
 
 ## Version History
-* 0.5. *jul-7-23*
+* 1.0. *jul-7-23*
     * New! Generation of the excels with data that accompanies the briefs in the webpage.
     * Improved metadata to correctly display in both Excels and Briefs:
       * Fixed metadata issues regarding indicator codes, now all the original codes are correct.
@@ -89,12 +89,6 @@ Dominique Pizzie
     * Fixed design issues of the graph's legends.
     * Rscript run made simpler. Refactor of some part of the code and added loading bar.
     * Python scripts now can be run both from Stata and shell.  
-    * **Remaining tasks**:
-      * Fix texts...
-      * Check for desing issues.
-      * Add HCI Datasheets to HCCI Datasheets (are they the same as last year?)
-      * Check if Latex to word works or if we need to rewrite the RMarkdown to work with word.
-      * ...
 * 0.4. *jun-30-23*
     * Improved text generation algorithm.
     * comp_series database fully integrated with pipeline. Those datasets are now up to date.
