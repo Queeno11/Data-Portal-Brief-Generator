@@ -78,7 +78,8 @@ indicators_for_briefs = [
     'ECD_CHLD_36-59M_LMPSL', # Proportion of children aged 24-59 months of age who are developmentally on track in health, learning and psychosocial well-being, by sex
     ## Organized learning pre-primary
     'C040202',
-    ## Stilbirth
+    ## Stilbirth rate
+    'CME_SBR',
     ######
     ## WASH
     'WS_PPL_W-ALB', #  "Basic water in household"
