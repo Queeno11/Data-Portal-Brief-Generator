@@ -882,7 +882,7 @@ rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
 
-save "$data_processed\complete_series_wmetadata_$date$extra", replace
+save "$data_processed\complete_series_nometadata_$date$extra", replace
 
 python:
 import pandas as pd
@@ -893,7 +893,7 @@ extra = Macro.getGlobal("extra")
 data_raw = Macro.getGlobal("data_raw")
 data_processed = Macro.getGlobal("data_processed")
  
-complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata_{date}{extra}.dta")
+complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_nometadata_{date}{extra}.dta")
 names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
 coded_names = names.code.str.replace(".","_").str.lower().unique()
 variables = pd.Series(complete_series_wmetadata.code.str.replace(".","_").str.lower().unique())

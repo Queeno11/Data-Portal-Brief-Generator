@@ -11,7 +11,7 @@
 	clear all
 	set more off	
 	set maxvar 32000
-	use "$data_output\complete_series_wmd_${date}", replace
+	use "$data_output\complete_series_wmd_${date}${extra}", replace
 	
 	gen year2 = year if value!=.
 	bysort wbcode wbcountryname code gender: egen myear = max(year2)

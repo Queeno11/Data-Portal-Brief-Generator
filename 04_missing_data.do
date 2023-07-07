@@ -7,7 +7,7 @@
 	****************************************************************************
 	
 	*----------------------------------last 5----------------------------------*
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017)
 	
@@ -43,7 +43,7 @@
 	
 	*----------------------------------last 10---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012)
 	
@@ -79,7 +79,7 @@
 	
 	*--------------------------------all years---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	
 	preserve
@@ -144,9 +144,9 @@
 	*----------------------------------last 5----------------------------------*
 	/*
 	import excel "$data_output\complete_series_wmd_${date}.xlsx", firstrow clear
-	save "$data_output\complete_series_wmd_${date}", replace
+	save "$data_output\complete_series_wmd_${date}${extra}", replace
 	*/
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017)
 	
@@ -182,7 +182,7 @@
 	
 	*----------------------------------last 10---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012)
 	
@@ -218,7 +218,7 @@
 	
 	*--------------------------------all years---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}", clear
+	use "$data_output\complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	
 	preserve

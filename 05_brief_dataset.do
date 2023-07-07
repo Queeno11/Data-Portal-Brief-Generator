@@ -8,7 +8,7 @@
 	clear all
 	set more off
 	set maxvar 32000
-	use "$data_output\complete_series_wmd_${date}", replace
+	use "$data_output\complete_series_wmd_${date}${extra}", replace
 	drop name description units scale update timespan minyear maxyear data source download_link note 
 
 *--------------------------------keep years--------------------------------*
