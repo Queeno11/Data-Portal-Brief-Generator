@@ -17,6 +17,7 @@ The 'Data_Raw' directory contains the downloaded data required to run all the co
 
 * Stata 17 or higher
   * [WBOpenData](https://github.com/jpazvd/wbopendata) --install via **ssc install wbopendata**
+  * [blindschemes] ( https://danbischof.com/2015/02/04/stata-figure-schemes/) --install via **ssc install blindschemes**
 * Python 3.1 or higher
   * Pandas  1.4.1 or higher
   * [Pandasdmx 1.0 or higher](https://pandasdmx.readthedocs.io/en/v1.0/)
