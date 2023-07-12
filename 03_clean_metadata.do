@@ -11,13 +11,9 @@ save "$data_processed\metadata_processed", replace
 use "$data_processed\complete_series_nometadata_$date$extra", clear
 
 ** Add names
-<<<<<<< Updated upstream
 replace code = lower(subinstr(code, ".", "_", .)) 
-merge m:1 code using "$data_processed\metadata_processed"
-=======
 rename code name_portal
 merge m:m name_portal using "$data_processed\metadata_processed"
->>>>>>> Stashed changes
 count if _merge==1
 assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
 *	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.

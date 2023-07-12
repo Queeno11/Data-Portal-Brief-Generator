@@ -105,7 +105,7 @@ Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params
 \end{table}
 
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("Briefs/Graphs_legend_top/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
+gr2 <- paste0("Briefs/Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
 knitr::include_graphics(gr2)
 ```
 
@@ -159,7 +159,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Briefs/Graphs_legend_top/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
+gr3 <- paste0("Briefs/Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
 knitr::include_graphics(gr3)
 ```
 
