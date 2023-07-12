@@ -282,37 +282,38 @@ foreach ctry in `wb_country_codes' {
 			capture gen `x'`m'_start_text = ""
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
+			*DROP TIME TEXT (Yanel - July 10th, 2023)
 			** Generate time text:
-			if `m'==1 {
-				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
-				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
-				capture gen `x'`m'_time_text = ""
-				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
-				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
-				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
-				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
-			if `m'==2 {
-				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
-				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
-				capture gen `x'`m'_time_text = ""
-				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
-				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
-				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
-				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
-			if `m'==3 {
-				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
-				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
-				capture gen `x'`m'_time_text = ""
-				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
-				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
-				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
-				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
+// 			if `m'==1 {
+// 				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
+// 				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
+// 				capture gen `x'`m'_time_text = ""
+// 				replace `x'`m'_time_text = ///
+// 				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
+// 				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
+// 				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
+// 				""))) if `indicator'!=. & wbcode=="`ctry'"
+// 			}
+// 			if `m'==2 {
+// 				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
+// 				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
+// 				capture gen `x'`m'_time_text = ""
+// 				replace `x'`m'_time_text = ///
+// 				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
+// 				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
+// 				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
+// 				""))) if `indicator'!=. & wbcode=="`ctry'"
+// 			}
+// 			if `m'==3 {
+// 				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
+// 				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
+// 				capture gen `x'`m'_time_text = ""
+// 				replace `x'`m'_time_text = ///
+// 				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
+// 				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
+// 				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
+// 				""))) if `indicator'!=. & wbcode=="`ctry'"
+// 			}
 
 			** Generate region and income text:
 			if mod(`i',2)==1 { // If i is odd
@@ -372,14 +373,16 @@ foreach ctry in `wb_country_codes' {
 			** Generate final text
 			capture gen `x'`m'_text = ""
 			* Full text when all data is there
-			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
-			* No time text when previous data is not available
+// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
+// 				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+ 				if `indicator'!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* No time text when previous data is not available
+// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
+// 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* No regional/income text when regional data is not available
-			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
-				if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+			*replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
+				*if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
 				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
@@ -396,7 +399,8 @@ foreach ctry in `wb_country_codes' {
 	}
 }
 
-drop *_start_text *_time_text  *_reginc_text 
+*drop *_start_text *_time_text  *_reginc_text 
+drop *_start_text *_reginc_text 
 display "Text correctly generated!"
 
 *-----------------Round values in hci variables for tables-----------------* 
@@ -447,6 +451,11 @@ replace hci_t = hci_t/100
 gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
+
+*Gen variable for hci and uhci comparison:
+gen compare_uhci="more than half" if uhci>50
+replace compare_uhci="less than half" if uhci<50
+replace compare_uhci="half" if uhci==50
 
 save "$data_output\ordered_text", replace
 exit
