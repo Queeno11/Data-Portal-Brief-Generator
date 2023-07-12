@@ -172,15 +172,14 @@ save "$data_processed/wdi", replace
 
 ****HCI
 import excel "$data_raw\hci_web.xlsx", clear firstrow
-rename IndicatorName names
+rename IndicatorName name
 rename IndicatorCode code
 rename CountryCode wbcode
 drop CountryName
 bysort name code wbcode: gen n = _n
 reshape long y, i(name code wbcode n) j(year)
-drop n names
+drop n name
 drop if missing(code)
-
 * Replace gender if it ends with .MA or .FE
 gen gender = 0
 replace gender = 1 if substr(code, -3, 3) == ".MA"
@@ -240,6 +239,8 @@ drop if missing(name)
 gen gender = 0
 rename y outschool_rate
 keep wbcode year gender outschool_rate
+drop if missing(wbcode)
+destring outschool_rate, replace
 save "$data_processed\outschool", replace
 
 *--------------------------------all WDI------------------------------*
@@ -248,7 +249,6 @@ merge 1:1 wbcode year gender using "$data_processed\educ_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\health_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
 merge 1:m wbcode year gender using "$data_processed\outschool", nogen
-
 save "$data_processed\all_wdi", replace
 
 *---------------------------------------------------------------------*
@@ -379,6 +379,8 @@ save "$data_processed\who_insbirths", replace
 use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_countryname using "$data_processed\who_insbirths", nogen keep(3)
 keep wbcode insbirths gender year
+drop if length(insbirths)>4
+destring insbirths, replace
 save "$data_processed\who_insbirths", replace
 
 *--------------------------------all WHO---------------------------------*
@@ -722,6 +724,8 @@ save "$data_processed\UN_forced_disp_rates", replace
 import excel "$data_raw\UN_family_planning.xlsx", clear firstrow
 keep if IndicatorName=="Demand for family planning satisfied by any method (Percent)"
 keep if Variant=="Median"
+keep if Category=="All women"
+keep if EstimateMethod=="Interpolation"
 gen gender=.
 replace gender=2 if Sex=="Female"
 replace gender=1 if Sex=="Male"
@@ -911,12 +915,13 @@ save "$data_processed\ILO_highskill", replace
 *---------------------------------all ILO-----------------------------------*
 use "$data_processed\ILO_highskill", clear
 destring year, replace
-merge m:m wbcode year gender using "$data_processed/neet", nogen keep(3)
-merge m:m wbcode year gender using "$data_processed/laborforce", nogen keep(3)
-merge m:m wbcode year gender using "$data_processed/laborunderut", nogen keep(3)
-merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen keep(3)
-merge m:m wbcode year gender using "$data_processed/potential_labor", nogen keep(3)
-merge m:m wbcode year gender using "$data_processed/informal_employment", nogen keep(3)
+merge 1:1 wbcode year gender using "$data_processed/neet", nogen
+merge m:m wbcode year gender using "$data_processed/laborforce", nogen
+merge m:m wbcode year gender using "$data_processed/youthunemp", nogen
+merge m:m wbcode year gender using "$data_processed/laborunderut", nogen
+merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen
+merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
+merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	

@@ -30,10 +30,10 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Data Portal
 
 ** 01 - Collects indicators via APIs
-python script "$root\01_API_access.py"
+// python script "$root\01_API_access.py"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
-// do "$root\02_clean_data"
+do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
 // do "$root\03_clean_metadata"
@@ -60,4 +60,4 @@ python script "$root\01_API_access.py"
 // shell Rscript "$root\09_create_Briefs.R" "$root"
 
 ** 10 - Generate the Excels --Datasheet for each country
-do "$root\10_create_excels.py"
+// do "$root\10_create_excels.py"
