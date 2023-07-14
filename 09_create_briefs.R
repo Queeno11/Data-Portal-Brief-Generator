@@ -59,13 +59,14 @@ for (i in 1:length(countrynamet)) {
     # Move the file
     file.rename(log_filename, destination_path)
     
-    ## Copy the EPS graphs to the PDF folder
-    eps_filename <- paste0("p2_", wbcode, "_stages.eps")
-    eps_path <- paste0("Graphs/", eps_filename)
-    destination_path <- file.path(output_folder, eps_filename)
+    # ## Copy the EPS graphs to the PDF folder
+    # eps_filename <- paste0("p2_", wbcode, "_stages.eps")
+    # eps_path <- paste0("Graphs/", eps_filename)
+    # destination_path <- file.path(output_folder, eps_filename)
     
-    # Copy the file
-    file.copy(eps_path, destination_path)
+    # # Copy the file
+    # file.copy(eps_path, destination_path)
+
     
   setTxtProgressBar(pb,i)
   

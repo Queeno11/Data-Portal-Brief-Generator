@@ -13,7 +13,8 @@ try:
     extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
     data_output = rf"{portal}\Data\Data_Output"
@@ -55,6 +56,16 @@ sources = sources.reset_index(drop=True)
 print("Data loaded succesfully")
 
 ###### EXCEL GENERATOR ######
+
+def drop_rows_until_not_nan(df):
+    first_valid_row = df.first_valid_index()
+    if first_valid_row is None:
+        return pd.DataFrame()
+
+    idx = df.index.get_loc(first_valid_row)
+    df = df.iloc[idx:]
+    return df.dropna(how='all')
+
 # Array of countries: array of tuples (wbcode, countryname)
 country_array = df[['wbcode', 'wbcountryname']].drop_duplicates().values
 
@@ -71,6 +82,7 @@ for wbcode, countryname in tqdm(country_array):
         hcci = country_df.pivot(index="year", columns="name", values="value")
         # Format to strings
         hcci = hcci.dropna(how="all", axis=1)
+        hcci = drop_rows_until_not_nan(hcci)
         hcci = hcci.round(1)
         hcci = hcci.fillna("-")
         hcci_dfs[gender] = hcci.reset_index()
@@ -79,7 +91,6 @@ for wbcode, countryname in tqdm(country_array):
     hcci_dfs['Sources'] = sources
     
     # Note: The only sheet that is not in the dictionary is the "Graphs" one, that we add at the end
-    
     ## Write the excels and format them ##
     with pd.ExcelWriter(rf"{excels}/HCI_Data_July_2023_{wbcode}.xlsx", engine='xlsxwriter') as writer:  
     
@@ -147,6 +158,9 @@ for wbcode, countryname in tqdm(country_array):
             startrow = 6
             startcol = 1
             to_excel = hcci_dfs[sheetname]
+            if to_excel.empty:
+                print(f"\nEmpty dataframe for '{sheetname}' in {countryname}")
+                continue # If the dataframe is empty, skip it and do not create the sheet
             to_excel.to_excel(writer, sheet_name=sheetname, startrow=startrow, startcol=startcol, index=False)
             
             # Params
