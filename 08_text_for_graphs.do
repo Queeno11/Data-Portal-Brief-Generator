@@ -238,7 +238,13 @@ levelsof wbcode, local(wb_country_codes)
 display "Generating texts, please wait..."
 foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
+
 		local i = 1 // Counter for texts
+		local time_improved = 0 // Counter for number of indicators that improved
+		local time_worsened = 0 // Counter for number of indicators that worsened
+		local time_no_change = 0 // Counter for number of indicators that did not change
+		local time_no_data = 0 // Counter for number of indicators with no data
+		
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
 			gen selected = 1 if wbcode=="`ctry'"
@@ -258,9 +264,10 @@ foreach ctry in `wb_country_codes' {
 			local inc_avg = strofreal(round(`indicator'_inc,1))
 
 			* Time locals
-			local lower_than_prev = (round(`indicator')<round(`indicator'_prev))
+			local lower_than_prev = (round(`indicator')<round(`indicator'_prev) & `indicator'_prev!=.)
 			local higher_than_prev = (round(`indicator')>round(`indicator'_prev))
 			local similar_than_prev = (round(`indicator')==round(`indicator'_prev))
+			local missing_time = (`indicator'_prev==.) 
 
 			* Comparisons with regional and income group averages locals
 			local lower_than_regional = (round(`indicator')<round(`indicator'_reg))
@@ -378,29 +385,38 @@ foreach ctry in `wb_country_codes' {
 			** Generate final text
 			capture gen `x'`m'_text = ""
 			* Full text when all data is there
-// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
-// 				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
- 				if `indicator'!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
-			* No time text when previous data is not available
-// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-// 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+ 				if `indicator'!=. & (`indicator'_reg!=. & `indicator'_inc!=.) & wbcode=="`ctry'"
 			* No regional/income text when regional data is not available
-			*replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
-				*if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
-			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
-				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
-			* No local text when local data is not available
-			replace `x'`m'_text = "`no_data_text'"  ///
-				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+				if `indicator'!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 			* Only no_data_text when no data is available
 			replace `x'`m'_text = "`no_data_text'"  ///
 				if `indicator'==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 
-			* increase counter
+			* increase counters
+			if lower_than_prev==1  local time_improved = `time_improved' + 1
+			if higher_than_prev==1 local time_worsened = `time_worsened' + 1
+			if similar_to_prev==1  local time_similar  = `time_similar' + 1
+			if missing_time==1     local time_no_data  = `time_no_data' + 1
 			local i = `i' + 1
 		}
+	}
+	
+	** Generate text for time comparison of all indicators
+	assert `lower_than_prev' + `higher_than_prev' + `similar_to_prev' + `missing_time' == 12
+	local time_comp_data = `lower_than_prev' + `higher_than_prev' + `similar_to_prev'
+	local has_improved = `time_improved' > 0
+	local has_worsened = `time_worsened' > 0
+	capture gen hcci_timecomp_text = ""
+	if `has_improved'==1 & `has_worsened'==1 {
+		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years, while `has_worsened' have experienced a decline." if wbcode=="`ctry'"
+	}
+	if `has_improved''==1 & `has_worsened'==0 {
+		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years." if wbcode=="`ctry'"	}
+	}
+	if `has_improved''==0 & `has_worsened'==1 {
+		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_worsened' have declined over the past approximately 5 years." if wbcode=="`ctry'"
 	}
 }
 

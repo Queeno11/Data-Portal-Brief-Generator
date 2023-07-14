@@ -118,7 +118,7 @@ knitr::include_graphics(gr2)
 
 \vspace{3mm} 
 
-Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.**
+Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.** *`r x[which(x$wbcountryname == params$countrynamet),"hcci_timecomp_text"]`*
 
 \vspace{1mm}
 
