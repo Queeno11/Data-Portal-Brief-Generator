@@ -10,7 +10,12 @@
 	2 - add text for new indicators
 	3 - add text for previous 5 (approx) years
 	*/
-	
+
+*Chequeamos todas las variables en seleccionadas para los briefs tengan su correpondiente texto:
+// use "$data_output\complete_series_wmd_${date}${extra}", clear
+// merge m:1 name_portal using "$data_processed\briefs_texts", nogen
+// count if (rank!=. & rank!=0 & missing(start_text))
+// assert r(N)==0
 
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
@@ -284,36 +289,36 @@ foreach ctry in `wb_country_codes' {
 
 			*DROP TIME TEXT (Yanel - July 10th, 2023)
 			** Generate time text:
-// 			if `m'==1 {
-// 				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
-// 				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
-// 				capture gen `x'`m'_time_text = ""
-// 				replace `x'`m'_time_text = ///
-// 				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
-// 				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
-// 				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
-// 				""))) if `indicator'!=. & wbcode=="`ctry'"
-// 			}
-// 			if `m'==2 {
-// 				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
-// 				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
-// 				capture gen `x'`m'_time_text = ""
-// 				replace `x'`m'_time_text = ///
-// 				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
-// 				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
-// 				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
-// 				""))) if `indicator'!=. & wbcode=="`ctry'"
-// 			}
-// 			if `m'==3 {
-// 				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
-// 				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
-// 				capture gen `x'`m'_time_text = ""
-// 				replace `x'`m'_time_text = ///
-// 				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
-// 				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
-// 				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
-// 				""))) if `indicator'!=. & wbcode=="`ctry'"
-// 			}
+			if `m'==1 {
+				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
+				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
+				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
+				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
+			if `m'==2 {
+				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
+				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
+				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
+				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
+			if `m'==3 {
+				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
+				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
+				capture gen `x'`m'_time_text = ""
+				replace `x'`m'_time_text = ///
+				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
+				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
+				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
+			}
 
 			** Generate region and income text:
 			if mod(`i',2)==1 { // If i is odd

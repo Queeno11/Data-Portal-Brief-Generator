@@ -92,7 +92,7 @@
 
 	*------------------------Labels, info & rank---------------------------*
 	
-	merge m:1 wbcode name using "$data_processed\metadata_briefs", keep(1 3) nogen
+	merge m:m wbcode name using "$data_processed\metadata_briefs", keep(1 3) nogen
 	gen category = 1 if stage_life=="Prenatal and Early Childhood"
 	replace category = 2 if stage_life=="School-aged Children"
 	replace category = 3 if stage_life=="Youth"

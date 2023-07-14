@@ -13,12 +13,12 @@ try:
     extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
     data_output = rf"{portal}\Data\Data_Output"
     excels = rf"{portal}\Datasheets"
-    date = "27_jun_2023"
+    date = "05_jul_2023"
     
 ###### Read complete_series ######
 print("Loading data, this may take a while...")
