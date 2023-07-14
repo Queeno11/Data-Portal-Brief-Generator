@@ -237,10 +237,10 @@ reshape long y, i(name code wbcode n) j(year)
 drop n
 drop if missing(name)
 gen gender = 0
-rename y outschool_rate
-keep wbcode year gender outschool_rate
+rename y SE_PRM_UNER_ZS
+keep wbcode year gender SE_PRM_UNER_ZS
 drop if missing(wbcode)
-destring outschool_rate, replace
+destring SE_PRM_UNER_ZS, replace
 save "$data_processed\outschool", replace
 
 *--------------------------------all WDI------------------------------*
@@ -373,14 +373,14 @@ save "$data_processed\who_pneumonia_cs", replace
 *who_institutional_births
 import delimited "$data_raw\who_insbirths.csv", clear
 rename countriesterritoriesandareas WHO_countryname
-rename institutionalbirthsbirthtakenpla insbirths
+rename institutionalbirthsbirthtakenpla SRHINSTITUTIONALBIRTH
 gen gender=0
 save "$data_processed\who_insbirths", replace
 use "$data_processed\Country codes\wbcodes_equiv_who", clear
 merge 1:m WHO_countryname using "$data_processed\who_insbirths", nogen keep(3)
-keep wbcode insbirths gender year
-drop if length(insbirths)>4
-destring insbirths, replace
+keep wbcode SRHINSTITUTIONALBIRTH gender year
+drop if length(SRHINSTITUTIONALBIRTH)>4
+destring SRHINSTITUTIONALBIRTH, replace
 save "$data_processed\who_insbirths", replace
 
 *--------------------------------all WHO---------------------------------*
@@ -608,11 +608,9 @@ lab var v21049 "Prevalence of low birthweight (%)"
 drop if FlagDescription=="Missing value"
 destring v21049, replace
 destring year, replace
-rename v21049 fao_stunting
+/* rename v21049 fao_stunting */
 drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-save "$data_processed\FAO_lowbirthweight",replace
-use "$data_processed\Country codes\wbcodes_equiv_FAO"
-merge m:m FAO_countryname using "$data_processed\FAO_lowbirthweight", nogen keep(3)
+merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
 drop FAO_countryname wbcountryname FAO_code
 save "$data_processed\FAO_lowbirthweight",replace
 
@@ -631,11 +629,9 @@ lab var v210041 "Prevalence of undernourishment (%) (3-year average, last year)"
 drop if FlagDescription=="Missing value"
 destring v210041, replace
 destring year, replace
-rename v210041 fao_undern
+// rename v210041 fao_undern
 drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-save "$data_processed\FAO_undernourishment",replace
-use "$data_processed\Country codes\wbcodes_equiv_FAO"
-merge m:m FAO_countryname using "$data_processed\FAO_undernourishment", nogen keep(3)
+merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
 drop FAO_countryname wbcountryname FAO_code
 save "$data_processed\FAO_undernourishment",replace
 
@@ -653,11 +649,9 @@ lab var v21026 "Prevalence of children (<5y) affected by wasting, %"
 drop if FlagDescription=="Missing value"
 destring v21026, replace
 destring year, replace
-rename v21026 fao_wasting
+/* rename v21026 fao_wasting */
 drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-save "$data_processed\FAO_wasting",replace
-use "$data_processed\Country codes\wbcodes_equiv_FAO"
-merge m:m FAO_countryname using "$data_processed\FAO_wasting", nogen keep(3)
+merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
 drop FAO_countryname wbcountryname FAO_code
 save "$data_processed\FAO_wasting",replace
 	
@@ -794,10 +788,10 @@ rename time year
 keep wbcode year gender une_2eap_ ya
 reshape wide une_2eap_, i(wbcode gender year) j(ya)
 rename (une_2eap_1 une_2eap_2)(une_2eap_mf_y une_2eap_mf_a)
-gen y_a_unemp=une_2eap_mf_y/une_2eap_mf_a
+gen youth_adult_un = une_2eap_mf_y/une_2eap_mf_a
 lab var une_2eap_mf_y "Youth unemployment (%)"
 lab var une_2eap_mf_a "Adult unemployment (%)"
-lab var y_a_unemp "Youth/adult unemployment rate"
+lab var youth_adult_un "Youth/adult unemployment rate"
 save "$data_processed/unemployment", replace 	
 
 *Labor underutilization
@@ -917,7 +911,7 @@ use "$data_processed\ILO_highskill", clear
 destring year, replace
 merge 1:1 wbcode year gender using "$data_processed/neet", nogen
 merge m:m wbcode year gender using "$data_processed/laborforce", nogen
-merge m:m wbcode year gender using "$data_processed/youthunemp", nogen
+merge m:m wbcode year gender using "$data_processed/unemployment", nogen
 merge m:m wbcode year gender using "$data_processed/laborunderut", nogen
 merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen
 merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
@@ -1004,10 +998,6 @@ complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_no
 names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
 coded_names = names.code.str.replace(".","_").str.lower().unique()
 variables = pd.Series(complete_series_wmetadata.code.str.replace(".","_").str.lower().unique())
-complete_series_wmetadata = pd.read_stata(fr"{data_processed}\complete_series_wmetadata.dta")
-names = pd.read_excel(fr"{data_raw}\Country codes & metadata\metadata.xlsx")
-coded_names = names.code.unique()
-variables = pd.Series(complete_series_wmetadata.code.unique())
 assert variables.isin(coded_names).all(), f"There are indicators without metadata: {variables[-variables.isin(coded_names)]}"
 print("####################")
 print("All indicators have the respective metadata")
