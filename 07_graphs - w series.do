@@ -59,6 +59,7 @@ gen onesvec=1
 *--------------------------Locals for page 1--------------------------*
 
 levelsof wbcode, local(wb_country_codes) 
+local wbcountrycodes
 foreach c in `wb_country_codes' {
 	* Note: if you change the number of indicators (for example, add c9) you also need to:
 	*	1) Add the label on lc9
@@ -84,24 +85,34 @@ foreach c in `wb_country_codes' {
 	
 	}
 	
+	
 *----------------------------Loop on countries-----------------------------*
+
+*--------------------------Loop on countries---------------------------*
 
 /* Loop with all countries */
 foreach i of local obs {
-	/* capture { */
-	/* Unmute to run only one or some countries */
-	/* if (wbcode[`i'] != "GUM") continue  */
-	
+	 *capture { */
+	 *Unmute to run only one or some countries /
+	 *if (wbcode[`i'] != "MAR") continue  */
+	*Unmute if the code suddenly stop to avoid generating all again*
+	local ct=wbcode[`i']
+	local graph_file "$charts\p1_`ct'_all.pdf"
+	capture confirm file "`graph_file'"
+	if (_rc == 601 ) continue
+
 	local ctry=wbcode in `i'
 	local region=wbregion in `i'
 	local income=wbincomegroup in `i'
 	local income2=incomegroup in `i'
 	local country=wbcountryname in `i'	
 	display "`country'"
+		
+		
 	*------------------------------First page------------------------------*
 	
 	/* With available data - automatic */
-
+//
 	forvalues m = 1(1)`nc' {
 	
 		display "obs_`c`m'_`ctry'' c`m'_`ctry'"
@@ -135,7 +146,6 @@ foreach i of local obs {
 			graph save "$charts\graph_`ctry'_c`m'.gph", replace
 		}
 		else {
-			stop
 			* If we dont have data, then plot only regional data
 			qui su `c`m'_`ctry'', d
 			scalar m1`c`m'_`ctry'' = `=scalar(r(max))'
@@ -179,22 +189,23 @@ foreach i of local obs {
 	*/
 	
 	twoway /// 
-	(scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
-	(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
-	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
-	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
-	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(11pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
-	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(11pt) mlabgap(12pt)), ///
-	graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(12pt) linegap(1.7) justification(left)) 		
+	(scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
+	(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
+	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
+	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
+	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
+	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(8pt) mlabgap(8pt)), ///
+	graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(10pt) linegap(1.7) justification(left)) 		
 	graph save "$charts\notes_`ctry'.gph", replace	
 	*graph export "$charts\notes_`ctry'.eps", replace
 	
 	drop m 
 
-	graph combine "$charts\notes_`ctry'.gph" "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(margin(vsmall) fcolor(black)) 
+	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph" "$charts\notes_`ctry'.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
-	
+	graph export "$charts\p1_`ctry'_all.jpg", replace width(1600)
+
 	erase "$charts\graph_`ctry'_c1.gph"
 	erase "$charts\graph_`ctry'_c2.gph"
 	erase "$charts\graph_`ctry'_c3.gph"
@@ -260,10 +271,11 @@ foreach i of local obs {
 	graph combine "$charts\graph_`ctry'_b1.gph" "$charts\graph_`ctry'_b2.gph" "$charts\graph_`ctry'_b3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Adults & Elderly", suffix color(black) size(vlarge) linegap(3) pos(11) span)
 	graph save "$charts\stage_4.gph", replace	
 	
-	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(margin(vsmall) fcolor(black))
+	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	graph export "$charts\p2_`ctry'_stages.pdf", replace
 	graph export "$charts\p2_`ctry'_stages.eps", replace
-	
+	graph export "$charts\p2_`ctry'_stages.jpg", replace width(1600)
+
 	erase "$charts\graph_`ctry'_l1.gph"
 	erase "$charts\graph_`ctry'_l2.gph"
 	erase "$charts\graph_`ctry'_l3.gph"		
@@ -280,7 +292,8 @@ foreach i of local obs {
 	erase "$charts\stage_1.gph" 
 	erase "$charts\stage_2.gph" 
 	erase "$charts\stage_3.gph"
-	erase "$charts\stage_4.gph"
-
+	erase "$charts\stage_4.gph"	
 }
+
+
 /* }	 */

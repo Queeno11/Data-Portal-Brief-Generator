@@ -85,12 +85,12 @@ This 2-page brief provides the 2020 Human Capital Index (HCI) released in Septem
 
 ### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
 
-* **Placeholder text.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+* **U-HCI** The returns on human capital are realized when individuals predominantly utilize that capital through work. Consequently, we introduce a utilization-adjusted Human Capital Index (UHCI) that accounts for underutilization of human capital in the labor market by taking into account the proportion of the employed working-age population. In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r x[which(x$wbcountryname == params$countrynamet), "uhci_table_t"]`. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
 
 \vspace{-1mm}
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
-\begin{tabular}{m{0.305\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}>{\centering\arraybackslash}m{0.053\textwidth}}
+\begin{tabular}{m{0.3\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
 \\\textbf{     }   &    &             &  \\ \hline
                          &      &              & \\
 \textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline

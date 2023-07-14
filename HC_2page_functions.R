@@ -1,9 +1,8 @@
 #install.packages('haven')
 rm(list = ls())
 library(haven)
-setwd('D:/Laboral/World Bank/Data-Portal-Brief-Generator')
-x <- read_dta('D:/Laboral/World Bank/Data-Portal-Brief-Generator/Data/Data_Output/ordered_text.dta')
 
+x <- read_dta('Data/Data_Output/ordered_text.dta')
 
 #----------------------------------------------------------
 #   Subfunctions

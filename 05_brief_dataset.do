@@ -8,9 +8,12 @@
 	clear all
 	set more off
 	set maxvar 32000
-	use "$data_output\complete_series_wmd_${date}", replace
-	drop name description units scale update timespan minyear maxyear data source download_link note 
-
+	use "$data_output\complete_series_wmd_${date}${extra}", replace
+	drop name description units scale update timespan minyear maxyear data source download_link note
+	replace code="netenr_ls" if code=="netenrolment_lowersec"
+	*FIXME
+// 	replace gender=0 if code=="se_lpv_prim"
+	drop if missing(gender)
 *--------------------------------keep years--------------------------------*
 
 	/* Me quedo con último año disponible */
@@ -44,11 +47,16 @@
 	drop myear year2 ok* year_* prevyear
 
 	/* Elimino indicadores que no van en los briefs */
+	replace rank=0 if code=="eyrs"
+	replace rank=0 if code=="qeyrs"
+	replace rank=0 if code=="test"
 	keep if rank != .
 	keep if stage_life != ""
 	keep if topic != ""
 	drop topic stage_life rank
 	
+	*FIXME
+// 	drop if (code=="se_lpv_prim" & missing(value))
 	/* Hago el reshape para que quede en variables separadas y así poder usar los mismos locals del do file de gráficos */
 	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)
 	collapse (max) year0 value0 year1 value1, by(wbcode wbcountryname wbregion wbincome gender code)
@@ -67,7 +75,8 @@
 		
 	/* Hago reshape por género */ 
 	* Seteo variable genero para tener el sufijo despues del reshape
-	gen gend = "_t" if gender==0
+	*gen gend = "_t" if gender==0
+	gen gend = "_t"
 	replace gend = "_m" if gender==1
 	replace gend = "_f" if gender==2
 	drop gender
@@ -99,7 +108,8 @@
 		gen `var'_year = year if `var'!=.
 	}
 	drop year
-	
+	rename *_f_year *_f_year
+	rename *_m_year *_m_year
 	foreach var in $prev {
 		gen `var'_year = prevyear if `var'!=.
 	}
@@ -141,16 +151,16 @@
 
 *------------------------------Clean redundant variables------------------------------*
 * Dropeo todas las variables que tienen todo missing
-foreach var of varlist $nselect {
-	capture assert mi(`var')
-	if !_rc {
-	drop `var'
-	drop `var'_prev
-	drop `var'_year
-	drop `var'_year_prev
-	}
-}
-	
+// foreach var of varlist $nselect {
+// 	capture assert mi(`var')
+// 	if !_rc {
+// 	drop `var'
+// // 	drop `var'_prev
+// // 	drop `var'_year
+// // 	drop `var'_yearprev
+// 	}
+// }
+//	
 *---------------------------------keep if----------------------------------*
 	save "$data_output\data_briefs_allcountries", replace
 	

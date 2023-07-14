@@ -14,6 +14,7 @@ try:
 
 except:
     portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
     data_output = rf"{portal}\Data\Data_Output"
@@ -90,7 +91,6 @@ for wbcode, countryname in tqdm(country_array):
     hcci_dfs['Sources'] = sources
     
     # Note: The only sheet that is not in the dictionary is the "Graphs" one, that we add at the end
-    # ARE 1990
     ## Write the excels and format them ##
     with pd.ExcelWriter(rf"{excels}/HCI_Data_July_2023_{wbcode}.xlsx", engine='xlsxwriter') as writer:  
     
@@ -161,7 +161,6 @@ for wbcode, countryname in tqdm(country_array):
             if to_excel.empty:
                 print(f"\nEmpty dataframe for '{sheetname}' in {countryname}")
                 continue # If the dataframe is empty, skip it and do not create the sheet
-
             to_excel.to_excel(writer, sheet_name=sheetname, startrow=startrow, startcol=startcol, index=False)
             
             # Params

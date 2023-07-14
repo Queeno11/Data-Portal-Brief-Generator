@@ -10,7 +10,12 @@
 	2 - add text for new indicators
 	3 - add text for previous 5 (approx) years
 	*/
-	
+
+*Chequeamos todas las variables en seleccionadas para los briefs tengan su correpondiente texto:
+// use "$data_output\complete_series_wmd_${date}${extra}", clear
+// merge m:1 name_portal using "$data_processed\briefs_texts", nogen
+// count if (rank!=. & rank!=0 & missing(start_text))
+// assert r(N)==0
 
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
@@ -282,6 +287,7 @@ foreach ctry in `wb_country_codes' {
 			capture gen `x'`m'_start_text = ""
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
+			*DROP TIME TEXT (Yanel - July 10th, 2023)
 			** Generate time text:
 			if `m'==1 {
 				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
@@ -372,14 +378,16 @@ foreach ctry in `wb_country_codes' {
 			** Generate final text
 			capture gen `x'`m'_text = ""
 			* Full text when all data is there
-			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
-			* No time text when previous data is not available
+// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
+// 				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+ 				if `indicator'!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* No time text when previous data is not available
+// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
+// 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* No regional/income text when regional data is not available
-			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
-				if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+			*replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
+				*if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
 				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
@@ -396,7 +404,8 @@ foreach ctry in `wb_country_codes' {
 	}
 }
 
-drop *_start_text *_time_text  *_reginc_text 
+*drop *_start_text *_time_text  *_reginc_text 
+drop *_start_text *_reginc_text 
 display "Text correctly generated!"
 
 *-----------------Round values in hci variables for tables-----------------* 
@@ -447,6 +456,11 @@ replace hci_t = hci_t/100
 gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
+
+*Gen variable for hci and uhci comparison:
+gen compare_uhci="more than half" if uhci>50
+replace compare_uhci="less than half" if uhci<50
+replace compare_uhci="half" if uhci==50
 
 save "$data_output\ordered_text", replace
 exit

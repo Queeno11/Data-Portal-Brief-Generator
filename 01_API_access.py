@@ -1,12 +1,19 @@
 import pandasdmx as sdmx
 import pandas as pd
-from sfi import Macro
 
-portal = Macro.getGlobal("portal")
-data_raw = Macro.getGlobal("data_raw")
-data_processed = Macro.getGlobal("data_processed")
-date = Macro.getGlobal("date") # Date when the full process is run
-extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+try:
+    from sfi import Macro
+    portal = Macro.getGlobal("portal")
+    data_raw = Macro.getGlobal("data_raw")
+    data_processed = Macro.getGlobal("data_processed")
+    date = Macro.getGlobal("date") # Date when the full process is run
+    extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+
+except:
+    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    data_raw = rf"{portal}\Data\Data_Raw"
+    data_processed = rf"{portal}\Data\Data_Processed"
+    date = "27_jun_2023"
 
 indicators_for_briefs = [
     'MNCH_MLRACT', # Percentage of febrile children (under age 5) who had a finger or heel stick for malaria testing
@@ -20,6 +27,8 @@ indicators_for_briefs = [
     'NT_ANT_WHZ_NE2', # Wasting
     'NT_ANT_WHZ_NE3', # Severe wasting
     'NT_ANT_WHZ_PO2', # Overweight
+    'NT_BF_EXBF', # (Exclusive breastfeeding)
+    'NT_CF_MMF', # (Minimum meal frequency)
     'MNCH_ANC1', # Antenatal care coverage at least one visit
     'MNCH_ANC4', # Antenatal care coverage at least four visits
     'PT_CHLD_5-17_LBR_ECON', # Child labour
@@ -40,6 +49,10 @@ indicators_for_briefs = [
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
     'MNCH_BIRTH18', # Early childbearing - percentage of women (aged 20-24 years) who gave birth before age 18
+    'MNCH_PNCNB', # (Postnatal care for newborns)
+    'MNCH_PNCMOM', # (Postnatal care for mothers)
+    'MNCH_DIARCARE', # (Careseeking for diarrhoea (%))
+
     ## Vaccines
     'IM_BCG',
     'IM_DTP1', 
@@ -54,17 +67,19 @@ indicators_for_briefs = [
     'IM_POL3', 
     'IM_ROTAC',
     'IM_HPV',
+    
     ## Child mortality
+    'CME_MRM0', #Neonatal
     'CME_MRY0T4', #04mort
     'CME_MRY5T14', #514mort
     'CME_MRY15T24', #1512mort
-    ## Caremother
-    'MNCH_PNCNB', #Postnatal care for newborns within 2 days of birth
+
     ## Childs on track
     'ECD_CHLD_36-59M_LMPSL', # Proportion of children aged 24-59 months of age who are developmentally on track in health, learning and psychosocial well-being, by sex
     ## Organized learning pre-primary
     'C040202',
-    ## Stilbirth
+    ## Stilbirth rate
+    'CME_SBR',
     ######
     ## WASH
     'WS_PPL_W-ALB', #  "Basic water in household"
@@ -113,7 +128,7 @@ def get_indicators_description():
     return cl_indicators
 
 
-def get_list_of_unicef_indicators():
+def get_list_of_unicef_indicators(parent_database='IMMUNISATION'):
     ''' Returns a pd.DataFrame of all the indicators in the UNICEF database.
     
         Connects to the UNICEF database via SDMX and queries the list of indicators (index),
@@ -123,8 +138,8 @@ def get_list_of_unicef_indicators():
     unicef = sdmx.Request('UNICEF')  # Queries the UNICEF database
     
     # Query any database (in this case IMMUNISATION) but it is irrelevant
-    exr_msg = unicef.dataflow('IMMUNISATION')
-    exr_flow = exr_msg.dataflow.IMMUNISATION
+    exr_msg = unicef.dataflow(parent_database)
+    exr_flow = exr_msg.dataflow[parent_database]
     dsd = exr_flow.structure
 
     # Prints the dimensions INDICATOR of the dataflow -> Indicators.
@@ -152,13 +167,17 @@ def drops_irrelevant_index_levels(df):
     
     indicator_0_to_5_years = [
         'NT_ANT_HAZ_NE2', 'NT_ANT_WHZ_NE2', 
-        'NT_ANT_WHZ_NE3', 'NT_ANT_WHZ_PO2'
-        ]
+        'NT_ANT_WHZ_NE3', 'NT_ANT_WHZ_PO2',
+        'NT_BF_EXBF'
+    ]
+    indicator_6_to_23_months =[
+        'NT_CF_MMF'
+    ]
     indicator_15_to_49_years = [
         'MNCH_ANC1', 'MNCH_ANC4',
-        'MNCH_DEMAND_FP', 
-        'MNCH_SAB', 'MNCH_ITNPREG',
-        ]
+        'MNCH_DEMAND_FP', 'MNCH_PNCMOM',
+        'MNCH_SAB', 'MNCH_ITNPREG', 
+    ]
     indicator_18_to_29_years = [
         'PT_M_18-29_SX-V_AGE-18',
         'PT_F_18-29_SX-V_AGE-18',
@@ -167,14 +186,15 @@ def drops_irrelevant_index_levels(df):
         'HVA_PREV_KNOW', 'HVA_PREV_KNOW_TEST', 
         'HVA_PREV_CNDM_MULT'
     ]
+
+    
+    # Replace COUNTRY with REF_AREA (SDMX standard)
+    df.index.names = ['REF_AREA' if idx=='COUNTRY' else idx for idx in df.index.names]
     
     indicador = df.index.get_level_values('INDICATOR').unique().values[0]
-
     indexes = df.index.names
-    # print(f'Los indices de esta base son: {indexes}')
     irrelevant_indexes = [
         idx for idx in indexes if idx not in ['REF_AREA', 'INDICATOR', 'TIME_PERIOD', 'SEX', 'DATA_SOURCE']]
-    # print(f'Se eliminan los indices {irrelevant_indexes}.')
     
     for idx in irrelevant_indexes:
         totals_mask = df.index.get_level_values(idx) == '_T'
@@ -182,7 +202,9 @@ def drops_irrelevant_index_levels(df):
             df = df[totals_mask].droplevel(idx)
         elif idx == 'AGE':
             if indicador in indicator_0_to_5_years:
-                df = df[df.index.get_level_values('AGE') == 'Y0T4']
+                df = df[df.index.get_level_values('AGE').isin(['Y0T4','M0T5'])]
+            elif indicador in indicator_6_to_23_months:
+                df = df[df.index.get_level_values('AGE') == 'M6T23']
             elif indicador in indicator_15_to_49_years:
                 df = df[df.index.get_level_values('AGE') == 'Y15T49']
             elif indicador in indicator_18_to_29_years:
@@ -226,6 +248,7 @@ if __name__ == '__main__':
     wash_indicators_health = ['WS_HCF_W-B','WS_HCF_S-B','WS_HCF_H-B']
     
     indicators = get_list_of_unicef_indicators()
+    indicators_sdg = get_list_of_unicef_indicators(parent_database='SDG_PROG_ASSESSMENT')
     cl_ref_areas = get_county_codes()
 
     # Get dataframes for each indicator in the dataset
@@ -237,10 +260,14 @@ if __name__ == '__main__':
         print(f'{round(i/len(indicators_for_briefs)*100, 1)}%: {selected_ind}')
 
         try:
-            selected_ind_data = indicators.loc[selected_ind]
-            selected_ind_code = selected_ind_data.name
-            selected_ind_name = selected_ind_data['name']
-            selected_ind_parent = selected_ind_data['parent']
+            # Get data from UNICEF API (except for C040202, all the rest have the same structure)
+            if selected_ind=='C040202':
+                selected_ind_code = selected_ind
+                selected_ind_parent = 'SDG_PROG_ASSESSMENT'
+            else:
+                selected_ind_data = indicators.loc[selected_ind]
+                selected_ind_code = selected_ind_data.name
+                selected_ind_parent = selected_ind_data['parent']
                         
             # Parents in WASH are not correct
             #   FIXME: if this raises errors, they must have fixed the WASH dataset. Check previous fixme...
