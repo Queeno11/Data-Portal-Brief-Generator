@@ -143,8 +143,8 @@ foreach i of local obs {
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
 			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(solid) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
-			graph save "$charts\graph_`ctry'_c`m'.gph", replace
+			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
+			  name(graph_`ctry'_c`m')
 		}
 		else {
 			* If we dont have data, then plot only regional data
@@ -163,8 +163,8 @@ foreach i of local obs {
 			(scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small))
-			graph save "$charts\graph_`ctry'_c`m'.gph", replace
+			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
+			  name(graph_`ctry'_c`m')
 			drop obs_`c`m'_`ctry''
 		}
 	}	
@@ -195,27 +195,17 @@ foreach i of local obs {
 	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
 	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
 	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
-	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(8pt) mlabgap(8pt)), ///
-	graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(10pt) linegap(1.7) justification(left)) 		
-	graph save "$charts\notes_`ctry'.gph", replace	
+	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(8pt) mlabgap(8pt)) ///
+	, graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(10pt) linegap(1.7) justification(left)) ///
+	  name(notes_`ctry') 		
 	*graph export "$charts\notes_`ctry'.eps", replace
 	
 	drop m 
 
-	graph combine "$charts\graph_`ctry'_c1.gph"  "$charts\graph_`ctry'_c2.gph"  "$charts\graph_`ctry'_c3.gph"  "$charts\graph_`ctry'_c4.gph" "$charts\graph_`ctry'_c5.gph" "$charts\graph_`ctry'_c6.gph" "$charts\graph_`ctry'_c7.gph" "$charts\graph_`ctry'_c8.gph" "$charts\notes_`ctry'.gph", rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
+	graph combine graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8 notes_`ctry', rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
 	graph export "$charts\p1_`ctry'_all.eps", replace
 	graph export "$charts\p1_`ctry'_all.jpg", replace width(1600)
-
-	erase "$charts\graph_`ctry'_c1.gph"
-	erase "$charts\graph_`ctry'_c2.gph"
-	erase "$charts\graph_`ctry'_c3.gph"
-	erase "$charts\graph_`ctry'_c4.gph"
-	erase "$charts\graph_`ctry'_c5.gph"
-	erase "$charts\graph_`ctry'_c6.gph"
-	erase "$charts\graph_`ctry'_c7.gph"
-	erase "$charts\graph_`ctry'_c8.gph"
-	erase "$charts\notes_`ctry'.gph"
 
 	*------------------------------Second Page-----------------------------*
 	
@@ -247,8 +237,8 @@ foreach i of local obs {
 			(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("{fontface Utopia: `l`x'`m'_`ctry''}", color(black) margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
-			graph save "$charts\graph_`ctry'_`x'`m'.gph", replace		
+			, legend(off) title("{fontface Utopia: `l`x'`m'_`ctry''}", color(black) margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall)) ///
+			  name(graph_`ctry'_`x'`m')
 		}
 		
 	// 	if _rc != 0 { 
@@ -262,37 +252,29 @@ foreach i of local obs {
 	}
 	
 	/* Combine all graphs by page and export */
-	graph combine "$charts\graph_`ctry'_l1.gph" "$charts\graph_`ctry'_l2.gph" "$charts\graph_`ctry'_l3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: EARLY CHILDHOOD}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
-	graph save "$charts\stage_1.gph", replace
-	graph combine "$charts\graph_`ctry'_e1.gph" "$charts\graph_`ctry'_e2.gph" "$charts\graph_`ctry'_e3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: SCHOOL AGE}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) 
-	graph save "$charts\stage_2.gph", replace
-	graph combine "$charts\graph_`ctry'_h1.gph" "$charts\graph_`ctry'_h2.gph" "$charts\graph_`ctry'_h3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: YOUTH}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
-	graph save "$charts\stage_3.gph", replace
-	graph combine "$charts\graph_`ctry'_b1.gph" "$charts\graph_`ctry'_b2.gph" "$charts\graph_`ctry'_b3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: ADULTS & ELDERLY}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
-	graph save "$charts\stage_4.gph", replace	
+	graph combine graph_`ctry'_l1 graph_`ctry'_l2 graph_`ctry'_l3, ///
+		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		title("{fontface Utopia: {bf: EARLY CHILDHOOD}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) ///
+		name(stage_1, replace)
+	graph combine graph_`ctry'_e1 graph_`ctry'_e2 graph_`ctry'_e3, ///
+		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		title("{fontface Utopia: {bf: SCHOOL AGE}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) /// 
+		name(stage_2, replace)
+	graph combine graph_`ctry'_h1 graph_`ctry'_h2 graph_`ctry'_h3, ///
+		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		title("{fontface Utopia: {bf: YOUTH}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) ///
+		name(stage_3, replace)
+	graph combine graph_`ctry'_b1 graph_`ctry'_b2 graph_`ctry'_b3, ///
+	rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		title("{fontface Utopia: {bf: ADULTS & ELDERLY}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) ///
+		name(stage_4, replace)
 	
-	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
-	graph export "$charts\p2_`ctry'_stages.pdf", replace
-	graph export "$charts\p2_`ctry'_stages.eps", replace
-	graph export "$charts\p2_`ctry'_stages.jpg", replace width(1600)
+	graph combine stage_1 stage_2 stage_3 stage_4, rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
+	graph export "p2_`ctry'_stages.pdf", replace
+	graph export "p2_`ctry'_stages.eps", replace
+	graph export "p2_`ctry'_stages.jpg", replace width(1600)
 
-	/* erase "$charts\graph_`ctry'_l1.gph"
-	erase "$charts\graph_`ctry'_l2.gph"
-	erase "$charts\graph_`ctry'_l3.gph"		
-	erase "$charts\graph_`ctry'_e1.gph"
-	erase "$charts\graph_`ctry'_e2.gph"
-	erase "$charts\graph_`ctry'_e3.gph"		
-	erase "$charts\graph_`ctry'_h1.gph"
-	erase "$charts\graph_`ctry'_h2.gph"
-	erase "$charts\graph_`ctry'_h3.gph"		
-	erase "$charts\graph_`ctry'_b1.gph"
-	erase "$charts\graph_`ctry'_b2.gph"
-	erase "$charts\graph_`ctry'_b3.gph"
-
-	erase "$charts\stage_1.gph" 
-	erase "$charts\stage_2.gph" 
-	erase "$charts\stage_3.gph"
-	erase "$charts\stage_4.gph"	 */
+	graph drop _all
 }
 
 
