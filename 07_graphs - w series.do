@@ -2,6 +2,7 @@
 *--------------------------------------Graphs----------------------------------*
 *------------------------------------------------------------------------------*
 
+* Fonts required; https://freefontsdownload.net/free-utopia-boldosf-font-149354.htm
 clear all
 set more off	
 set maxvar 32000
@@ -98,8 +99,8 @@ foreach i of local obs {
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
-	capture confirm file "`graph_file'"
-	if (_rc == 601 ) continue
+// 	capture confirm file "`graph_file'"
+// 	if (_rc == 601 ) continue
 
 	local ctry=wbcode in `i'
 	local region=wbregion in `i'
@@ -240,14 +241,13 @@ foreach i of local obs {
 			scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
 			scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
 
-		// 	capture {
 			twoway ///
 			(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
+			, legend(off) title("{fontface Utopia: `l`x'`m'_`ctry''}", color(black) margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
 			graph save "$charts\graph_`ctry'_`x'`m'.gph", replace		
 		}
 		
@@ -262,13 +262,13 @@ foreach i of local obs {
 	}
 	
 	/* Combine all graphs by page and export */
-	graph combine "$charts\graph_`ctry'_l1.gph" "$charts\graph_`ctry'_l2.gph" "$charts\graph_`ctry'_l3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Early Childhood", suffix color(black) size(vlarge) linegap(3) pos(11) span)
+	graph combine "$charts\graph_`ctry'_l1.gph" "$charts\graph_`ctry'_l2.gph" "$charts\graph_`ctry'_l3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: EARLY CHILDHOOD}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
 	graph save "$charts\stage_1.gph", replace
-	graph combine "$charts\graph_`ctry'_e1.gph" "$charts\graph_`ctry'_e2.gph" "$charts\graph_`ctry'_e3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("School Age", suffix color(black) size(vlarge) linegap(3) pos(11) span) 
+	graph combine "$charts\graph_`ctry'_e1.gph" "$charts\graph_`ctry'_e2.gph" "$charts\graph_`ctry'_e3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: SCHOOL AGE}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span) 
 	graph save "$charts\stage_2.gph", replace
-	graph combine "$charts\graph_`ctry'_h1.gph" "$charts\graph_`ctry'_h2.gph" "$charts\graph_`ctry'_h3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Youth", suffix color(black) size(vlarge) linegap(3) pos(11) span)
+	graph combine "$charts\graph_`ctry'_h1.gph" "$charts\graph_`ctry'_h2.gph" "$charts\graph_`ctry'_h3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: YOUTH}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
 	graph save "$charts\stage_3.gph", replace
-	graph combine "$charts\graph_`ctry'_b1.gph" "$charts\graph_`ctry'_b2.gph" "$charts\graph_`ctry'_b3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("Adults & Elderly", suffix color(black) size(vlarge) linegap(3) pos(11) span)
+	graph combine "$charts\graph_`ctry'_b1.gph" "$charts\graph_`ctry'_b2.gph" "$charts\graph_`ctry'_b3.gph", rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) title("{fontface Utopia: {bf: ADULTS & ELDERLY}}", suffix color("0 148 181") size(large) linegap(3) pos(11) span)
 	graph save "$charts\stage_4.gph", replace	
 	
 	graph combine "$charts\stage_1.gph" "$charts\stage_2.gph" "$charts\stage_3.gph" "$charts\stage_4.gph", rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
@@ -276,7 +276,7 @@ foreach i of local obs {
 	graph export "$charts\p2_`ctry'_stages.eps", replace
 	graph export "$charts\p2_`ctry'_stages.jpg", replace width(1600)
 
-	erase "$charts\graph_`ctry'_l1.gph"
+	/* erase "$charts\graph_`ctry'_l1.gph"
 	erase "$charts\graph_`ctry'_l2.gph"
 	erase "$charts\graph_`ctry'_l3.gph"		
 	erase "$charts\graph_`ctry'_e1.gph"
@@ -292,7 +292,7 @@ foreach i of local obs {
 	erase "$charts\stage_1.gph" 
 	erase "$charts\stage_2.gph" 
 	erase "$charts\stage_3.gph"
-	erase "$charts\stage_4.gph"	
+	erase "$charts\stage_4.gph"	 */
 }
 
 
