@@ -11,10 +11,10 @@ save "$data_processed\metadata_processed", replace
 use "$data_processed\complete_series_nometadata_$date$extra", clear
 
 ** Add names
-*replace code = lower(subinstr(code, ".", "_", .)) 
-rename code code_merge
-*merge m:m name_portal using "$data_processed\metadata_processed"
-merge m:m code_merge using "$data_processed\metadata_processed"
+replace code = lower(subinstr(code, ".", "_", .)) 
+// rename code code_merge
+merge m:m code using "$data_processed\metadata_processed"
+// merge m:m code_merge using "$data_processed\metadata_processed"
 count if _merge==1
 assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
 *	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.
