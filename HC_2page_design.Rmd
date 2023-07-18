@@ -1,0 +1,170 @@
+
+
+---
+title: "`r params$countrynamet`"
+output:
+   pdf_document: default
+   latex_engine: pdflatex
+   fig_caption: yes
+   keep_tex: yes
+   urlcolor: blue
+fontsize: 9pt
+geometry: "left=1.3cm,right=1.3cm,top=1.5cm,bottom=0.5cm"
+header-includes:  \usepackage{fancyhdr} 
+  \usepackage{graphicx}
+  \usepackage{eurosym}
+  \usepackage{datetime}
+  \usepackage{booktabs,xcolor} \pagestyle{fancy}  
+  \fancypagestyle{plain}{\pagestyle{fancy}}
+  \pagenumbering{gobble}
+  \renewcommand\thefootnote{\textcolor{black}{\arabic{footnote}}}
+  \usepackage{pagecolor}
+  \pagecolor{white}
+  \usepackage{fourier}
+  \usepackage[fontsize=8.7pt]{scrextend}
+  \usepackage{float}
+  \restylefloat{table}
+  \usepackage{xcolor}
+  \usepackage{multicol}
+  \newcommand{\hideFromPandoc}[1]{#1}
+  \hideFromPandoc{
+    \let\Begin\begin
+    \let\End\end
+  }
+  \usepackage{caption}
+  \captionsetup{skip=0pt}
+  \usepackage{hyperref}
+  \usepackage{array}
+  \usepackage{varwidth}
+  \hypersetup{
+      colorlinks=true,
+      linkcolor=blue,
+      filecolor=magenta,      
+      urlcolor=cyan,
+  }
+  \urlstyle{same}
+  \usepackage{enumitem}
+  \setlist{leftmargin=*}
+  \pagenumbering{gobble}
+  \usepackage{numprint}
+  \usepackage{fbox}
+  
+params:
+  countrynamet: "Afghanistan"   
+
+---
+\definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
+\definecolor{steelblue}{rgb}{0.27, 0.51, 0.71}
+\definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
+\newcommand\boldblue[1]{\textcolor{bondiblue}{\textbf{#1}}}
+
+This two-page brief provides the 2020 Human Capital Index (HCI) released in September 2020, and a set of complementary indicators. The HCI measures the potential amount of human capital that a child born today can attain by age 18, conveying the productivity of the next generation of workers compared to a benchmark of complete education and full health. While the effects of COVID-19 on this index are yet to be measured due to the lack of data, we expect the post-pandemic HCI to be relatively lower due to significant global setbacks in deep learning and health. **Data collection efforts to allow updates to the HCI remain critical for all countries to inform policies and programs to address the setbacks to human capital.**
+
+\Begin{multicols}{2}
+
+### \boldblue{T\small{HE HUMAN CAPITAL INDEX}}###
+
+`r x[which(x$wbcountryname == params$countrynamet),"hci_text_1"]` 
+
+`r x[which(x$wbcountryname == params$countrynamet),"hci_text_2"]` 
+
+### \boldblue{T\small{HE HUMAN CAPITAL INDEX COMPONENTS}}###
+
+* **Probability of Survival to Age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+
+* **Expected Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"eyrs_text"]`
+
+* **Harmonized Test Scores.** `r x[which(x$wbcountryname == params$countrynamet),"test_text"]`
+
+* **Learning-adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
+
+* **Adult Survival Rate.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+
+* **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
+
+
+### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
+
+As the returns on human capital materialize through work, we introduce a utilization-adjusted Human Capital Index (UHCI) that adjust the HCI for underutilization, by taking into account the proportion of the employed working-age population. 
+
+* In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
+
+* Comparing by gender, the adjusted utilization of human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent)
+
+\vspace{-0.5mm}
+\begin{table}[H]
+\renewcommand{\tabcolsep}{0.8mm}
+\begin{tabular}{m{0.3\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
+\\\textbf{     }   &    &             &  \\ \hline
+                         &      &              & \\
+\textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
+\vspace{-1mm} \\
+Human Capital Index (HCI) &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_table_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_table_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_table_t"]`\\
+Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_table_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_table_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_table_t"]` \\
+                         & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
+\vspace{-4mm}
+\\\hline
+\end{tabular}
+\vspace{1mm} 
+\end{table}
+
+```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
+gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
+knitr::include_graphics(gr2)
+```
+
+\vfill
+
+\End{multicols}
+
+
+\newpage
+
+\vspace{3mm} 
+
+Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parentheses) and benchmarked against regional and country income group averages. **They highlight where there is need for investment in people in each stage of life and for data collection and updates for evidence-based policy making.**
+
+\vspace{1mm}
+
+\Begin{multicols}{2}
+
+### \boldblue{E\small{ARLY CHILDHOOD}}###
+
+* `r x[which(x$wbcountryname == params$countrynamet),"l1_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"l2_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"l3_text"]`
+
+
+### \boldblue{S\small{CHOOL AGE}}###
+
+* `r x[which(x$wbcountryname == params$countrynamet),"e1_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"e2_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"e3_text"]`
+
+### \boldblue{Y\small{OUTH}}###
+
+* `r x[which(x$wbcountryname == params$countrynamet),"h1_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"h2_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"h3_text"]`
+
+### \boldblue{A\small{DULTS \& ELDERLY}}###
+
+* `r x[which(x$wbcountryname == params$countrynamet),"b1_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"b2_text"]`
+
+* `r x[which(x$wbcountryname == params$countrynamet),"b3_text"]`
+
+
+```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
+gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
+knitr::include_graphics(gr3)
+```
+
+\End{multicols}
