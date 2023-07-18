@@ -6,6 +6,7 @@
 clear all
 set more off	
 set maxvar 32000
+set graph off
 
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
@@ -114,10 +115,8 @@ foreach i of local obs {
 	
 	/* With available data - automatic */
 //
-	forvalues m = 1(1)`nc' {
+	qui forvalues m = 1(1)`nc' {
 	
-		display "obs_`c`m'_`ctry'' c`m'_`ctry'"
-		display "local c`m'_`ctry' `c`m'_`ctry''"
 		qui tab `c`m'_`ctry'' if wbcode=="`ctry'"		
 		gen obs_`c`m'_`ctry'' = 1 if `=scalar(r(N))'>0
 		replace obs_`c`m'_`ctry'' = 0 if `=scalar(r(N))'==0
@@ -142,8 +141,8 @@ foreach i of local obs {
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
-			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(solid) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
+			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
+			, legend(off) title("{fontface Utopia: `lc`m'_`ctry''}", color(black) margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
 			  name(graph_`ctry'_c`m')
 		}
 		else {
@@ -163,7 +162,7 @@ foreach i of local obs {
 			(scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			, legend(off) title("`lc`m'_`ctry''", margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
+			, legend(off) title("{fontface Utopia: `lc`m'_`ctry''}", color(black) margin(b=5) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(small)) ///
 			  name(graph_`ctry'_c`m')
 			drop obs_`c`m'_`ctry''
 		}
@@ -194,7 +193,7 @@ foreach i of local obs {
 	(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
 	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
 	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
-	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(solid) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
+	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(black) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
 	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(8pt) mlabgap(8pt)) ///
 	, graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(10pt) linegap(1.7) justification(left)) ///
 	  name(notes_`ctry') 		
@@ -204,12 +203,11 @@ foreach i of local obs {
 
 	graph combine graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8 notes_`ctry', rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	graph export "$charts\p1_`ctry'_all.pdf", replace	
-	graph export "$charts\p1_`ctry'_all.eps", replace
 	graph export "$charts\p1_`ctry'_all.jpg", replace width(1600)
 
 	*------------------------------Second Page-----------------------------*
 	
-	foreach x in e b h l {
+	qui foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
 			qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
@@ -236,7 +234,7 @@ foreach i of local obs {
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
-			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
+			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
 			, legend(off) title("{fontface Utopia: `l`x'`m'_`ctry''}", color(black) margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
@@ -246,7 +244,7 @@ foreach i of local obs {
 	// 		(scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
 	// 		(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 	// 		(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-	// 		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(solid) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
+	// 		(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
 	// 		, legend(off) title("`l`x'`m'_`ctry''", margin(b=5) size(30pt) pos(11)) xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall))
 	// 		graph save "$charts\graph_`ctry'_`x'`m'.gph", replace	
 	}
@@ -270,9 +268,9 @@ foreach i of local obs {
 		name(stage_4, replace)
 	
 	graph combine stage_1 stage_2 stage_3 stage_4, rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
-	graph export "p2_`ctry'_stages.pdf", replace
-	graph export "p2_`ctry'_stages.eps", replace
-	graph export "p2_`ctry'_stages.jpg", replace width(1600)
+	graph export "$charts\p2_`ctry'_stages.pdf", replace
+	/* graph export "p2_`ctry'_stages.eps", replace */
+	graph export "$charts\p2_`ctry'_stages.jpg", replace width(1600)
 
 	graph drop _all
 }

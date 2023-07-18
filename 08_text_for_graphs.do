@@ -237,13 +237,14 @@ local nb = 3
 levelsof wbcode, local(wb_country_codes) 
 display "Generating texts, please wait..."
 foreach ctry in `wb_country_codes' {
-	foreach x in e b h l {
 
-		local i = 1 // Counter for texts
-		local time_improved = 0 // Counter for number of indicators that improved
-		local time_worsened = 0 // Counter for number of indicators that worsened
-		local time_no_change = 0 // Counter for number of indicators that did not change
-		local time_no_data = 0 // Counter for number of indicators with no data
+	local time_improved = 0 // Counter for number of indicators that improved
+	local time_worsened = 0 // Counter for number of indicators that worsened
+	local time_no_change = 0 // Counter for number of indicators that did not change
+	local time_no_data = 0 // Counter for number of indicators with no data
+	local i = 1 // Counter for texts
+
+	foreach x in e b h l {
 		
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
@@ -264,10 +265,10 @@ foreach ctry in `wb_country_codes' {
 			local inc_avg = strofreal(round(`indicator'_inc,1))
 
 			* Time locals
-			local lower_than_prev = (round(`indicator')<round(`indicator'_prev) & `indicator'_prev!=.)
-			local higher_than_prev = (round(`indicator')>round(`indicator'_prev))
-			local similar_than_prev = (round(`indicator')==round(`indicator'_prev))
-			local missing_time = (`indicator'_prev==.) 
+			local lower_than_prev = ((round(`indicator')<round(`indicator'_prev)) & (`indicator'!=. & `indicator'_prev!=.))
+			local higher_than_prev = ((round(`indicator')>round(`indicator'_prev)) & (`indicator'!=. & `indicator'_prev!=.))
+			local similar_to_prev = ((round(`indicator')==round(`indicator'_prev)) & (`indicator'!=. & `indicator'_prev!=.))
+			local missing_time = (`indicator'==. | `indicator'_prev==.)
 
 			* Comparisons with regional and income group averages locals
 			local lower_than_regional = (round(`indicator')<round(`indicator'_reg))
@@ -295,7 +296,7 @@ foreach ctry in `wb_country_codes' {
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
 			*DROP TIME TEXT (Yanel - July 10th, 2023)
-			** Generate time text:
+			/* ** Generate time text:
 			if `m'==1 {
 				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
 				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
@@ -325,7 +326,7 @@ foreach ctry in `wb_country_codes' {
 				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
 				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
 				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
+			} */
 
 			** Generate region and income text:
 			if mod(`i',2)==1 { // If i is odd
@@ -395,29 +396,34 @@ foreach ctry in `wb_country_codes' {
 				if `indicator'==. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 
 			* increase counters
-			if lower_than_prev==1  local time_improved = `time_improved' + 1
-			if higher_than_prev==1 local time_worsened = `time_worsened' + 1
-			if similar_to_prev==1  local time_similar  = `time_similar' + 1
-			if missing_time==1     local time_no_data  = `time_no_data' + 1
+			assert `lower_than_prev' + `higher_than_prev' + `similar_to_prev' + `missing_time' == 1
+			if `lower_than_prev'==1  {
+				local time_improved = `time_improved' + 1
+			}
+			if `higher_than_prev'==1 {
+				local time_worsened = `time_worsened' + 1
+			}
+			if `similar_to_prev'==1  {
+				local time_no_change  = `time_no_change' + 1
+			}
+			if `missing_time'==1 {
+				local time_no_data  = `time_no_data' + 1
+			}
 			local i = `i' + 1
 		}
 	}
 	
 	** Generate text for time comparison of all indicators
-	assert `lower_than_prev' + `higher_than_prev' + `similar_to_prev' + `missing_time' == 12
-	local time_comp_data = `lower_than_prev' + `higher_than_prev' + `similar_to_prev'
+	assert `time_improved' + `time_worsened' + `time_no_change' + `time_no_data' == 12
+	local time_comp_data = `time_improved' + `time_worsened' + `time_no_change'
 	local has_improved = `time_improved' > 0
 	local has_worsened = `time_worsened' > 0
 	capture gen hcci_timecomp_text = ""
-	if `has_improved'==1 & `has_worsened'==1 {
-		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years, while `has_worsened' have experienced a decline." if wbcode=="`ctry'"
-	}
-	if `has_improved''==1 & `has_worsened'==0 {
-		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years." if wbcode=="`ctry'"	}
-	}
-	if `has_improved''==0 & `has_worsened'==1 {
-		replace hcci_timecomp_text = "Among the `time_comp_data' selected indicators with available data for `countryname', `has_worsened' have declined over the past approximately 5 years." if wbcode=="`ctry'"
-	}
+	replace hcci_timecomp_text = ///
+		cond(`has_improved'==1 & `has_worsened'==1, "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years, while `has_worsened' have experienced a decline.", /// 
+		cond(`has_improved'==1 & `has_worsened'==0, "Among the `time_comp_data' selected indicators with available data for `countryname', `has_improved' have shown improvement over the past approximately 5 years.", ///
+		cond(`has_improved'==0 & `has_worsened'==1, "Among the `time_comp_data' selected indicators with available data for `countryname', `has_worsened' have experienced a decline over the past approximately 5 years.", ""))) ///
+		if wbcode=="`ctry'"
 }
 
 *drop *_start_text *_time_text  *_reginc_text 
