@@ -58,7 +58,7 @@ params:
 \definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
 \newcommand\boldblue[1]{\textcolor{bondiblue}{\textbf{#1}}}
 
-This 2-page brief provides the 2020 Human Capital Index (HCI) released in September 2020, and a set of indicators that are complementary to the HCI. The HCI measures the amount of human capital that a child born today can expect to attain by age 18. It conveys the productivity of the next generation of workers compared to a benchmark of complete education and full health. Although the effects of COVID-19 on the HCI are yet to be measured due to the lack of data, we expect the post-pandemic HCI to be relatively lower due to the deep learning and health losses globally. **Data collection efforts to allow updates to the HCI remain critical for all countries to inform policies and programs to address the setbacks to human capital.**
+This two-page brief provides the 2020 Human Capital Index (HCI) released in September 2020, and a set of complementary indicators. The HCI measures the potential amount of human capital that a child born today can attain by age 18, conveying the productivity of the next generation of workers compared to a benchmark of complete education and full health. While the effects of COVID-19 on this index are yet to be measured due to the lack of data, we expect the post-pandemic HCI to be relatively lower due to significant global setbacks in deep learning and health. **Data collection efforts to allow updates to the HCI remain critical for all countries to inform policies and programs to address the setbacks to human capital.**
 
 \Begin{multicols}{2}
 
@@ -85,9 +85,13 @@ This 2-page brief provides the 2020 Human Capital Index (HCI) released in Septem
 
 ### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
 
-* **U-HCI** The returns on human capital are realized when individuals predominantly utilize that capital through work. Consequently, we introduce a utilization-adjusted Human Capital Index (UHCI) that accounts for underutilization of human capital in the labor market by taking into account the proportion of the employed working-age population. In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r x[which(x$wbcountryname == params$countrynamet), "uhci_table_t"]`. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
+As the returns on human capital materialize through work, we introduce a utilization-adjusted Human Capital Index (UHCI) that adjust the HCI for underutilization, by taking into account the proportion of the employed working-age population. 
 
-\vspace{-1mm}
+* In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
+
+* Comparing by gender, the adjusted utilization of human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent)
+
+\vspace{-0.5mm}
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
 \begin{tabular}{m{0.3\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
@@ -105,7 +109,7 @@ Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params
 \end{table}
 
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.jpg")
+gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
 knitr::include_graphics(gr2)
 ```
 
@@ -118,8 +122,8 @@ knitr::include_graphics(gr2)
 
 \vspace{3mm} 
 
-Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.** *`r x[which(x$wbcountryname == params$countrynamet),"hcci_timecomp_text"]`*
-<<<
+Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parentheses) and benchmarked against regional and country income group averages. **They highlight where there is need for investment in people in each stage of life and for data collection and updates for evidence-based policy making.**
+
 \vspace{1mm}
 
 \Begin{multicols}{2}
@@ -159,7 +163,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.jpg")
+gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
 knitr::include_graphics(gr3)
 ```
 
