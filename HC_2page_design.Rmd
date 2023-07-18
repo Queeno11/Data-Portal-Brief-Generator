@@ -105,7 +105,7 @@ Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params
 \end{table}
 
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
+gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.jpg")
 knitr::include_graphics(gr2)
 ```
 
@@ -119,7 +119,7 @@ knitr::include_graphics(gr2)
 \vspace{3mm} 
 
 Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.** *`r x[which(x$wbcountryname == params$countrynamet),"hcci_timecomp_text"]`*
-
+<<<
 \vspace{1mm}
 
 \Begin{multicols}{2}
@@ -159,7 +159,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
+gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.jpg")
 knitr::include_graphics(gr3)
 ```
 

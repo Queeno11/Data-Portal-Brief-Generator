@@ -43,7 +43,8 @@ for (i in 1:length(countrynamet)) {
     suppressWarnings(
       capture.output(
         render(
-          input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd", output_format="pdf_document", #(keep_md=TRUE, keep_tex=TRUE),
+          input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd", output_format="pdf_document", 
+          keep_tex = TRUE, #keep_md=TRUE,
           output_file = output_file, 
           params = list(countrynamet = country),
           clean = TRUE,
