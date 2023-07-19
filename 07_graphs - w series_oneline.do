@@ -138,9 +138,9 @@ foreach i of local obs {
 			/// (scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			(scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
+			/// (scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
 			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_c`m')
 		}
 		else {
@@ -160,7 +160,7 @@ foreach i of local obs {
 			/// (scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(18pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_c`m')
 			drop obs_`c`m'_`ctry''
 		}
@@ -187,7 +187,7 @@ foreach i of local obs {
 	*/
 	
 	twoway /// 
-	(scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
+	/// (scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
 	(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
 	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
 	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
@@ -231,10 +231,10 @@ foreach i of local obs {
 			twoway ///
 			/// (scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
-			(scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+			/// (scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=5) size(23pt) pos(11))  xtitle("") ytitle("") yscale(range(0.5 1.2) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(medsmall)) ///
+			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(23pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
 		
@@ -251,19 +251,19 @@ foreach i of local obs {
 	/* Combine all graphs by page and export */
 	graph combine graph_`ctry'_l1 graph_`ctry'_l2 graph_`ctry'_l3, ///
 		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: EARLY CHILDHOOD}", suffix color("15 119 157") size(18pt) linegap(3) pos(11) span) ///
+		title("{fontface Utopia Semibold: EARLY CHILDHOOD}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_1, replace)
 	graph combine graph_`ctry'_e1 graph_`ctry'_e2 graph_`ctry'_e3, ///
 		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: SCHOOL AGE}", suffix color("15 119 157") size(18pt) linegap(3) pos(11) span) /// 
+		title("{fontface Utopia Semibold: SCHOOL AGE}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) /// 
 		name(stage_2, replace)
 	graph combine graph_`ctry'_h1 graph_`ctry'_h2 graph_`ctry'_h3, ///
 		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: YOUTH}", suffix color("15 119 157") size(18pt) linegap(3) pos(11) span) ///
+		title("{fontface Utopia Semibold: YOUTH}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_3, replace)
 	graph combine graph_`ctry'_b1 graph_`ctry'_b2 graph_`ctry'_b3, ///
 	rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: ADULTS & ELDERLY}", suffix color("15 119 157") size(18pt) linegap(3) pos(11) span) ///
+		title("{fontface Utopia Semibold: ADULTS & ELDERLY}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_4, replace)
 	
 	graph combine stage_1 stage_2 stage_3 stage_4, rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
