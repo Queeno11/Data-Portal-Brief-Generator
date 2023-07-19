@@ -83,13 +83,13 @@ This two-page brief provides the 2020 Human Capital Index (HCI) released in Sept
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
 
-### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
+### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL}}###
 
 As the returns on human capital materialize through work, we introduce a utilization-adjusted Human Capital Index (UHCI) that adjust the HCI for underutilization, by taking into account the proportion of the employed working-age population. 
 
 * In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
 
-* Comparing by gender, the adjusted utilization of human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent)
+* Comparing by gender, the utilization-adjusted of human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent)
 
 \vspace{-0.5mm}
 \begin{table}[H]
@@ -100,7 +100,7 @@ As the returns on human capital materialize through work, we introduce a utiliza
 \textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
 \vspace{-1mm} \\
 Human Capital Index (HCI) &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_table_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_table_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_table_t"]`\\
-Utilization of Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_table_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_table_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_table_t"]` \\
+Utilization-Adjusted Human Capital Index (UHCI) & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_table_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_table_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_table_t"]` \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
