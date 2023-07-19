@@ -759,7 +759,7 @@ save "$data_processed/neet", replace
 *FIXME: Cambié la source acá: la data que se estaba importando antes es employment-to-population ratio. Ahora importa labor force participation rate. 
 *import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear	
 import delimited using "$data_raw/EAP_DWAP_SEX_AGE_RT_A.csv", clear			
-rename (time obs_value)(year eap_2wap_mf_a)
+rename (time obs_value)(year eap_dwap_mf_a)
 rename ref_arealabel wbcountryname
 keep if classif1label=="Age (Youth, adults): 25+"
 gen gender = . 
@@ -767,8 +767,8 @@ replace gender = 0 if sexlabel=="Sex: Total"
 replace gender = 1 if sexlabel=="Sex: Male"
 replace gender = 2 if sexlabel=="Sex: Female"
 merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen keep(3)
-keep wbcode gender year eap_2wap_mf_a
-lab var eap_2wap_mf_a "Labor force participation (%)"	
+keep wbcode gender year eap_dwap_mf_a
+lab var eap_dwap_mf_a "Labor force participation (%)"	
 save "$data_processed/laborforce", replace 
 
 *Unemployment
