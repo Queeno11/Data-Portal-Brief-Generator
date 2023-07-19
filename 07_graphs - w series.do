@@ -94,7 +94,7 @@ foreach c in `wb_country_codes' {
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-	* if (wbcode[`i'] != "AUS") continue 
+	if (wbcode[`i'] != "AUS") continue 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -199,7 +199,8 @@ foreach i of local obs {
 	
 	drop m 
 
-	graph combine graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8 notes_`ctry', rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
+	graph combine graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8 notes_`ctry', ///
+		rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	/* graph export "$charts\p1_`ctry'_all.pdf", replace	 */
 	graph export "$charts\p1_`ctry'_all.jpg", replace width(3200)
 

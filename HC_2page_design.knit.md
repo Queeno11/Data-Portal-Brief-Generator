@@ -1,13 +1,13 @@
 
 
 ---
-title: "Moldova"
+title: "Australia"
 output:
-   pdf_document: default
-   latex_engine: pdflatex
-   fig_caption: yes
-   keep_tex: yes
-   urlcolor: blue
+  pdf_document: 
+    keep_tex: true
+  latex_engine: pdflatex
+  fig_caption: yes
+  urlcolor: blue
 fontsize: 9pt
 geometry: "left=1.3cm,right=1.3cm,top=1.5cm,bottom=0.5cm"
 header-includes:  \usepackage{fancyhdr} 
@@ -64,28 +64,28 @@ This 2-page brief provides the 2020 Human Capital Index (HCI) released in Septem
 
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX}}###
 
-A child born in Moldova just before the pandemic will be **58 percent** as productive when she grows up as she could be if she enjoyed complete education and full health. 
+A child born in Australia just before the pandemic will be **77 percent** as productive when she grows up as she could be if she enjoyed complete education and full health. 
 
-This is lower than the average for the Europe & Central Asia region (69 percent) but higher than the average for Upper Middle Income countries (56 percent). 
+This is higher than the average for the East Asia & Pacific region (59 percent) and High Income countries (71 percent). 
 
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX COMPONENTS}}###
 
-* **Probability of Survival to Age 5.** **98** out of 100 children born in Moldova survive to age 5.
+* **Probability of Survival to Age 5.** **100** out of 100 children born in Australia survive to age 5.
 
-* **Expected Years of School.** In Moldova, a child who starts school at age 4 can expect to complete **11.8 years** of school by her 18th birthday.
+* **Expected Years of School.** In Australia, a child who starts school at age 4 can expect to complete **13.6 years** of school by her 18th birthday.
 
-* **Harmonized Test Scores.** Students in Moldova score **439** on a scale where 625 represents advanced attainment and 300 represents minimum attainment.
+* **Harmonized Test Scores.** Students in Australia score **516** on a scale where 625 represents advanced attainment and 300 represents minimum attainment.
 
-* **Learning-adjusted Years of School.** Factoring in what children actually learn, expected years of school is only **8.3 years**.
+* **Learning-adjusted Years of School.** Factoring in what children actually learn, expected years of school is only **11.2 years**.
 
-* **Adult Survival Rate.** Across Moldova, **84 percent** of 15-year olds will survive until age 60. This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions.
+* **Adult Survival Rate.** Across Australia, **95 percent** of 15-year olds will survive until age 60. This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions.
 
-* **Fraction of Children Under 5 Not Stunted.** **94** out of 100 children are **not** stunted. **6** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime.
+* **Fraction of Children Under 5 Not Stunted.** **98** out of 100 children are **not** stunted. **2** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime.
 
 
 ### \boldblue{T\small{HE HUMAN CAPITAL UTILIZATION}}###
 
-* **U-HCI** The returns on human capital are realized when individuals predominantly utilize that capital through work. Consequently, we introduce a utilization-adjusted Human Capital Index (UHCI) that accounts for underutilization of human capital in the labor market by taking into account the proportion of the employed working-age population. In Moldova, adjusting the HCI for utilization leads to a decrease to 0.27. This suggests that nearly less than half of Moldova's population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
+* **U-HCI** The returns on human capital are realized when individuals predominantly utilize that capital through work. Consequently, we introduce a utilization-adjusted Human Capital Index (UHCI) that accounts for underutilization of human capital in the labor market by taking into account the proportion of the employed working-age population. In Australia, adjusting the HCI for utilization leads to a decrease to 0.57. This suggests that nearly more than half of Australia's population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
 
 \vspace{-1mm}
 \begin{table}[H]
@@ -95,8 +95,8 @@ This is lower than the average for the Europe & Central Asia region (69 percent)
                          &      &              & \\
 \textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
 \vspace{-1mm} \\
-Human Capital Index (HCI) &   0.56 &   0.61 &    0.58\\
-Utilization of Human Capital Index (UHCI) & 0.27  &  0.27 & 0.27 \\
+Human Capital Index (HCI) &   0.76 &   0.78 &    0.77\\
+Utilization of Human Capital Index (UHCI) & 0.59  &  0.54 & 0.57 \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
@@ -105,7 +105,7 @@ Utilization of Human Capital Index (UHCI) & 0.27  &  0.27 & 0.27 \\
 \end{table}
 
 
-\begin{flushright}\includegraphics[height=0.8\textheight]{Graphs/p1_MDA_all} \end{flushright}
+\begin{flushright}\includegraphics[height=0.8\textheight]{Graphs/p1_AUS_all} \end{flushright}
 
 \vfill
 
@@ -116,7 +116,7 @@ Utilization of Human Capital Index (UHCI) & 0.27  &  0.27 & 0.27 \\
 
 \vspace{3mm} 
 
-Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. Due to the slow moving nature of the HCI, an additional set of Human Capital Complementary Indicators (HCCIs) offer a snapshot of proximate dimensions of human capital in Moldova that can be monitored to measure simultaneous progress in intermediate outcomes. These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.** *Among the 12 selected indicators with available data for Moldova, 1 have shown improvement over the past approximately 5 years, while 1 have experienced a decline.*
+Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. Due to the slow moving nature of the HCI, an additional set of Human Capital Complementary Indicators (HCCIs) offer a snapshot of proximate dimensions of human capital in Australia that can be monitored to measure simultaneous progress in intermediate outcomes. These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parenthesis) and benchmarked against regional and country income group averages. **They highlight where the need is for investment in people in each stage of life and for data collection and updates for evidence-based policy making.** *Among the 12 selected indicators with available data for Australia, 1 have shown improvement over the past approximately 5 years, while 1 have experienced a decline.*
 <<<
 \vspace{1mm}
 
@@ -124,39 +124,39 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
 
-* **Neonatal mortality rate (deaths per 1,000 live births).** The neonatal mortality rate is **11 per 1,000 live births** (*2021*). The indicator is both above the regional average (4) and the income group average (10).
+* **Neonatal mortality rate (deaths per 1,000 live births).** The neonatal mortality rate is **2 per 1,000 live births** (*2021*). The indicator is both below the regional average (10) and the income group average (3).
 
-* **Participation rate in organized learning (% of children one year before the official primary entry age).** As in (*2020*) ,  **100 percent** of children one year before the official primary entry age participate in an organized learning program.. The indicator is higher than both the regional average (88%) and the income group average (84%).
+* **Participation rate in organized learning (% of children one year before the official primary entry age).** As in (*2019*) ,  **83 percent** of children one year before the official primary entry age participate in an organized learning program.. The indicator is higher than the regional average (82%) but lower than the income group average (91%).
 
-* **Diphtheria vaccination (%).** Diphtheria vaccine coverage is **87 percent** (*2021*). The indicator is below the regional average (93%) but similar to the income group average (87%).
+* **Diphtheria vaccination (%).** Diphtheria vaccine coverage is **95 percent** (*2021*). The indicator is both above the regional average (83%) and the income group average (94%).
 
 
 ### \boldblue{S\small{CHOOL AGE}}###
 
-* **Child mortality (deaths per 1,000 youth aged 5).**  The mortality rate at ages 5–14 is **2 per 1,000 children aged 15** (*2021*). The indicator is higher than the regional average (1) but lower than the income group average (3).
+* **Child mortality (deaths per 1,000 youth aged 5).**  The mortality rate at ages 5–14 is **1 per 1,000 children aged 15** (*2021*). The indicator is lower than the regional average (4) and similar to the income group average (1).
 
-* **Schools with basic sanitation services (%).** The share of schools with improved sanitation facilities is **81 percent** (*2020*). The indicator is below the regional average (95%) but similar to the income group average (81%).
+* **Schools with basic sanitation services (%).** The share of schools with improved sanitation facilities is **100 percent** (*2021*). The indicator is both above the regional average (75%) and the income group average (98%).
 
-* **Net enrolment rate, lower secondary.** The percentage of school net enrolment at lower secondary is **99** (*2021*). The indicator is higher than both the regional average (98%) and the income group average (92%).
+* **Net enrolment rate, lower secondary.** The percentage of school net enrolment at lower secondary is **98** (*2020*). The indicator is higher than the regional average (88%) and similar to the income group average (98%).
 
 ### \boldblue{Y\small{OUTH}}###
 
-* **Youth literacy rate (%).** The literacy rate for youth ages 15-24 years is **100 percent** (*2021*). The indicator is similar to the regional average (100%) and higher than the income group average (98%).
+* **Adolescent fertility (births/1000 women).** The adolescent fertility rate, i.e., the number of births for every 1000 women ages 15-19, is **8** (*2021*). The indicator is lower than the regional average (12) but higher than the income group average (7).
 
-* **Upper secondary school completion rate (%).** Upper secondary school completion rate is **71 percent** (*2020*). The indicator is below the regional average (85%) but above the income group average (64%).
+* **Youth unemployment (%).** Unemployment among youth ages 15-24 is **8 percent** (*2023*). The indicator is both below the regional average (12%) and the income group average (15%).
 
-* **Youth mortality (deaths per 1,000 youth aged 15).**  The mortality rate at ages 15–24 is **7 per 1,000 youth aged 15** (*2021*). The indicator is higher than the regional average (4) but lower than the income group average (9).
+* **Gross tertiary school enrollment (%).** The tertiary school gross enrollment ratio is **114 percent** (*2020*). The indicator is higher than both the regional average (76%) and the income group average (81%).
 
 ### \boldblue{A\small{DULTS \& ELDERLY}}###
 
-* **Refugees (%).** The rate of refugees, under the mandate of the United Nations High Commissioner for Refugees (UNHCR), as percentage of population is **0 persons** (*2022*). The indicator is similar to both the regional average (0%) and the income group average (0%).
+* **Labor force participation (%).** The labor force participation as percentage of the working population is **66 percent** (*2022*). The indicator is above the regional average (65%) but below the income group average (67%).
 
-* **Current health expenditure (% of GDP).** The current health expenditure as a percentage of GDP is **7 percent** (*2020*). The indicator is lower than both the regional average (8%) and the income group average (8%).
+* **Life expectancy at birth (years).** Life expectancy at birth is **83 years** (*2021*). The indicator is higher than both the regional average (79 years) and the income group average (82 years).
 
-* **Asylum seekers (persons).** The rate of asylum seekers, specifically individuals awaiting a decision on their asylum claims under the mandate of the United Nations High Commissioner for Refugees (UNHCR), as percentage of population is **0 persons** (*2022*). The indicator is similar to both the regional average (0%) and the income group average (0%).
+* **Adult unemployment (%).** Unemployment among adults more than 25 years old is **3 percent** (*2023*). The indicator is similar to the regional average (3%) but below the income group average (4%).
 
 
 
-\begin{flushright}\includegraphics[height=0.88\textheight]{Graphs/p2_MDA_stages} \end{flushright}
+\begin{flushright}\includegraphics[height=0.88\textheight]{Graphs/p2_AUS_stages} \end{flushright}
 
 \End{multicols}
