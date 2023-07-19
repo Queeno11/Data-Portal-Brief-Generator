@@ -3,11 +3,11 @@
 ---
 title: "`r params$countrynamet`"
 output:
-   pdf_document: default
-   latex_engine: pdflatex
-   fig_caption: yes
-   keep_tex: yes
-   urlcolor: blue
+  pdf_document: 
+    keep_tex: true
+  latex_engine: pdflatex
+  fig_caption: yes
+  urlcolor: blue
 fontsize: 9pt
 geometry: "left=1.3cm,right=1.3cm,top=1.5cm,bottom=0.5cm"
 header-includes:  \usepackage{fancyhdr} 
