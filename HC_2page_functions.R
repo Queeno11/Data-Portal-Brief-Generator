@@ -1,5 +1,4 @@
 #install.packages('haven')
-rm(list = ls())
 library(haven)
 
 x <- read_dta('Data/Data_Output/ordered_text.dta')

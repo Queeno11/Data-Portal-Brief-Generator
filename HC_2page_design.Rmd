@@ -1,13 +1,13 @@
 
 
 ---
-title: "`r params$countrynamet`"
+title: "`r params$countrynamet``r params$extra`"
 output:
-   pdf_document: default
-   latex_engine: pdflatex
-   fig_caption: yes
-   keep_tex: yes
-   urlcolor: blue
+  pdf_document: 
+    keep_tex: true
+  latex_engine: pdflatex
+  fig_caption: yes
+  urlcolor: blue
 fontsize: 9pt
 geometry: "left=1.3cm,right=1.3cm,top=1.5cm,bottom=0.5cm"
 header-includes:  \usepackage{fancyhdr} 
@@ -50,7 +50,8 @@ header-includes:  \usepackage{fancyhdr}
   \usepackage{fbox}
   
 params:
-  countrynamet: "Afghanistan"   
+  countrynamet: "Afghanistan"
+  extra: ""
 
 ---
 \definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
@@ -109,7 +110,7 @@ Utilization-Adjusted Human Capital Index (UHCI) & `r x[which(x$wbcountryname == 
 \end{table}
 
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all.pdf")
+gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all", params$extra,".jpg")
 knitr::include_graphics(gr2)
 ```
 
@@ -163,7 +164,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages.pdf")
+gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
 knitr::include_graphics(gr3)
 ```
 
