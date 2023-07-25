@@ -12,6 +12,10 @@
 	*/
 
 * Check that all indicators selected have a text:
+import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
+drop d_*
+save "$data_processed\briefs_texts", replace
+
 use "$data_output\complete_series_wmd_${date}${extra}", clear
 merge m:1 name_portal using "$data_processed\briefs_texts", nogen
 count if (rank!=. & rank!=0 & missing(start_text))
@@ -177,7 +181,7 @@ replace qeyrs_text = "Internationally comparable data on quality adjusted years 
 
 gen asr_text = ///
 "Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" +  strofreal(round(asr,1)) + "**." ///
- This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
++ "This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
@@ -288,36 +292,36 @@ foreach ctry in `wb_country_codes' {
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
 			** Generate time text:
-			if `m'==1 {
-				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
-				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
+// 			if `m'==1 {
+				* Version 1. Example: ", changed from 7 percent (2021). // This remains unchanged since 2021."
+				local time_comparison_text ", changed from `ind_value_prev'`unit_time' (`ind_year_prev')"
 				capture gen `x'`m'_time_text = ""
 				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
-				cond(`higher_than_prev', "`time_comparison_text' increased `diff_value'`unit_time'", ///
-				cond(`similar_than_prev', "`time_comparison_text' remained unchanged", ///
+				cond(`lower_than_prev', "`time_comparison_text'", ///
+				cond(`higher_than_prev', "`time_comparison_text'", ///
+				cond(`similar_than_prev', ". This remains unchanged since `ind_year_prev'", ///
 				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
-			if `m'==2 {
-				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
-				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
-				capture gen `x'`m'_time_text = ""
-				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
-				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
-				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
-				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
-			if `m'==3 {
-				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
-				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
-				capture gen `x'`m'_time_text = ""
-				replace `x'`m'_time_text = ///
-				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
-				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
-				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
-				""))) if `indicator'!=. & wbcode=="`ctry'"
-			}
+// 			}
+// 			if `m'==2 {
+// 				* Version 2. Example: "The indicator has improved by 7 percentage point compared to its value 5 years ago."
+// 				local time_comparison_text "compared to its value `diff_year' years ago (`ind_value_prev')"
+// 				capture gen `x'`m'_time_text = ""
+// 				replace `x'`m'_time_text = ///
+// 				cond(`lower_than_prev', ". The indicator has decreased `diff_value'`unit_time' `time_comparison_text'", ///
+// 				cond(`higher_than_prev', ". The indicator has improved by `diff_value'`unit_time' `time_comparison_text'", ///
+// 				cond(`similar_than_prev', ". The indicator has remained unchanged `time_comparison_text'", ///
+// 				""))) if `indicator'!=. & wbcode=="`ctry'"
+// 			}
+// 			if `m'==3 {
+// 				* Version 3. Example: "87 percent of population (2021) has access to an improved sanitation facility at home, 7 percentage point higher than 5 years ago."
+// 				local time_comparison_text "`diff_year' years ago (`ind_value_prev')"
+// 				capture gen `x'`m'_time_text = ""
+// 				replace `x'`m'_time_text = ///
+// 				cond(`lower_than_prev', ", `diff_value'`unit_time' lower than `time_comparison_text'", ///
+// 				cond(`higher_than_prev', ", `diff_value'`unit_time' higher than `time_comparison_text'", ///
+// 				cond(`similar_than_prev', ", the same value as it was `time_comparison_text'", ///
+// 				""))) if `indicator'!=. & wbcode=="`ctry'"
+// 			}
 
 			** Generate region and income text:
 			if mod(`i',2)==1 { // If i is odd
@@ -331,7 +335,7 @@ foreach ctry in `wb_country_codes' {
 				"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc'). ", ///
 				cond(`similar_than_regional', ///
 				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc'). ", ///
-				""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+				""))) if `indicator'!=. & wbcode=="`ctry'"
 			}
 			if mod(`i',2)==0 { // If i is even
 				* Version 2. Example: "The indicator is below the regional average (32%) but above the income group average (42%)."
@@ -363,20 +367,20 @@ foreach ctry in `wb_country_codes' {
 			local no_data_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc', while within the income group, this indicator is `inc_avg'`unit_reginc'."
 
 			
-			*DROP TIME TEXT (Yanel - July 10th, 2023)
+
 			** Generate final text
 			capture gen `x'`m'_text = ""
 			* Full text when all data is there
-// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
-// 				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
-			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
- 				if `indicator'!=. & `indicator'_reg!=. & wbcode=="`ctry'"
-			* No time text when previous data is not available
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
+				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 // 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-// 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+//  				if `indicator'!=. & `indicator'_reg!=. & wbcode=="`ctry'"
+			* No time text when previous data is not available
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
+				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* No regional/income text when regional data is not available
-			*replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
-				*if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
+				if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
 			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
 				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==.) & wbcode=="`ctry'"
@@ -476,6 +480,9 @@ gen comparegender_uhci="higher" if round(uhci_m)>round(uhci_f)
 replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
 replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
+*Calculate implicit unemployment rate:
+gen not_employed = 1-(uhci/hci)
+
 save "$data_output\ordered_text", replace
 exit
 *--------------------------Merge to original base--------------------------*
@@ -484,7 +491,7 @@ exit
 /* Habría que chequear cuál de estos es el correcto (parecen pisarse) y borrar los que no sirvan */ 
 
 use "$data_processed\text", clear
-drop unicef_neomort_text unicef_mealfreq_text vacBCG_text uisger02_text uisger02_f_text uisger02_m_text uisger01_text lastnm_mmrt_text_1 unicef_care_text lastnm_birth_reg_text_1 unicef_breastf_text unicef_diarrhoea_text uiscr1_text uiscr1_f_text uiscr1_m_text lastnm_sec_ger_text_1 se_lpv_prim_text se_lpv_prim_f_text se_lpv_prim_m_text vacHEPBB_text uiscr2_text eip_neet_mf_y_text eip_neet_mf_y_f_text eip_neet_mf_y_m_text lastnm_afr_text_1 lastnm_ter_ger_text une_2eap_mf_y_text une_2eap_mf_y_f_text une_2eap_mf_y_m_text eap_2wap_mf_a_f_text eap_2wap_mf_a_m_text sp_dyn_le00_in_text sp_dyn_le00_in_f_text sp_dyn_le00_in_m_text lastnm_probdeath_ncd_text_1
+drop unicef_neomort_text unicef_mealfreq_text vacBCG_text uisger02_text uisger02_f_text uisger02_m_text uisger01_text lastnm_mmrt_text_1 unicef_care_text lastnm_birth_reg_text_1 unicef_breastf_text unicef_diarrhoea_text uiscr1_text uiscr1_f_text uiscr1_m_text lastnm_sec_ger_text_1 se_lpv_prim_text se_lpv_prim_f_text se_lpv_prim_m_text vacHEPBB_text uiscr2_text eip_neet_mf_y_text eip_neet_mf_y_f_text eip_neet_mf_y_m_text lastnm_afr_text_1 lastnm_ter_ger_text une_2eap_mf_y_text une_2eap_mf_y_f_text une_2eap_mf_y_m_text eap_dwap_mf_a_f_text eap_dwap_mf_a_m_text sp_dyn_le00_in_text sp_dyn_le00_in_f_text sp_dyn_le00_in_m_text lastnm_probdeath_ncd_text_1
 merge 1:1 wbcode using "$charts\ordered_text", nogen 	
 export excel "$charts\ordered_2", replace firstrow(variable) 
 save "$charts\ordered_text", replace
