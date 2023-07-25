@@ -75,15 +75,15 @@ foreach c in `wb_country_codes' {
 	local c7_`c' nostu
 	local c8_`c' uhci
 	
-	local lc1_`c' "Human Capital Index"
+	local lc1_`c' "{bf: Human Capital Index (%)}"
 	local lc2_`c' "Probability of Survival to Age 5"
 	local lc3_`c' "Expected Years of School"
-	local lc4_`c' "Harmonized Test Scores"
-	local lc5_`c' "Learning-adjusted Years of School"
-	local lc6_`c' "Adult Survival Rate"
+	local lc4_`c' "Average Harmonized Test Score"
+	local lc5_`c' "Learning-Adjusted Years of School"
+	local lc6_`c' "Fraction of 15-year-olds that will survive until age 60"
 	local lc7_`c' "Fraction of Children Under 5 Not Stunted"
-	local lc8_`c' "Utilization of Human Capital Index"
-	
+	local lc8_`c' "Utilization-Adjusted Human Capital Index (%)"
+		
 	}
 	
 	
@@ -108,11 +108,29 @@ foreach i of local obs {
 	local country=wbcountryname in `i'	
 	display "`country'"
 		
-		
+	*-------------------------------FORMATS--------------------------------*
+	* Markers
+	local reg_marker_fmt = "msymbol(D) mlc(black) mfcolor(sky)"
+	local inc_marker_fmt = "msymbol(S) mlc(black) mfcolor(orangebrown)"
+	local country_marker_fmt = "mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlc(black) mfcolor(reddish)"
+	local time_marker_fmt = "msymbol(S) mlc(black)"
+	* Legendsize(size(12pt) 12pt) 
+    local legend_text_ops = "linegap(1.9) placement(east) justification(left)"
+
+    local country_pos = 1 // top - its y axis
+    local reg_pos = 0 // bottom
+    local inc_pos = 0 // bottom
+	local time_pos = 0 // bottom
+    local first_col_marker_pos = 0 // left - its x axis
+    local first_col_text_pos = `first_col_marker_pos' + 0.05
+    local second_col_marker_pos = `first_col_marker_pos' + 2.1
+    local second_col_text_pos = `first_col_marker_pos' + 2.15
+
+
 	*------------------------------First page------------------------------*
 	
 	/* With available data - automatic */
-//
+
 	qui forvalues m = 1(1)`nc' {
 	
 		qui tab `c`m'_`ctry'' if wbcode=="`ctry'"		
@@ -130,17 +148,17 @@ foreach i of local obs {
 			scalar m75`c`m'_`ctry'' = `=scalar(r(p75))'
 			scalar m100`c`m'_`ctry'' = `=scalar(r(p100))'
 			scalar dif`c`m'_`ctry'' = `=scalar(m1`c`m'_`ctry'')' - `=scalar(m2`c`m'_`ctry'')'
-			scalar max`c`m'_`ctry'' = 20 * ceil(`=scalar(m1`c`m'_`ctry'')'/20) 	
-			scalar min`c`m'_`ctry'' = 20 * floor(`=scalar(m2`c`m'_`ctry'')'/20) 
+			scalar max`c`m'_`ctry'' = ceil(`=scalar(m1`c`m'_`ctry'')') 	
+			scalar min`c`m'_`ctry'' = floor(`=scalar(m2`c`m'_`ctry'')') 
 			scalar inter`c`m'_`ctry'' = (`=scalar(max`c`m'_`ctry'')'-`=scalar(min`c`m'_`ctry'')')/2
 			
 			twoway ///
 			/// (scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
-			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
-			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
+			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) mlabel(`c`m'_`ctry'') mlabsize(12pt) `country_marker_fmt') ///
+			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(12pt) `reg_marker_fmt') /// 
+			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(12pt) `inc_marker_fmt') /// 
 			/// (scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
-			(scatter onesvec `c`m'_`ctry'' if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) mlabel(`c`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(10pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_c`m')
 		}
 		else {
@@ -160,7 +178,7 @@ foreach i of local obs {
 			/// (scatter onesvec `c`m'_`ctry'' if `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_c`m')
 			drop obs_`c`m'_`ctry''
 		}
@@ -168,39 +186,19 @@ foreach i of local obs {
 		
 	/* Legend */ 
 	
-	gen m = 0.1
-	gen f_`ctry' = 1
-	gen g_`ctry' = 1.08 
-	gen h_`ctry' = 1.16
-	gen i_`ctry' = 1.24
-	gen j_`ctry' = 1.32
-	gen k_`ctry' = 1.4
+    twoway /// 
+    (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
+    (scatteri `reg_pos'     `first_col_marker_pos', msize(8pt) `reg_marker_fmt') ///
+    (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
+	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
+	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(12pt) `legend_text_ops') ///
+	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: Average for `region'.}", size(12pt) `legend_text_ops') ///
+	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: Average for `income2'.}", size(12pt) `legend_text_ops') ///
+      title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
+	  name(notes_`ctry', replace)
 	
-	/*
-	gen m = 0.1
-	gen f_`ctry' = 1
-	gen g_`ctry' = 1.04 
-	gen h_`ctry' = 1.08
-	gen i_`ctry' = 1.12
-	gen j_`ctry' = 1.16
-	gen k_`ctry' = 1.2
-	*/
-	
-	twoway /// 
-	/// (scatter f_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) msymbol(Oh) msize(vlarge) mcolor(dimgray*1.5) mlabposition(3) mlabgap(8pt)) ///
-	(scatter g_`ctry' m, msymbol(D) mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(D) msize(vlarge) mcolor(sky) mlabposition(3) mlabgap(8pt)) ///
-	(scatter h_`ctry' m, msymbol(s)  mlabcolor(black) mlabsize(8pt) mlc(black) msymbol(S) msize(vlarge) mcolor(orangebrown) mlabposition(3) mlabgap(8pt)) ///
-	(scatter i_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(reddish) msymbol(Oh) msize(vlarge) mlwidth(thick) mlabposition(3) mlabgap(8pt)) ///
-	(scatter j_`ctry' m, msymbol(Oh) mlabcolor(black) mlabsize(8pt) mlc(black) msize(vlarge) mcolor(reddish) mlabposition(3) mlabgap(6pt)) ///
-	(scatter k_`ctry' m, msymbol(Oh) msize(vtiny) mcolor(white) mlabcolor(black) mlabsize(8pt) mlabgap(8pt)) ///
-	, graphregion(color(white)) xscale(off) yscale(off) xlabel(0(0)4) legend(off) ylabel(,nogrid) ysize(1.8) text(1.205 1.65 "Notes for all figures in this brief:" "represents `country'." "represents `country' approximately 5 years earlier." "represents the average for `income2'." "represents the average for `region'." "represent other countries in the World.", size(10pt) linegap(1.7) justification(left)) ///
-	  name(notes_`ctry') 		
-	*graph export "$charts\notes_`ctry'.eps", replace
-	
-	drop m 
-
-	graph combine graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8 notes_`ctry', ///
-		rows(9) cols(1) xsize(4.4) ysize(8.8) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
+	graph combine notes_`ctry' graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8, ///
+		rows(9) cols(1) xsize(4.4) ysize(8.3) graphregion(fcolor(white) lcolor(black) lwidth(medium)) 
 	/* graph export "$charts\p1_`ctry'_all.pdf", replace	 */
 	graph export "$charts\p1_`ctry'_all${extra}.jpg", replace width(3200)
 
@@ -229,14 +227,27 @@ foreach i of local obs {
 			scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
 
 			twoway ///
+			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(35pt) mlabel(``x'`m'_`ctry'') mlabsize(23pt) `country_marker_fmt') ///
+			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) `reg_marker_fmt') /// 
 			/// (scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
-			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(D) mlc(black) mfcolor(sky)) /// 
 			/// (scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) /// 
-			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) mlabel(``x'`m'_`ctry'') mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlabsize(17pt) mlc(black) mfcolor(reddish)) ///
-			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(23pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) mfcolor("107 203 69") `time_marker_fmt') /// 
+			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(23pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
+
+	* Legend
+	twoway /// 
+		(scatteri `country_pos' `first_col_marker_pos', msize(12pt) `country_marker_fmt') ///
+		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) mfcolor("107 203 69") `time_marker_fmt') ///
+		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
+		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1) ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(18pt) `legend_text_ops') ///
+		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(18pt)  `legend_text_ops') ///
+	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: Average for `region'.}", size(18pt)  `legend_text_ops') ///
+		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(30pt) margin(b=3) pos(12)) ///
+		name(notes_`ctry', replace)
+
 		
 	// 	if _rc != 0 { 
 	// 		twoway ///
@@ -250,7 +261,7 @@ foreach i of local obs {
 	
 	/* Combine all graphs by page and export */
 	graph combine graph_`ctry'_l1 graph_`ctry'_l2 graph_`ctry'_l3, ///
-		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		rows(5) cols(1) xsize(6) ysize(5) graphregion(margin(zero) color(white)) ///
 		title("{fontface Utopia Semibold: EARLY CHILDHOOD}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_1, replace)
 	graph combine graph_`ctry'_e1 graph_`ctry'_e2 graph_`ctry'_e3, ///
@@ -262,11 +273,11 @@ foreach i of local obs {
 		title("{fontface Utopia Semibold: YOUTH}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_3, replace)
 	graph combine graph_`ctry'_b1 graph_`ctry'_b2 graph_`ctry'_b3, ///
-	rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
+		rows(3) cols(1) xsize(6) ysize(3.5) graphregion(margin(zero) color(white)) ///
 		title("{fontface Utopia Semibold: ADULTS & ELDERLY}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_4, replace)
 	
-	graph combine stage_1 stage_2 stage_3 stage_4, rows(4) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
+	graph combine notes_`ctry' stage_1 stage_2 stage_3 stage_4, rows(5) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	/* graph export "$charts\p2_`ctry'_stages.pdf", replace */
 	/* graph export "p2_`ctry'_stages.eps", replace */
 	graph export "$charts\p2_`ctry'_stages${extra}.jpg", replace width(3200) quality(100)

@@ -2,17 +2,10 @@
 *								Text for graphs						   
 *------------------------------------------------------------------------------*
 
-*---------------------------------Pendings---------------------------------*	
 	
-	/*
-	(Some) pendings for update:
-	1 - check all texts and ifs (some minor errors were find last year, need for correction)
-	2 - add text for new indicators
-	3 - add text for previous 5 (approx) years
-	*/
 
 * Check that all indicators selected have a text:
-use "$data_output\complete_series_wmd_${date}${extra}", clear
+use "$data_output\complete_series_wmd_${date}", clear
 merge m:1 name_portal using "$data_processed\briefs_texts", nogen
 count if (rank!=. & rank!=0 & missing(start_text))
 assert r(N)==0
@@ -177,8 +170,8 @@ replace qeyrs_text = "Internationally comparable data on quality adjusted years 
 
 gen asr_text = ///
 "Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" +  strofreal(round(asr,1)) + "**." ///
- This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
-replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
+	+ "This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
+	replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
 "Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are **not** stunted." ///
@@ -331,7 +324,7 @@ foreach ctry in `wb_country_codes' {
 				"`reginc_text' higher than the regional average (`reg_avg'`unit_reginc'). ", ///
 				cond(`similar_than_regional', ///
 				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc'). ", ///
-				""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+				""))) if `indicator'!=. & wbcode=="`ctry'"
 			}
 			if mod(`i',2)==0 { // If i is even
 				* Version 2. Example: "The indicator is below the regional average (32%) but above the income group average (42%)."

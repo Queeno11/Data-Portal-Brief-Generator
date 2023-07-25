@@ -7,7 +7,7 @@ set more off
 global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"05_jul_2023" // Date when the full process is run
-global extra			"_oneline"			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *----------------------------------Globals---------------------------------*
 cd "${root}"
