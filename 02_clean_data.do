@@ -768,7 +768,13 @@ replace gender = 1 if sexlabel=="Sex: Male"
 replace gender = 2 if sexlabel=="Sex: Female"
 merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen keep(3)
 keep wbcode gender year eap_dwap_mf_a
+drop if gender==.
+reshape wide eap_dwap_mf_a, i(wbcode year) j(gender)
+rename eap_dwap_mf_a1 eap_dwap_m_a
+rename eap_dwap_mf_a2 eap_dwap_f_a 
 lab var eap_dwap_mf_a "Labor force participation (%)"	
+lab var eap_dwap_m_a "Labor force participation, male (%)"	
+lab var eap_dwap_f_a "Labor force participation, female (%)"	
 save "$data_processed/laborforce", replace 
 
 *Unemployment
@@ -919,11 +925,11 @@ merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	
-wbopendata, indicator(SE.LPV.PRIM) latest long clear
-rename countrycode wbcode
-gen gender=0
-keep year wbcode se_lpv_prim gender
-save"$data_processed/learning_poverty", replace 
+// wbopendata, indicator(SE.LPV.PRIM) latest long clear
+// rename countrycode wbcode
+// gen gender=0
+// keep year wbcode se_lpv_prim gender
+// save"$data_processed/learning_poverty", replace 
 
 *------------------------------------UIS-----------------------------------*			
 import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
