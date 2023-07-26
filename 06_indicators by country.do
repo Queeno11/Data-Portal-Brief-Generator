@@ -103,6 +103,23 @@
 	replace rank=. if vy_<2018 // FIXME: ver de agregar que haya también dato previo para comparar
 	sort wbcode category topic gender rank 
 	bysort wbcode category topic gender: gen arank = _n + rank - rank // (+ rank - rank) to make arank missing when rank is missing
+	gen dim_rank = .
+	* Early childhood
+	replace dim_rank = 1 if category==1 & topic=="Health"
+	replace dim_rank = 2 if category==1 & topic=="Education"
+	replace dim_rank = 3 if category==1 & topic=="Labor"
+	* School-aged children
+	replace dim_rank = 1 if category==2 & topic=="Education"
+	replace dim_rank = 2 if category==2 & topic=="Labor"
+	replace dim_rank = 3 if category==2 & topic=="Health"
+	* Youth 
+	replace dim_rank = 1 if category==3 & topic=="Labor"
+	replace dim_rank = 2 if category==3 & topic=="Education"
+	replace dim_rank = 3 if category==3 & topic=="Health"
+	* Adulthood and elderly
+	replace dim_rank = 1 if category==4 & topic=="Labor"
+	replace dim_rank = 2 if category==4 & topic=="Health"
+	replace dim_rank = 3 if category==4 & topic=="Education"
 	
 	*----------------------Selection of indicators-------------------------*
 	
@@ -163,7 +180,7 @@
 
 					// Little trick to get the position of the best ranked indicator 
 					//	(best ranked of every other topic, if tie, then the newer)
-					sort rank inv_year
+					sort rank dim_rank inv_year
 					gen position = _n if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
 					egen min_position = min(position) if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
 					replace selected_indicator = 1 if min_position == position & position !=.

@@ -35,6 +35,14 @@ setwd(path)
 # Run setup for database and functions
 source("HC_2page_functions.R")
 
+#### FILTER ##########################
+# Create a vector of the values you want to filter
+selected_wbcodes <- c("AFG", "AUS", "ESP", "ISL", "ARG")
+x <- subset(x, wbcode %in% selected_wbcodes)
+countrynamet <- x[["wbcountryname"]]
+countrycodes <- x[["wbcode"]]
+######################################
+
 # Set progress bar
 pb = txtProgressBar(min = 0, max = length(countrynamet), initial = 0, style=3) 
 
@@ -43,12 +51,9 @@ for (i in 1:length(countrynamet)) {
     country <- countrynamet[i]
     wbcode <- countrycodes[i]
     
-    country <- "Australia"
-    wbcode <- "AUS"
-
     output_folder <- file.path("Briefs", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
-    #dir.create(output_folder)
+    dir.create(output_folder)
 
     ## Render Rmd to PDF
     suppressWarnings(
@@ -71,10 +76,9 @@ for (i in 1:length(countrynamet)) {
     # Move the file
     file.rename(log_filename, destination_path)
     
-    break
-    
   setTxtProgressBar(pb,i)
   
 }
 
 close(pb)
+print("All briefs created!")

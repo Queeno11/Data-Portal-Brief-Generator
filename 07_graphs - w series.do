@@ -76,7 +76,7 @@ foreach c in `wb_country_codes' {
 	local c8_`c' uhci
 	
 	local lc1_`c' "{bf: Human Capital Index (%)}"
-	local lc2_`c' "Probability of Survival to Age 5"
+	local lc2_`c' "Fraction of live births that will survive until age 5"
 	local lc3_`c' "Expected Years of School"
 	local lc4_`c' "Average Harmonized Test Score"
 	local lc5_`c' "Learning-Adjusted Years of School"
@@ -94,7 +94,7 @@ foreach c in `wb_country_codes' {
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-	if (wbcode[`i'] != "AUS") continue 
+	if !inlist(wbcode[`i'], "AFG", "AUS", "ESP", "ISL", "ARG") continue 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -186,14 +186,32 @@ foreach i of local obs {
 		
 	/* Legend */ 
 	
+	* Make abreaviation for the legend if it's too long
+	local full_region_text = "Average for `region'."
+	if length("`full_region_text'") > 40 {
+		local region_text = "Avg. for `region'."
+	}
+	else {
+		local region_text = "`full_region_text'"
+	}
+
+	local full_income_text = "Average for `income2'."
+	if length("`full_income_text'") > 40 {
+		local income_text = "Avg. for `income2'."
+	}
+	else {
+		local income_text = "`full_income_text'"
+	}
+
+
     twoway /// 
     (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
     (scatteri `reg_pos'     `first_col_marker_pos', msize(8pt) `reg_marker_fmt') ///
     (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
 	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(18) ///
-	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(12pt) `legend_text_ops') ///
-	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: Average for `region'.}", size(12pt) `legend_text_ops') ///
-	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: Average for `income2'.}", size(12pt) `legend_text_ops') ///
+	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(11pt) `legend_text_ops') ///
+	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(11pt) `legend_text_ops') ///
+	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(11pt) `legend_text_ops') ///
 	  /// title("{fontface Utopia Semibold: HCI and COMPONENTS}", span color("15 119 157") size(22pt) margin(b=1) pos(12)) ///
   	  /// subtitle("{fontface Utopia Semibold: Key components for measuring future productivity}", span color(black) size(17pt) margin(b=2.5) pos(12)) ///
       title("{fontface Utopia Semibold: HUMAN CAPITAL INDEX}", span color("15 119 157") size(22pt) margin(b=1) pos(12)) ///
@@ -239,15 +257,24 @@ foreach i of local obs {
 			  name(graph_`ctry'_`x'`m')
 		}
 
+	* Make abreaviation for the legend if it's too long
+	local full_region_text = "Average for `region'."
+	if length("`full_region_text'") > 40 {
+		local region_text = "Avg. for `region'."
+	}
+	else {
+		local region_text = "`full_region_text'"
+	}
+
 	* Legend
 	twoway /// 
 		(scatteri `country_pos' `first_col_marker_pos', msize(12pt) `country_marker_fmt') ///
 		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) color("245 202 195") `time_marker_fmt') ///
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
 		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(18) ysize(1) ///
-		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(18pt) `legend_text_ops') ///
-		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(18pt)  `legend_text_ops') ///
-	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: Average for `region'.}", size(18pt)  `legend_text_ops') ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(17pt) `legend_text_ops') ///
+		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(17pt)  `legend_text_ops') ///
+	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(17pt)  `legend_text_ops') ///
 		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(30pt) margin(b=1) pos(12)) ///
 		subtitle("{fontface Utopia Semibold: Country performance by stage of life}", span color(black) size(22pt) margin(b=2.5) pos(12)) ///
 		name(notes_`ctry', replace)
