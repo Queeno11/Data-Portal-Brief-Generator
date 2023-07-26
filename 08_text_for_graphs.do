@@ -156,7 +156,7 @@ replace hci_text = "The data on HCI is not available in " + wbcountrynameb + "."
 
 gen psurv_text = ///
 "Of every 100 children born in " + wbcountrynameb + ", **" + strofreal(round(psurv,1)) + "** survive to age 5." if psurv!=.
-replace psurv_text = "Internationally comparable data on probability of survival to age 5 are not available for " + wbcountrynameb + "." if psurv==.
+replace psurv_text = "Internationally comparable data on fraction of live births that will survive until age 5 are not available for " + wbcountrynameb + "." if psurv==.
 
 gen eyrs_text = ///
 "In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + " years**"  ///
@@ -174,12 +174,12 @@ replace qeyrs_text = "Internationally comparable data on quality adjusted years 
 
 gen asr_text = ///
 "Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" +  strofreal(round(asr,1)) + "**." ///
-+ "This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
++ " This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
 "Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are **not** stunted." ///
-+ "This means that **" + strofreal(round((100-nostu),1)) +  "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
++ " This means that **" + strofreal(round((100-nostu),1)) +  "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
 replace nostu_text = "Internationally comparable data on stunting are not available for " + wbcountrynameb + "." if nostu==.
 
 // GENDER COMPARISON 
@@ -335,25 +335,13 @@ foreach ctry in `wb_country_codes' {
 				local reginc_text ". The indicator is"
 				capture gen `x'`m'_reginc_text = ""
 				replace `x'`m'_reginc_text = ///
-				cond(`lower_than_regional'   & `lower_than_income', ///
-				"`reginc_text' both below the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`higher_than_regional'  & `higher_than_income', ///
-				"`reginc_text' both above the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`higher_than_regional'  & `lower_than_income', ///
-				"`reginc_text' above the regional average (`reg_avg'`unit_reginc') but below the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`lower_than_regional'   & `higher_than_income', ///
-				"`reginc_text' below the regional average (`reg_avg'`unit_reginc') but above the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`similar_than_regional' & `similar_than_income', ///
-				"`reginc_text' similar to both the regional average (`reg_avg'`unit_reginc') and the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`similar_than_regional' & `higher_than_income', ///
-				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') but above the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`similar_than_regional' & `lower_than_income', ///
-				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc') but below the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`higher_than_regional'  & `similar_than_income', ///
-				"`reginc_text' above the regional average (`reg_avg'`unit_reginc') but similar to the income group average (`inc_avg'`unit_reginc'). ", ///
-				cond(`lower_than_regional'   & `similar_than_income', ///
-				"`reginc_text' below the regional average (`reg_avg'`unit_reginc') but similar to the income group average (`inc_avg'`unit_reginc'). ", ///
-				""))))))))) if `indicator'!=. & wbcode=="`ctry'"
+				cond(`lower_than_regional', ///
+				"`reginc_text' below the regional average (`reg_avg'`unit_reginc'). ", ///
+				cond(`higher_than_regional', ///
+				"`reginc_text' above the regional average (`reg_avg'`unit_reginc'). ", ///
+				cond(`similar_than_regional', ///
+				"`reginc_text' similar to the regional average (`reg_avg'`unit_reginc'). ", ///
+				""))) if `indicator'!=. & wbcode=="`ctry'"
 			}
 			drop selected
 			
@@ -365,24 +353,22 @@ foreach ctry in `wb_country_codes' {
 			capture gen `x'`m'_text = ""
 			* Full text when all data is there
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
-// 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-//  				if `indicator'!=. & `indicator'_reg!=. & wbcode=="`ctry'"
+				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg!=. & wbcode=="`ctry'"
 			* No time text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_reginc_text ///
-				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg!=. & wbcode=="`ctry'"
 			* No regional/income text when regional data is not available
 			replace `x'`m'_text = `x'`m'_start_text + `x'`m'_time_text ///
-				if `indicator'!=. & `indicator'_prev!=. & (`indicator'_reg==. | `indicator'_inc==.) & wbcode=="`ctry'"
+				if `indicator'!=. & `indicator'_prev!=. & `indicator'_reg==. & wbcode=="`ctry'"
 			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
-				if `indicator'!=. & `indicator'_prev==. & (`indicator'_reg==.) & wbcode=="`ctry'"
+				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg==. & wbcode=="`ctry'"
 			* No local text when local data is not available
 			replace `x'`m'_text = "`no_data_text'"  ///
 				if `indicator'==. & `indicator'_reg!=. & wbcode=="`ctry'"
 			* Only no_data_text when no data is available
 			replace `x'`m'_text = "`no_data_text'"  ///
-				if `indicator'==. & (`indicator'_reg==.) & wbcode=="`ctry'"
+				if `indicator'==. & `indicator'_reg==. & wbcode=="`ctry'"
 				
 			** Generate text with a summary of changing indicators:
 			capture gen `x'`m'_change_up = 0

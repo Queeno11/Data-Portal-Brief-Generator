@@ -63,43 +63,48 @@ This two-page brief provides the 2020 Human Capital Index (HCI) and a set of com
 
 \Begin{multicols}{2}
 
+\vspace{-6mm}
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX}}###
+\vspace{-2mm}
 
 `r x[which(x$wbcountryname == params$countrynamet),"hci_text_1"]` 
 
 `r x[which(x$wbcountryname == params$countrynamet),"hci_text_2"]` 
 
+\vspace{-2mm}
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX COMPONENTS}}###
+\vspace{-2mm}
 
-* **Probability of Survival to Age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+* **Fraction of live births that will survive until age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
 
 * **Expected Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"eyrs_text"]`
 
-* **Harmonized Test Scores.** `r x[which(x$wbcountryname == params$countrynamet),"test_text"]`
+* **Average Harmonized Test Scores.** `r x[which(x$wbcountryname == params$countrynamet),"test_text"]`
 
-* **Learning-adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
+* **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
-* **Fraction of Surviving Adults.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+* **Fraction of 15-year-olds that will survive until age 60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
+\vspace{-6mm}
+### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL INDEX}}###
+\vspace{-2mm}
 
-### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL}}###
+Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are not employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
 
-Around `r round(x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent of working-age people in `r params$countrynamet` are not employed. This means they cannot use their human capital to increase their productivity, resulting in a decreasing productivity by an additional `r round(1 - x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent. Thus, a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
+Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent).
 
-Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent)
-
-\vspace{-0.5mm}
+\vspace{-7mm}
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
-\begin{tabular}{m{0.3\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
+\begin{tabular}{m{0.29\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
 \\\textbf{     }   &    &             &  \\ \hline
                          &      &              & \\
-\textbf{ Human Capital and Utilization   } & \textbf{ Boys} & \textbf{ Girls} &  \textbf{ Overall} \\\hline
+\textbf{ Human Capital and Utilization   } & \textbf{Boys} & \textbf{Girls} &  \textbf{Overall} \\\hline
 \vspace{-1mm} \\
-Human Capital Index &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_m"])`% &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_f"])`% &    `r round(x[which(x$wbcountryname == params$countrynamet),"hci"])`%\\
-Utilization-Adjusted Human Capital Index & `r rount(x[which(x$wbcountryname == params$countrynamet),"uhci_m"])`%  &  `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_f"])`% & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci"])`% \\
+Human Capital Index &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_m"])`\% &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_f"])`\% &    `r round(x[which(x$wbcountryname == params$countrynamet),"hci"])`\% \\
+Utilization-Adjusted Human Capital Index & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_m"])`\%  &  `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_f"])`\% & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci"])`\% \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
@@ -127,7 +132,9 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 \Begin{multicols}{2}
 
+\vspace{-6mm}
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
+\vspace{-2mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"l1_text"]`
 
@@ -135,8 +142,9 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 * `r x[which(x$wbcountryname == params$countrynamet),"l3_text"]`
 
-
+\vspace{-6mm}
 ### \boldblue{S\small{CHOOL AGE}}###
+\vspace{-2mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"e1_text"]`
 
@@ -144,7 +152,9 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 * `r x[which(x$wbcountryname == params$countrynamet),"e3_text"]`
 
+\vspace{-6mm}
 ### \boldblue{Y\small{OUTH}}###
+\vspace{-2mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"h1_text"]`
 
@@ -152,7 +162,9 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 * `r x[which(x$wbcountryname == params$countrynamet),"h3_text"]`
 
+\vspace{-6mm}
 ### \boldblue{A\small{DULTS \& ELDERLY}}###
+\vspace{-2mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"b1_text"]`
 
