@@ -122,9 +122,9 @@ foreach i of local obs {
     local inc_pos = 0 // bottom
 	local time_pos = 0 // bottom
     local first_col_marker_pos = 0 // left - its x axis
-    local first_col_text_pos = `first_col_marker_pos' + 0.05
+    local first_col_text_pos = `first_col_marker_pos' + 0.07
     local second_col_marker_pos = `first_col_marker_pos' + 2.1
-    local second_col_text_pos = `first_col_marker_pos' + 2.15
+    local second_col_text_pos = `first_col_marker_pos' + 2.17
 
 
 	*------------------------------First page------------------------------*
@@ -188,7 +188,7 @@ foreach i of local obs {
 	
 	* Make abreaviation for the legend if it's too long
 	local full_region_text = "Average for `region'."
-	if length("`full_region_text'") > 40 {
+	if length("`full_region_text'") > 35 {
 		local region_text = "Avg. for `region'."
 	}
 	else {
@@ -259,7 +259,7 @@ foreach i of local obs {
 
 	* Make abreaviation for the legend if it's too long
 	local full_region_text = "Average for `region'."
-	if length("`full_region_text'") > 40 {
+	if length("`full_region_text'") > 35 {
 		local region_text = "Avg. for `region'."
 	}
 	else {
@@ -272,9 +272,9 @@ foreach i of local obs {
 		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) color("245 202 195") `time_marker_fmt') ///
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
 		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(18) ysize(1) ///
-		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(17pt) `legend_text_ops') ///
-		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(17pt)  `legend_text_ops') ///
-	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(17pt)  `legend_text_ops') ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(15pt) `legend_text_ops') ///
+		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(15pt)  `legend_text_ops') ///
+	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(15pt)  `legend_text_ops') ///
 		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(30pt) margin(b=1) pos(12)) ///
 		subtitle("{fontface Utopia Semibold: Country performance by stage of life}", span color(black) size(22pt) margin(b=2.5) pos(12)) ///
 		name(notes_`ctry', replace)

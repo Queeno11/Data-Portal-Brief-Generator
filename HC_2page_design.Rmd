@@ -91,7 +91,7 @@ This two-page brief provides the 2020 Human Capital Index (HCI) and a set of com
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL INDEX}}###
 \vspace{-2mm}
 
-Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are not employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
+Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
 
 Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent).
 
