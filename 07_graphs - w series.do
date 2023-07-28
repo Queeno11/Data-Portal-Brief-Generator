@@ -308,7 +308,7 @@ foreach i of local obs {
 		title("{fontface Utopia Semibold: ADULTS & ELDERLY}", suffix color("15 119 157") size(18pt) linegap(3) pos(12) span) ///
 		name(stage_4, replace)
 	
-	graph combine notes_`ctry' stage_1 stage_2 stage_3 stage_4, rows(5) cols(1) xsize(6) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
+	graph combine notes_`ctry' stage_1 stage_2 stage_3 stage_4, rows(5) cols(1) xsize(6) ysize(13) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	/* graph export "$charts\p2_`ctry'_stages.pdf", replace */
 	/* graph export "p2_`ctry'_stages.eps", replace */
 	graph export "$charts\p2_`ctry'_stages${extra}.jpg", replace width(3200) quality(100)

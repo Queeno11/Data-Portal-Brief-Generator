@@ -287,7 +287,7 @@ foreach ctry in `wb_country_codes' {
 			** Generate time text:
 // 			if `m'==1 {
 				* Version 1. Example: ", changed from 7 percent (2021). // This remains unchanged since 2021."
-				local time_comparison_text ", changed from `ind_value_prev' `unit_time' (`ind_year_prev')"
+				local time_comparison_text ", compared to `ind_value_prev' `unit_time' in `ind_year_prev'"
 				capture gen `x'`m'_time_text = ""
 				replace `x'`m'_time_text = ///
 				cond(`lower_than_prev', "`time_comparison_text'", ///

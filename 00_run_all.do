@@ -7,7 +7,7 @@ set more off
 global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"25_jul_2023" // Date when the full process is run
-global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
+global extra			"_nosubt"			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *----------------------------------Globals---------------------------------*
 cd "${root}"
@@ -51,13 +51,16 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-do "$root\07_graphs - w series${extra}.do"
+// do "$root\07_graphs - w series${extra}.do"
 
 ** 08 - Generates text for the briefs
-do "$root\08_text_for_graphs.do"
+// do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
 shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"
 
 ** 10 - Generate the Excels --Datasheet for each country
+python script "$root\10_add_header_and_footer.py"
+
+** 11 - Generate the Excels --Datasheet for each country
 // do "$root\10_create_excels.py"
