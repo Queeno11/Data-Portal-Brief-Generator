@@ -96,7 +96,7 @@ for country_data in df[["wbcode", "wbcountryname"]].itertuples():
 
     # Save them
     page_1.save(
-        rf"test_{wbcode}_2.pdf",
+        rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
         "PDF",
         resolution=100.0,
         save_all=True,
