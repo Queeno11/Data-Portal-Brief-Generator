@@ -72,14 +72,14 @@ local c6 asr
 local c7 nostu
 local c8 uhci
 
-local lc1 "HUMAN CAPITAL INDEX (%)"
+local lc1 "HUMAN CAPITAL INDEX"
 local lc2 "Fraction of live births that will survive until age 5"
 local lc3 "Expected Years of School"
 local lc4 "Average Harmonized Test Score"
 local lc5 "Learning-Adjusted Years of School"
 local lc6 "Fraction of 15-year-olds that will survive until age 60"
 local lc7 "Fraction of Children Under 5 Not Stunted"
-local lc8 "UTILIZATION-ADJUSTED HUMAN CAPITAL INDEX (%)"
+local lc8 "UTILIZATION-ADJUSTED HUMAN CAPITAL INDEX"
 
 local cc1 "15 119 157"
 local cc2 black
@@ -98,7 +98,7 @@ local cc8 "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-	if !inlist(wbcode[`i'], "AFG", "AUS", "ESP", "ISL", "ARG") continue 
+	/* if !inlist(wbcode[`i'], "AFG", "AUS", "ESP", "ISL", "ARG") continue  */
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -156,7 +156,7 @@ foreach i of local obs {
 			scalar min`c`m'' = floor(`=scalar(m2`c`m'')') 
 			scalar inter`c`m'' = (`=scalar(max`c`m'')'-`=scalar(min`c`m'')')/2
 			
-			if "`lc`m''"=="HUMAN CAPITAL INDEX (%)" {
+			if `m'==1 | `m'==8 {
 				local country_marker_fmt = "mlabcolor(reddish) mlabposition(12) mlabformat(%8.2f) mlc(black) mfcolor(reddish)"
 			}
 			else {
@@ -222,7 +222,7 @@ foreach i of local obs {
 	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
 	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(11pt) `legend_text_ops') ///
 	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(11pt) `legend_text_ops') ///
-	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income2'}", size(11pt) `legend_text_ops') ///
+	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(11pt) `legend_text_ops') ///
       title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
 	  name(notes, replace)
 	
@@ -233,6 +233,8 @@ foreach i of local obs {
 
 	*------------------------------Second Page-----------------------------*
 	
+	local country_marker_fmt = "mlabcolor(reddish) mlabposition(12) mlabformat(%8.0f) mlc(black) mfcolor(reddish)"
+
 	qui foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
@@ -278,7 +280,7 @@ foreach i of local obs {
 	* Legend
 	twoway /// 
 		(scatteri `country_pos' `first_col_marker_pos', msize(12pt) `country_marker_fmt') ///
-		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) mfcolor("107 203 69") `time_marker_fmt') ///
+		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) color("245 202 195") `time_marker_fmt') ///
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
 		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1) ///
 		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(15pt) `legend_text_ops') ///

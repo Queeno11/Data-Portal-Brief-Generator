@@ -62,7 +62,7 @@ params:
 
 \vspace{2.3em}
 
-This two-page brief provides the 2020 Human Capital Index (HCI) and a set of complementary indicators. The HCI measures the potential amount of human capital that a child born today can attain by age 18, conveying the productivity of the next generation of workers compared to a benchmark of complete education and full health. While the effects of COVID-19 on this index are yet to be measured due to the lack of data, we expect the immediate post-pandemic HCI to be relatively lower due to significant global setbacks in deep learning and health. **Data collection efforts to allow updates to the HCI remain critical for all countries to inform policies and programs to address the setbacks to human capital.**
+**Human capital –the knowledge, skills, and health that enable people to be productive members of society– is a critical ingredient for economic growth. This brief tracks `r params$countrynamet` progress in accumulating and using human capital through two sets of indicators.** Page 1 presents the Human Capital Index (HCI), its component parts, and relevant country benchmarks. The HCI measures the foregone productivity of the next generation of workers due to incomplete education and health investments in today's children.  The utilization-adjusted HCI takes into account additional foregone productivity of non-working adults. The data are from 2020. Page 2 presents Human Capital Complementary Indicators (HCCI) that proxy success at each stage of the lifecycle, based on the most recent data. 
 
 \vspace{0.5em}
 
@@ -96,9 +96,9 @@ This two-page brief provides the 2020 Human Capital Index (HCI) and a set of com
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL INDEX}}###
 \vspace{-2mm}
 
-Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
+Around **`r round(x[which(x$wbcountryname == params$countrynamet), "not_employed"]*100)` percent** of working-age people in `r params$countrynamet` are not employed. This means they cannot use their human capital to increase their productivity, resulting in a decreasing productivity by an additional **`r round(x[which(x$wbcountryname == params$countrynamet), "not_employed"]*100)` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"]*100)` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
 
-Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"])` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"])` percent).
+Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbcountryname == params$countrynamet),"comparegender_uhci"]` for males (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_m"]*100)` percent) than for females (`r round(x[which(x$wbcountryname == params$countrynamet), "uhci_f"]*100)` percent).
 
 \vspace{-7mm}
 \begin{table}[H]
@@ -108,8 +108,8 @@ Comparing by gender, the utilization-adjusted human capital is `r x[which(x$wbco
                          &      &              & \\
 \textbf{ Human Capital and Utilization   } & \textbf{Boys} & \textbf{Girls} &  \textbf{Overall} \\\hline
 \vspace{-1mm} \\
-Human Capital Index &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_m"])`\% &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_f"])`\% &    `r round(x[which(x$wbcountryname == params$countrynamet),"hci"])`\% \\
-Utilization-Adjusted Human Capital Index & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_m"])`\%  &  `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_f"])`\% & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci"])`\% \\
+Human Capital Index &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_m"], 2)` &   `r round(x[which(x$wbcountryname == params$countrynamet),"hci_f"], 2)` &    `r round(x[which(x$wbcountryname == params$countrynamet),"hci"], 2)` \\
+Utilization-Adjusted Human Capital Index & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_m"], 2)`  &  `r round(x[which(x$wbcountryname == params$countrynamet),"uhci_f"], 2)` & `r round(x[which(x$wbcountryname == params$countrynamet),"uhci"], 2)` \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
@@ -131,7 +131,7 @@ knitr::include_graphics(gr2)
  
 $$\\[-3em]$$
 
-Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parentheses) and benchmarked against regional averages and progress in the last five years. **They highlight where there is need for investment in people in each stage of life and for data collection and updates for evidence-based policy making.**
+Human capital is multi-dimensional and cumulatively built over the lifecycle. The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. They draw from the latest available data (italicized and shown in parentheses) and data 5-years prior. The HCCIs are benchmarked against regional averages and progress in the last five years.
 
 \vspace{1mm}
 

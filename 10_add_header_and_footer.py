@@ -66,39 +66,43 @@ def add_header_and_footer(background, header, footer):
 
 
 df = pd.read_stata(rf"{data_output}\data_briefs.dta")
-df = df[df.wbcode.isin(["AFG", "AUS", "SPA", "ISL", "ARG"])]
+# df = df[df.wbcode.isin(["AFG", "AUS", "SPA", "ISL", "ARG"])]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images")
 
 for country_data in df[["wbcode", "wbcountryname"]].itertuples():
-    wbcode = country_data[1]
-    wbcountryname = country_data[2]
+    try:
+        wbcode = country_data[1]
+        wbcountryname = country_data[2]
 
-    print(wbcode)
-    pdf = convert_from_path(
-        rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
-        size=(1700 * 2.5, 2200 * 2.5),
-    )  # This returns a list even for a 1 page pdf
+        print(wbcode)
+        pdf = convert_from_path(
+            rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
+            size=(1700 * 2.5, 2200 * 2.5),
+        )  # This returns a list even for a 1 page pdf
 
-    ## P1
-    header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
-    header = Image.open(header_path)
-    footer = Image.open(rf"{sources}\Footer Images\p1 footer.png")
+        ## P1
+        header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
+        header = Image.open(header_path)
+        footer = Image.open(rf"{sources}\Footer Images\p1 footer.png")
 
-    page_1 = add_header_and_footer(pdf[0], header, footer)
+        page_1 = add_header_and_footer(pdf[0], header, footer)
 
-    ## P2
-    header_path = [header for header in headers if f"2-HCCB-{wbcode}" in header][0]
-    header = Image.open(header_path)
-    footer = Image.open(rf"{sources}\Footer Images\p2 footer.png")
+        ## P2
+        header_path = [header for header in headers if f"2-HCCB-{wbcode}" in header][0]
+        header = Image.open(header_path)
+        footer = Image.open(rf"{sources}\Footer Images\p2 footer.png")
 
-    page_2 = add_header_and_footer(pdf[1], header, footer)
+        page_2 = add_header_and_footer(pdf[1], header, footer)
 
-    # Save them
-    page_1.save(
-        rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
-        "PDF",
-        resolution=100.0,
-        save_all=True,
-        append_images=[page_2],
-    )
+        # Save them
+        page_1.save(
+            rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
+            "PDF",
+            mode="RGBA",
+            resolution=100.0,
+            save_all=True,
+            append_images=[page_2],
+        )
+    except:
+        print(f"Error with {wbcode}")
