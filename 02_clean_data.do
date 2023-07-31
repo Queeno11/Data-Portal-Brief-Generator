@@ -768,10 +768,8 @@ replace gender = 1 if sexlabel=="Sex: Male"
 replace gender = 2 if sexlabel=="Sex: Female"
 merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen keep(3)
 keep wbcode gender year eap_dwap_mf_a
-drop if gender==.
-reshape wide eap_dwap_mf_a, i(wbcode year) j(gender)
-rename eap_dwap_mf_a1 eap_dwap_m_a
-rename eap_dwap_mf_a2 eap_dwap_f_a 
+gen eap_dwap_m_a = eap_dwap_mf_a if gender==1
+gen eap_dwap_f_a = eap_dwap_mf_a if gender==2
 lab var eap_dwap_mf_a "Labor force participation (%)"	
 lab var eap_dwap_m_a "Labor force participation, male (%)"	
 lab var eap_dwap_f_a "Labor force participation, female (%)"	

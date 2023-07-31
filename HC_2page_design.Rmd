@@ -84,7 +84,11 @@ This two-page brief provides the 2020 Human Capital Index (HCI) released in Sept
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
 
+<<<<<<< Updated upstream
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL}}###
+=======
+Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
+>>>>>>> Stashed changes
 
 As the returns on human capital materialize through work, we introduce a utilization-adjusted Human Capital Index (UHCI) that adjust the HCI for underutilization, by taking into account the proportion of the employed working-age population. 
 
@@ -110,7 +114,7 @@ Utilization-Adjusted Human Capital Index (UHCI) & `r x[which(x$wbcountryname == 
 \end{table}
 
 ```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
-gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all", params$extra,".jpg")
+gr2 <- paste0("Graph no subt/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all", params$extra,".jpg")
 knitr::include_graphics(gr2)
 ```
 
@@ -164,7 +168,7 @@ Human capital, a crucial ingredient for economic growth, is multi-dimensional an
 
 
 ```{r gr3, out.height= "88%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
+gr3 <- paste0("Graph no subt/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
 knitr::include_graphics(gr3)
 ```
 

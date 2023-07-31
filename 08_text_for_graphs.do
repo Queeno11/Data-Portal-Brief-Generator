@@ -288,9 +288,15 @@ foreach ctry in `wb_country_codes' {
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
 
 			** Generate time text:
+<<<<<<< Updated upstream
 			if `m'==1 {
 				* Version 1. Example: "Compared to 5 years ago, the indicator has increased 7 percentage points."
 				local time_comparison_text ". Compared to `diff_year' years ago (`ind_value_prev'), the indicator has"
+=======
+// 			if `m'==1 {
+				* Version 1. Example: ", changed from 7 percent (2021). // This remains unchanged since 2021."
+				local time_comparison_text ", changed from `ind_value_prev' `unit_time' (`ind_year_prev')"
+>>>>>>> Stashed changes
 				capture gen `x'`m'_time_text = ""
 				replace `x'`m'_time_text = ///
 				cond(`lower_than_prev', "`time_comparison_text' decreased `diff_value'`unit_time'", ///
