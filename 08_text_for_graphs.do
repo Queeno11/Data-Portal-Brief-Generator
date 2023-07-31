@@ -9,7 +9,7 @@ import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
 drop d_*
 save "$data_processed\briefs_texts", replace
 
-use "$data_output\complete_series_wmd_${date}${extra}", clear
+use "$data_output\complete_series_wmd_${date}", clear
 merge m:1 name_portal using "$data_processed\briefs_texts", nogen
 count if (rank!=. & rank!=0 & missing(start_text))
 assert r(N)==0
@@ -287,7 +287,7 @@ foreach ctry in `wb_country_codes' {
 			** Generate time text:
 // 			if `m'==1 {
 				* Version 1. Example: ", changed from 7 percent (2021). // This remains unchanged since 2021."
-				local time_comparison_text ", changed from `ind_value_prev'`unit_time' (`ind_year_prev')"
+				local time_comparison_text ", compared to `ind_value_prev' `unit_time' in `ind_year_prev'"
 				capture gen `x'`m'_time_text = ""
 				replace `x'`m'_time_text = ///
 				cond(`lower_than_prev', "`time_comparison_text'", ///

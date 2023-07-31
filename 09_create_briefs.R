@@ -53,7 +53,7 @@ for (i in 1:length(countrynamet)) {
     
     output_folder <- file.path("Briefs", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
-    dir.create(output_folder)
+    # dir.create(output_folder)
 
     ## Render Rmd to PDF
     suppressWarnings(

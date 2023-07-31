@@ -75,15 +75,25 @@ foreach c in `wb_country_codes' {
 	local c7_`c' nostu
 	local c8_`c' uhci
 	
-	local lc1_`c' "{bf: Human Capital Index (%)}"
+	local lc1_`c' "HUMAN CAPITAL INDEX (%)"
 	local lc2_`c' "Fraction of live births that will survive until age 5"
 	local lc3_`c' "Expected Years of School"
 	local lc4_`c' "Average Harmonized Test Score"
 	local lc5_`c' "Learning-Adjusted Years of School"
 	local lc6_`c' "Fraction of 15-year-olds that will survive until age 60"
 	local lc7_`c' "Fraction of Children Under 5 Not Stunted"
-	local lc8_`c' "Utilization-Adjusted Human Capital Index (%)"
-		
+	local lc8_`c' "UTILIZATION-ADJUSTED HUMAN CAPITAL INDEX (%)"
+
+	local cc1_`c' "15 119 157"
+	local cc2_`c' black
+	local cc3_`c' black
+	local cc4_`c' black
+	local cc5_`c' black
+	local cc6_`c' black
+	local cc7_`c' black
+	local cc8_`c' "15 119 157"
+
+
 	}
 	
 	
@@ -122,9 +132,9 @@ foreach i of local obs {
     local inc_pos = 0 // bottom
 	local time_pos = 0 // bottom
     local first_col_marker_pos = 0 // left - its x axis
-    local first_col_text_pos = `first_col_marker_pos' + 0.05
+    local first_col_text_pos = `first_col_marker_pos' + 0.07
     local second_col_marker_pos = `first_col_marker_pos' + 2.1
-    local second_col_text_pos = `first_col_marker_pos' + 2.15
+    local second_col_text_pos = `first_col_marker_pos' + 2.17
 
 
 	*------------------------------First page------------------------------*
@@ -158,7 +168,7 @@ foreach i of local obs {
 			(scatter onesvec `c`m'_`ctry''_reg if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(12pt) `reg_marker_fmt') /// 
 			(scatter onesvec `c`m'_`ctry''_inc if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(12pt) `inc_marker_fmt') /// 
 			/// (scatter onesvec `c`m'_`ctry''_prev if wbcode=="`ctry'" & `c`m'_`ctry'' > 0 & `c`m'_`ctry'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
-			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(black) margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `lc`m'_`ctry''}", color(`cc`m'_`ctry'') margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'_`ctry'')' `=scalar(max`c`m'_`ctry'')')) xlabel(`=scalar(min`c`m'_`ctry'')' (`=scalar(inter`c`m'_`ctry'')') `=scalar(max`c`m'_`ctry'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_c`m')
 		}
 		else {
@@ -188,7 +198,7 @@ foreach i of local obs {
 	
 	* Make abreaviation for the legend if it's too long
 	local full_region_text = "Average for `region'."
-	if length("`full_region_text'") > 40 {
+	if length("`full_region_text'") > 35 {
 		local region_text = "Avg. for `region'."
 	}
 	else {
@@ -203,19 +213,16 @@ foreach i of local obs {
 		local income_text = "`full_income_text'"
 	}
 
-
+	
     twoway /// 
     (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
     (scatteri `reg_pos'     `first_col_marker_pos', msize(8pt) `reg_marker_fmt') ///
     (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
-	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(18) ///
+	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
 	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(11pt) `legend_text_ops') ///
 	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(11pt) `legend_text_ops') ///
-	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(11pt) `legend_text_ops') ///
-	  /// title("{fontface Utopia Semibold: HCI and COMPONENTS}", span color("15 119 157") size(22pt) margin(b=1) pos(12)) ///
-  	  /// subtitle("{fontface Utopia Semibold: Key components for measuring future productivity}", span color(black) size(17pt) margin(b=2.5) pos(12)) ///
-      title("{fontface Utopia Semibold: HUMAN CAPITAL INDEX}", span color("15 119 157") size(22pt) margin(b=1) pos(12)) ///
-  	  subtitle("{fontface Utopia Semibold: Key components for measuring future productivity}", span color(black) size(17pt) margin(b=2.5) pos(12)) ///
+	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income2'}", size(11pt) `legend_text_ops') ///
+      title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
 	  name(notes_`ctry', replace)
 	
 	graph combine notes_`ctry' graph_`ctry'_c1  graph_`ctry'_c2  graph_`ctry'_c3  graph_`ctry'_c4 graph_`ctry'_c5 graph_`ctry'_c6 graph_`ctry'_c7 graph_`ctry'_c8, ///
@@ -246,20 +253,21 @@ foreach i of local obs {
 			scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
 			scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
 			scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
-
+			
+			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
-			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(35pt) mlabel(``x'`m'_`ctry'') mlabsize(23pt) `country_marker_fmt') ///
+			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(36pt) mlabel(``x'`m'_`ctry'') mlabsize(23pt) `country_marker_fmt') ///
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) `reg_marker_fmt') /// 
 			/// (scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
 			/// (scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) color("245 202 195") `time_marker_fmt') /// 
-			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(23pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=3)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(24pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' (`=scalar(inter``x'`m'_`ctry'')') `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
 
 	* Make abreaviation for the legend if it's too long
 	local full_region_text = "Average for `region'."
-	if length("`full_region_text'") > 40 {
+	if length("`full_region_text'") > 35 {
 		local region_text = "Avg. for `region'."
 	}
 	else {
@@ -269,14 +277,13 @@ foreach i of local obs {
 	* Legend
 	twoway /// 
 		(scatteri `country_pos' `first_col_marker_pos', msize(12pt) `country_marker_fmt') ///
-		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) color("245 202 195") `time_marker_fmt') ///
+		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) mfcolor("107 203 69") `time_marker_fmt') ///
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
-		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(18) ysize(1) ///
-		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(17pt) `legend_text_ops') ///
-		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(17pt)  `legend_text_ops') ///
-	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(17pt)  `legend_text_ops') ///
-		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(30pt) margin(b=1) pos(12)) ///
-		subtitle("{fontface Utopia Semibold: Country performance by stage of life}", span color(black) size(22pt) margin(b=2.5) pos(12)) ///
+		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1) ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(15pt) `legend_text_ops') ///
+		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: Country ~5 years before.}", size(15pt)  `legend_text_ops') ///
+	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(15pt)  `legend_text_ops') ///
+		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(30pt) margin(b=3) pos(12)) ///
 		name(notes_`ctry', replace)
 
 		

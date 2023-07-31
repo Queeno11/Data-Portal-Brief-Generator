@@ -770,8 +770,10 @@ merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen kee
 keep wbcode gender year eap_dwap_mf_a
 drop if gender==.
 reshape wide eap_dwap_mf_a, i(wbcode year) j(gender)
+rename eap_dwap_mf_a0 eap_dwap_mf_a
 rename eap_dwap_mf_a1 eap_dwap_m_a
 rename eap_dwap_mf_a2 eap_dwap_f_a 
+gen gender = 0 // FIXME: Le puse 0 para los briefs, pero no está bien esto para el dataportal
 lab var eap_dwap_mf_a "Labor force participation (%)"	
 lab var eap_dwap_m_a "Labor force participation, male (%)"	
 lab var eap_dwap_f_a "Labor force participation, female (%)"	
