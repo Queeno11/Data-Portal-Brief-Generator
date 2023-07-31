@@ -47,8 +47,26 @@
 	replace category = 2 if stage_life == "School-aged Children"
 	replace category = 3 if stage_life == "Youth"
 	replace category = 4 if stage_life == "Adulthood and Elderly"
-	save "$data_processed\top_ranked_indicators", replace
 
+	gen dim_rank=.
+	* Early childhood
+	replace dim_rank = 1 if category==1 & rank!=. & dimension=="Health"
+	replace dim_rank = 2 if category==1 & rank!=. & dimension=="Education"
+	replace dim_rank = 3 if category==1 & rank!=. & dimension=="Labor"
+	* School-aged children
+	replace dim_rank = 1 if category==2 & rank!=. & dimension=="Education"
+	replace dim_rank = 2 if category==2 & rank!=. & dimension=="Labor"
+	replace dim_rank = 3 if category==2 & rank!=. & dimension=="Health"
+	* Youth 
+	replace dim_rank = 1 if category==3 & rank!=. & dimension=="Labor"
+	replace dim_rank = 2 if category==3 & rank!=. & dimension=="Education"
+	replace dim_rank = 3 if category==3 & rank!=. & dimension=="Health"
+	* Adulthood and elderly
+	replace dim_rank = 1 if category==4 & rank!=. & dimension=="Labor"
+	replace dim_rank = 2 if category==4 & rank!=. & dimension=="Health"
+	replace dim_rank = 3 if category==4 & rank!=. & dimension=="Education"
+
+	save "$data_processed\top_ranked_indicators", replace
 	frame change default
 	
 
@@ -102,150 +120,143 @@
 	replace rank=. if rank==0 // rank==0 means HCI indicator, that should not be shown in second page brief
 	replace rank=. if vy_<2018 // FIXME: ver de agregar que haya también dato previo para comparar
 	sort wbcode category topic gender rank 
-	bysort wbcode category topic gender: gen arank = _n + rank - rank // (+ rank - rank) to make arank missing when rank is missing
+	bysort wbcode category topic gender: gen arank = _n + rank - rank if rank!=. // (+ rank - rank) to make arank missing when rank is missing
 	gen dim_rank = .
 	* Early childhood
-	replace dim_rank = 1 if category==1 & topic=="Health"
-	replace dim_rank = 2 if category==1 & topic=="Education"
-	replace dim_rank = 3 if category==1 & topic=="Labor"
+	replace dim_rank = 1 if category==1 & rank!=. & topic=="Health"
+	replace dim_rank = 2 if category==1 & rank!=. & topic=="Education"
+	replace dim_rank = 3 if category==1 & rank!=. & topic=="Labor"
 	* School-aged children
-	replace dim_rank = 1 if category==2 & topic=="Education"
-	replace dim_rank = 2 if category==2 & topic=="Labor"
-	replace dim_rank = 3 if category==2 & topic=="Health"
+	replace dim_rank = 1 if category==2 & rank!=. & topic=="Education"
+	replace dim_rank = 2 if category==2 & rank!=. & topic=="Labor"
+	replace dim_rank = 3 if category==2 & rank!=. & topic=="Health"
 	* Youth 
-	replace dim_rank = 1 if category==3 & topic=="Labor"
-	replace dim_rank = 2 if category==3 & topic=="Education"
-	replace dim_rank = 3 if category==3 & topic=="Health"
+	replace dim_rank = 1 if category==3 & rank!=. & topic=="Labor"
+	replace dim_rank = 2 if category==3 & rank!=. & topic=="Education"
+	replace dim_rank = 3 if category==3 & rank!=. & topic=="Health"
 	* Adulthood and elderly
-	replace dim_rank = 1 if category==4 & topic=="Labor"
-	replace dim_rank = 2 if category==4 & topic=="Health"
-	replace dim_rank = 3 if category==4 & topic=="Education"
+	replace dim_rank = 1 if category==4 & rank!=. & topic=="Labor"
+	replace dim_rank = 2 if category==4 & rank!=. & topic=="Health"
+	replace dim_rank = 3 if category==4 & rank!=. & topic=="Education"
 	
+	keep if rank!=.
 	*----------------------Selection of indicators-------------------------*
-	
-	/*
-	Para cada stage y topic:
-	1) Si tenemos todos los indicadores, entonces elegimos el mejor para ese stage y topic (min(arank))
-	2) Si no hay indicadores, paso el loop al siguiente topic del MISMO STAGE:
-		2.A) Si encuentra para los otros topic del mismo stage, elijo el mejor indicador de entre los otros topic (p. ej. si falta en "Labor", elijo el de menor rank entre "Health" y "Education"). Si empatan, elijo Health que es la que más tiene.
-			3.A) Si siguen faltando indicadores, voy a las aperturas por género.
-		2.B) Si encuentra para solo uno de los otros topic, elige 3 según arank del unico topic disponible
-			3.B) Si siguen faltando indicadores, voy a las aperturas por género.
-		2.C) Si no hay indicadores para el stage. Hago un display en rojo (espero que no pase)
-	*/
-	
 
-	*** Selecting main indicator for each stage and dimension
-	**Arank == 1 means that such indicator is the selected one for that country, stage_life and topic (with gender==0).	
 	
-	* Create duumy to flag selected indicators
-	bysort wbcode category topic gender: gen selected_indicator = 1 if arank==1 & gender==0
 	
-	*Check which countries has indicators for each dimension-topic.
-	bysort wbcode category topic: egen has_indic = min(selected_indicator) 
-	// If has_indic==., then such country has no indicator for that dimension-topic pair.
-	
+	gen selected_indicators = .
 	gen inv_year = 2500-vy_
 	
-	*** Selecting second best indicator for each stage (taking from other dimensions of the same stage)
-	* Create dataset to store the countries not fulfilling the 3 indicators per stage_life
-	frame create no_data_countries  
-	frame change no_data_countries
-	set obs 1
-	gen wbcode = ""
-	gen stage_of_life = .
-	gen selected_indicators = .
 	frame change default
 
-	
-	* Loop for each country and stage. 
-	* Explanaiton: The loop tries to get the top ranked indicator for each dimension in a stage of life (for a certain country). If the
-	*	country doesnt have any indicator for that dimension, then select the best ranked indicator for that stage of life among the other
-	*	dimensions. If no result comes from that, adds the top indicator for the dimension with a missing value (no country value will be 
-	*	shown in the graphs)
+
+	* Loop Explanaition:
+	* 	For each country and category (stage of life):
+	* 	 - Loop over each topic (dimension) and select the highest ranked indicator for such country-category-topic
+	*	 - In some cases, there will not be three indicators selected with such loop (there could be lack of data or a stage that only has two dimensions):
+	*		- First try to select the highest ranked indicators for the remaining dimensions (sorted by dim_rank)
+	*		- Then, if there is no data for the country-category, then populate with the top ranked indicators for the category
+
+
 	levelsof(wbcode), local(countries)
 	levelsof(category), local(categories)
 	levelsof(topic), local(topics)
+
 	foreach country in `countries' {
 		display "`country'"
-		foreach category in `categories' {
-			foreach topic in `topics' {
-				qui count if wbcode=="`country'" & category==`category' & topic=="`topic'" & selected_indicator==1
-				local selected_indicators = r(N)
-				qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
-				local available_indicators = r(N)
-				if `selected_indicators'==0 & `available_indicators'>=1 {
-					// In this case, the dimension-topic has no indicator and we have other indicators available, 				
-					// therefore we complete the brief with the best ranked indicator of the hole stage
+		foreach category in 2 {
 
-					// Little trick to get the position of the best ranked indicator 
-					//	(best ranked of every other topic, if tie, then the newer)
-					sort rank dim_rank inv_year
-					gen position = _n if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
-					egen min_position = min(position) if wbcode=="`country'" & category==`category' & selected_indicator!=1 & gender==0
-					replace selected_indicator = 1 if min_position == position & position !=.
-					drop position min_position
+			local selected_indicators = ""
+			local remaining_indicators = 3
+
+			foreach topic in `topics' {
+				
+				preserve
+				keep if category==`category' & wbcode=="`country'" 
+
+				qui count if topic=="`topic'" & selected_indicator!=1
+				local available_indicators = r(N)
+
+				if `available_indicators'>=1 {
+					keep if topic=="`topic'"
+					sort rank inv_year
+					local this_selected_indicator = name // The first position is the highest ranked
+					
+					local selected_indicators = "`selected_indicators' `this_selected_indicator',"
+					local remaining_indicators = `remaining_indicators' - 1
+				}
+
+				restore
+				
+				replace selected_indicators = 1 if category==`category' & wbcode=="`country'" & name=="`this_selected_indicator'"
+			}
+
+			if `remaining_indicators'!=0 {
+				
+				*** 1) Si hay data: busco completar con otros indicadores de la misma stage, hasta que se me acaben los indicadores o complete los 3 de la stage
+				count if category==`category' & wbcode=="`country'" & selected_indicators!=1
+				local available_indicators = r(N)
+				while `available_indicators'>0 & `remaining_indicators'>0{
+					preserve
+
+					keep if category==`category' & wbcode=="`country'" & selected_indicators!=1 
+					sort dim_rank rank inv_year
+
+					local this_selected_indicator = name // The first position is the highest ranked
+					local remaining_indicators = `remaining_indicators' - 1
+					restore
+					
+					replace selected_indicators = 1 if category==`category' & wbcode=="`country'" & name=="`this_selected_indicator'"
+
+				}
+
+				
+				***  2) Si no hay data suficiente: completo con el top ranked indicator de las topics que faltan
+				if `remaining_indicators'>0 {
+					* Store selected indicators in local so they won't be selected in step 2
+					levelsof name if category==`category' & wbcode=="`country'" & selected_indicators==1, local(already_selected) separate(,)
+					
+					frame change top_ranked_indicators
+					preserve
+					keep if category==`category'
+					if `remaining_indicators'<3 {
+						drop if inlist(name_portal, `already_selected')
+					}
+
+					while `remaining_indicators'>0 {
+						
+						sort dim_rank rank 
+						local name = name_portal
+						local lbl = name
+						local rank = rank
+						drop if name_portal == "`name'"	
+						
+						* Create new observation with the data of the top_ranked indicator
+						frame change default
+						display "`name' `lbl' `rank'"
+						count
+						local new_q_obs = r(N) + 1
+						set obs `new_q_obs'
+						replace name = "`name'" if _n==_N
+						replace lbl = "`lbl'" if _n==_N
+						replace rank = `rank' if _n==_N
+						replace gender = 0 if _n==_N
+						replace wbcode = "`country'" if _n==_N
+						replace year = 2023 if _n==_N
+						replace category = `category' if _n==_N
+						display "`name' `lbl' `rank'"
+						frame change top_ranked_indicators
+
+						local remaining_indicators = `remaining_indicators' - 1
+
+					}
+					restore
+					frame change default
 				}
 			}
-			// Verificación sobre si tenemos todo o si sigubeen faltando indicadores
-			qui count if wbcode=="`country'" & category==`category' & selected_indicator==1
-			local selected_indicators = r(N)
-			qui count if wbcode=="`country'" & category==`category' & selected_indicator!=1
-			local available_indicators = r(N)
-
-			if `selected_indicators' !=3 {
-				// When not enought indicators store the country name and the stage with lack of data in an alternative dataframe - only for reporting
-				display in red "Para `country' no hay 3 indicadores para la stage `category'"
-
-				frame change no_data_countries
-				expand 2 in 1
-				replace wbcode = "`country'" in 1
-				replace stage_of_life = `category' in 1 
-				replace selected_indicators = `selected_indicators' in 1
-				frame change default
-	
-			}
-
-			local i = 1
-
-			while `selected_indicators' <3  {
-				// Create observation with one of the best ranked indicators for the dimension	
-				// FIXME: now it only choses one arbitrarily, but it should chose an indicator from the other dimensions of the same stage
-				frame change top_ranked_indicators
-				use "$data_processed\top_ranked_indicators", clear
-				keep if category==`category'
-			
-				sort rank
-				local name = name_portal[`i']
-				local lbl = name[`i']
-				local rank = rank[`i']
-				frame change default
-				display "`name' `lbl' `rank'"
-
-				count
-				local new_q_obs   = r(N) + 1
-				set obs `new_q_obs'
-				replace name = "`name'" if _n==_N
-				replace lbl = "`lbl'" if _n==_N
-				replace rank = `rank' if _n==_N
-				replace gender = 0 if _n==_N
-				replace wbcode = "`country'" if _n==_N
-				replace year = 2023 if _n==_N
-				replace category = `category' if _n==_N
-				replace selected_indicator = 1 if _n==_N
-				display "`name' `lbl' `rank'"
-				local i = `i' + 1
-				local selected_indicators = `selected_indicators' + 1
-			}	
 		}
 	}
 	
-	* Save report on data scarcity
-	frame change no_data_countries
-	drop if selected_indicators == .
-	save "${data_output}\briefs_countries_with_no_data_${date}", replace
-	frame change default
-
 	*---------------------------Keep and reshape---------------------------*
 	
 	/**** Si los labels llegan a quedar demasiado largos para los gráficos, ir al principio de este do file y editar (con replace) los labels para que sean más cortos --> no cambiar en la data original del data portal. La gracia es que los labels nuevos queden en el dta metadata, así más adelante cuando mergamos ese dta, nos pasa bien los labels que queremos.  ****/
