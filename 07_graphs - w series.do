@@ -98,7 +98,7 @@ local cc8 "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-	/* if !inlist(wbcode[`i'], "AFG", "AUS", "ESP", "ISL", "ARG") continue  */
+	if !inlist(wbcode[`i'], "AGO") continue 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -182,9 +182,10 @@ foreach i of local obs {
 			scalar m75`c`m'' = `=scalar(r(p75))'
 			scalar m100`c`m'' = `=scalar(r(p100))'
 			scalar dif`c`m'' = `=scalar(m1`c`m'')' - `=scalar(m2`c`m'')'
-			scalar max`c`m'' = 20 * ceil(`=scalar(m1`c`m'')'/20) 	
-			scalar min`c`m'' = 20 * floor(`=scalar(m2`c`m'')'/20) 
+			scalar max`c`m'' = ceil(`=scalar(m1`c`m'')') 	
+			scalar min`c`m'' = floor(`=scalar(m2`c`m'')') 
 			scalar inter`c`m'' = (`=scalar(max`c`m'')'-`=scalar(min`c`m'')')/2
+			
 			twoway ///
 			/// (scatter onesvec `c`m'' if `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
