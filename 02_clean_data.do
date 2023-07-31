@@ -757,9 +757,9 @@ save "$data_processed/neet", replace
 
 *Labor force participation	
 *FIXME: Cambié la source acá: la data que se estaba importando antes es employment-to-population ratio. Ahora importa labor force participation rate. 
-*import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear	
-import delimited using "$data_raw/EAP_DWAP_SEX_AGE_RT_A.csv", clear			
-rename (time obs_value)(year eap_dwap_mf_a)
+import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear	
+*import delimited using "$data_raw/EAP_DWAP_SEX_AGE_RT_A.csv", clear			
+rename (time obs_value)(year emp_2wap_mf_a)
 rename ref_arealabel wbcountryname
 keep if classif1label=="Age (Youth, adults): 25+"
 gen gender = . 
@@ -767,16 +767,12 @@ replace gender = 0 if sexlabel=="Sex: Total"
 replace gender = 1 if sexlabel=="Sex: Male"
 replace gender = 2 if sexlabel=="Sex: Female"
 merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen keep(3)
-keep wbcode gender year eap_dwap_mf_a
-drop if gender==.
-reshape wide eap_dwap_mf_a, i(wbcode year) j(gender)
-rename eap_dwap_mf_a0 eap_dwap_mf_a
-rename eap_dwap_mf_a1 eap_dwap_m_a
-rename eap_dwap_mf_a2 eap_dwap_f_a 
-gen gender = 0 // FIXME: Le puse 0 para los briefs, pero no está bien esto para el dataportal
-lab var eap_dwap_mf_a "Labor force participation (%)"	
-lab var eap_dwap_m_a "Labor force participation, male (%)"	
-lab var eap_dwap_f_a "Labor force participation, female (%)"	
+keep wbcode gender year emp_2wap_mf_a
+gen eap_dwap_m_a = emp_2wap_mf_a if gender==1
+gen eap_dwap_f_a = emp_2wap_mf_a if gender==2
+lab var emp_2wap_mf_a "Labor force participation (%)"	
+lab var emp_2wap_m_a "Labor force participation, male (%)"	
+lab var emp_2wap_f_a "Labor force participation, female (%)"	
 save "$data_processed/laborforce", replace 
 
 *Unemployment
@@ -803,8 +799,7 @@ lab var youth_adult_un "Youth/adult unemployment rate"
 save "$data_processed/unemployment", replace 	
 
 *Labor underutilization
-*import delimited using "$data_raw/LUU_2LU4_SEX_AGE_RT_A.csv", clear	
-import delimited using "$data_raw/LUU_XLU4_SEX_AGE_RT_A.csv", clear		
+import delimited using "$data_raw/LUU_2LU4_SEX_AGE_RT_A.csv", clear			
 rename obs_value luu_2lu4_
 rename ref_arealabel wbcountryname	
 gen ya = . 
@@ -869,7 +864,8 @@ save "$data_processed/potential_labor", replace
 *Informal employment
 import delimited using "$data_raw/EMP_NIFL_SEX_AGE_RT_A.csv", clear		
 rename obs_value emp_nifl_
-rename ref_arealabel wbcountryname	 	
+rename ref_arealabel wbcountryname	
+keep if sourcelabel=="LFS - Labour Force Survey" 	
 gen ya = . 
 replace ya = 1 if classif1=="Age (Youth, adults): 15-24"
 replace ya = 2 if classif1=="Age (Youth, adults): 25+"		
@@ -892,6 +888,7 @@ save "$data_processed/informal_employment", replace
 *import excel "$data_raw\employment_high_skill.xlsx", clear firstrow
 import delimited using "$data_raw/EMP_TEMP_SEX_AGE_OCU_NB_A.csv", clear		
 keep if classif1label=="Age (Youth, adults): 15-64"
+keep if sourcelabel=="LFS - Labour Force Survey" 	
 gen gender=.
 replace gender=2 if sexlabel=="Sex: Female"
 replace gender=1 if sexlabel=="Sex: Male"
