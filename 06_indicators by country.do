@@ -208,6 +208,8 @@
 					restore
 					
 					replace selected_indicators = 1 if category==`category' & wbcode=="`country'" & name=="`this_selected_indicator'"
+					count if category==`category' & wbcode=="`country'" & selected_indicators!=1
+					local available_indicators = r(N)
 
 				}
 
@@ -267,7 +269,6 @@
 	replace py_ = 2015 if py_==.
 	replace vy_ = 2020 if vy_==.
 	
-
 	*---------------------------Keep and reshape---------------------------*
 	
 	/**** Si los labels llegan a quedar demasiado largos para los gráficos, ir al principio de este do file y editar (con replace) los labels para que sean más cortos --> no cambiar en la data original del data portal. La gracia es que los labels nuevos queden en el dta metadata, así más adelante cuando mergamos ese dta, nos pasa bien los labels que queremos.  ****/

@@ -42,13 +42,17 @@ drop d_*
 save "$data_processed\briefs_texts", replace
 
 *--------------------------------Load data---------------------------------*
-frame change default
+
 clear all
 set more off	
 set maxvar 32000
 use "$data_output\data_briefs", replace
 
-
+*FIXMEEE
+gen hci_f = hci
+gen hci_m = hci
+gen uhci_f = uhci
+gen uhci_m = uhci
 *------------------------------Keep vars-----------------------------------*
 
 *keep wb* unicef_neomort* unicef_mealfreq* vacBCG* uisger02* lastnm_mmrt* unicef_care* lastnm_birth_reg* unicef_breastf* unicef_diarrhoea* uiscr1* lastnm_sec_ger* vacHEPBB* se_lpv_prim* uiscr2* eip_neet_mf_y* lastnm_afr* lastnm_ter_ger* une_2eap_mf_y* emp_nifl_mf_y* eap_2wap_mf_a_f* eap_2wap_mf_a_m* sp_dyn_le00_in* lastnm_probdeath_ncd* une_2eap_mf_a* emp_nifl_mf_a* fao_prev_fsec_all* per_sa_allsa_cov_pop_tot* fao_water_stress_all* fao_food_prices* fao_prev_fsec_adf* unicef_sanitation* fao_prev_fsec_adm * unicef_water*
@@ -248,7 +252,7 @@ local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
 display "Generating texts, please wait..."
-foreach ctry in `wb_country_codes' {
+foreach ctry in "AGO" {
 	foreach x in e b h l {
 		local i = 1 // Counter for texts
 		forvalues m = 1(1)`n`x'' {
@@ -289,7 +293,6 @@ foreach ctry in `wb_country_codes' {
 			local ind_name = name // FIXME: check if its not better to create two new columns for the metadata with the text and units for the briefs
 			local ind_scale = units
 			local start_text = start_text
-			local no_data_start_text = no_data_start_text
 			local unit_time = unit_time
 			local unit_reginc = unit_reginc
 			restore
@@ -366,17 +369,20 @@ foreach ctry in `wb_country_codes' {
 			* No time nor regional/income text when previous data is not available
 			replace `x'`m'_text = `x'`m'_start_text ///
 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg==. & wbcode=="`ctry'"
+			* No local text when local data is not available
+			replace `x'`m'_text = "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg!=. & wbcode=="`ctry'"
 			* Only no_data_text when no data is available for that indicator 
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
-				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. wbcode=="`ctry'"
 			* Only no_data_inc_text when no data or income data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
 				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc==. & wbcode=="`ctry'"
 			* Only no_data_reg_text when no data or regional data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
 				if `indicator'==. & `indicator'_reg==. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* Only no_data_reginc_text when no data or regional or income data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
 				if `indicator'==. & `indicator'_reg==. & `indicator'_inc==. & wbcode=="`ctry'"	
 			
 				

@@ -48,13 +48,13 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-// do "$root\06_indicators by country.do"
+do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
 // do "$root\07_graphs - w series${extra}.do"
 
 ** 08 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do"
+do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
 shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"
