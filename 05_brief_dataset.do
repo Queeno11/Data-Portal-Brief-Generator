@@ -11,13 +11,22 @@
 	use "$data_output\complete_series_wmd_${date}${extra}", replace
 	drop name description units scale update timespan minyear maxyear data source download_link note
 	replace code="netenr_ls" if code=="netenrolment_lowersec"
-	*FIXME
+
+	** Remove gender from variables
+	* Familiy Planning
 	drop if gender!=2 & code=="met_fam_plan"
 	replace gender=0 if code=="met_fam_plan"
+	* HCI
 	replace code="hci_f" if code=="hci" & gender==2
-	replace gender=0 if code=="hci" & gender==2
 	replace code="hci_m" if code=="hci" & gender==1
-	replace gender=0 if code=="hci" & gender==1
+	replace code="uhci_f" if code=="uhci" & gender==2
+	replace code="uhci_m" if code=="uhci" & gender==1
+
+	replace gender=0 if code=="hci_f" & gender==2
+	replace gender=0 if code=="hci_m" & gender==1
+	replace gender=0 if code=="uhci_f" & gender==2
+	replace gender=0 if code=="uhci_m" & gender==1
+
 	drop if gender!=0
 	drop if missing(gender)
 *--------------------------------keep years--------------------------------*
