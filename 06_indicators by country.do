@@ -164,7 +164,7 @@
 
 	foreach country in `countries' {
 		display "`country'"
-		foreach category in 2 {
+		foreach category in `categories' {
 
 			local selected_indicators = ""
 			local remaining_indicators = 3
@@ -184,11 +184,12 @@
 					
 					local selected_indicators = "`selected_indicators' `this_selected_indicator',"
 					local remaining_indicators = `remaining_indicators' - 1
-				}
 
-				restore
-				
-				replace selected_indicators = 1 if category==`category' & wbcode=="`country'" & name=="`this_selected_indicator'"
+					restore
+					
+					replace selected_indicators = 1 if category==`category' & wbcode=="`country'" & name=="`this_selected_indicator'"
+				}
+				else restore
 			}
 
 			if `remaining_indicators'!=0 {
@@ -217,16 +218,19 @@
 					levelsof name if category==`category' & wbcode=="`country'" & selected_indicators==1, local(already_selected) separate(,)
 					
 					frame change top_ranked_indicators
-					preserve
+					use "$data_processed\top_ranked_indicators", replace
+										
 					keep if category==`category'
 					if `remaining_indicators'<3 {
 						drop if inlist(name_portal, `already_selected')
 					}
-
+					local name = ""
 					while `remaining_indicators'>0 {
-						
+						frame change top_ranked_indicators
 						sort dim_rank rank 
+						local prev_name = "`name'"
 						local name = name_portal
+						assert "`name'" != "`prev_name'"
 						local lbl = name
 						local rank = rank
 						drop if name_portal == "`name'"	
@@ -244,19 +248,26 @@
 						replace wbcode = "`country'" if _n==_N
 						replace year = 2023 if _n==_N
 						replace category = `category' if _n==_N
+						replace selected_indicators = 1 if _n==_N
 						display "`name' `lbl' `rank'"
 						frame change top_ranked_indicators
 
 						local remaining_indicators = `remaining_indicators' - 1
 
 					}
-					restore
+					
 					frame change default
+					count if category==`category' & wbcode=="`country'" & selected_indicators==1
+					assert r(N)==3
 				}
 			}
 		}
 	}
 	
+	replace py_ = 2015 if py_==.
+	replace vy_ = 2020 if vy_==.
+	
+
 	*---------------------------Keep and reshape---------------------------*
 	
 	/**** Si los labels llegan a quedar demasiado largos para los gráficos, ir al principio de este do file y editar (con replace) los labels para que sean más cortos --> no cambiar en la data original del data portal. La gracia es que los labels nuevos queden en el dta metadata, así más adelante cuando mergamos ese dta, nos pasa bien los labels que queremos.  ****/
@@ -270,15 +281,15 @@
 	sort wbcode category is_missing rank 
 	by wbcode category: gen show_order = _n
 	
-		*** Export liststing for data_portal
-		preserve
-		keep if show_order==1
-		keep wbcode name category
-		reshape wide name, i(wbcode) j(category)
-		rename (name1 name2 name3 name4) (Prenatal_and_Early_Childhood Schoolaged_Children Youth Adulthood_and_Elderly)
-		export excel "$data_output/list_bycountry_share.xlsx", replace
-		restore
-		****************************************
+// 		*** Export liststing for data_portal
+// 		preserve
+// 		keep if show_order==1
+// 		keep wbcode name category
+// 		reshape wide name, i(wbcode) j(category)
+// 		rename (name1 name2 name3 name4) (Prenatal_and_Early_Childhood Schoolaged_Children Youth Adulthood_and_Elderly)
+// 		export excel "$data_output/list_bycountry_share.xlsx", replace
+// 		restore
+// 		****************************************
 	
 	keep wbcode name lbl category year age sou def show_order
 	rename (name lbl year  age sou def)(name_ lbl_ year_ age_ sou_ def_)

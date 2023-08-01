@@ -12,13 +12,19 @@
 	drop name description units scale update timespan minyear maxyear data source download_link note
 	replace code="netenr_ls" if code=="netenrolment_lowersec"
 	*FIXME
-// 	replace gender=0 if code=="se_lpv_prim"
+	drop if gender!=2 & code=="met_fam_plan"
+	replace gender=0 if code=="met_fam_plan"
+	replace code="hci_f" if code=="hci" & gender==2
+	replace gender=0 if code=="hci" & gender==2
+	replace code="hci_m" if code=="hci" & gender==1
+	replace gender=0 if code=="hci" & gender==1
+	drop if gender!=0
 	drop if missing(gender)
 *--------------------------------keep years--------------------------------*
 
 	/* Me quedo con último año disponible */
 	gen year2 = year if value!=.
-	bysort wbcode wbcountryname code gender: egen myear = max(year2)
+	bysort wbcode wbcountryname code: egen myear = max(year2)
 	forvalues m = 1(1)9 {
 	gen year_`m' = myear - `m'
 	}
@@ -26,7 +32,7 @@
 	/* Chequeo si hay valor para el indicador 1 año atrás, 2 años atrás, etc */
 	forvalues m = 1(1)9 {
 	gen o = 1 if value!=. & year==year_`m'
-	bysort wbcode code gender: egen ok`m' = max(o) 
+	bysort wbcode code: egen ok`m' = max(o) 
 	drop o
 	}
 	
@@ -89,8 +95,8 @@
 	
 	reshape wide $indicators, i(wbcode wbcountryname wbregion wbincome year prevyear) j(gend) string
 	rename *_t *
-	rename *_prev_f *_f_prev
-	rename *_prev_m *_m_prev
+// 	rename *_prev_f *_f_prev
+// 	rename *_prev_m *_m_prev
 	
 	* Genero lista con las variables "prev" y "nselect" (no prev)
 	global prev ""
@@ -108,8 +114,8 @@
 		gen `var'_year = year if `var'!=.
 	}
 	drop year
-	rename *_f_year *_f_year
-	rename *_m_year *_m_year
+// 	rename *_f_year *_f_year
+// 	rename *_m_year *_m_year
 	foreach var in $prev {
 		gen `var'_year = prevyear if `var'!=.
 	}
@@ -138,7 +144,7 @@
 	replace incomegroup = "Low Income countries" if incomegroup == "Low income"
 	
 *------------------------------Rename&recode-------------------------------*
-	foreach var in asr asr_m asr_f nostu nostu_f nostu_m psurv psurv_m psurv_f asr_prev asr_m_prev asr_f_prev nostu_prev nostu_f_prev nostu_m_prev psurv_prev psurv_m_prev psurv_f_prev {
+	foreach var in asr nostu psurv asr_prev nostu_prev psurv_prev {
 		replace `var' = `var'*100
 	}
 	

@@ -757,8 +757,8 @@ save "$data_processed/neet", replace
 
 *Labor force participation	
 *FIXME: Cambié la source acá: la data que se estaba importando antes es employment-to-population ratio. Ahora importa labor force participation rate. 
+*FIXME: cuando tengamos el dataportal vamos a tener que cambiar esto
 import delimited using "$data_raw/EMP_2WAP_SEX_AGE_RT_A.csv", clear	
-*import delimited using "$data_raw/EAP_DWAP_SEX_AGE_RT_A.csv", clear			
 rename (time obs_value)(year emp_2wap_mf_a)
 rename ref_arealabel wbcountryname
 keep if classif1label=="Age (Youth, adults): 25+"
@@ -768,8 +768,9 @@ replace gender = 1 if sexlabel=="Sex: Male"
 replace gender = 2 if sexlabel=="Sex: Female"
 merge m:m wbcountryname using "$data_processed\Country codes\wbcodes", nogen keep(3)
 keep wbcode gender year emp_2wap_mf_a
-gen eap_dwap_m_a = emp_2wap_mf_a if gender==1
-gen eap_dwap_f_a = emp_2wap_mf_a if gender==2
+reshape wide emp_2wap_mf_a, i(wbcode year) j(gender)
+rename (emp_2wap_mf_a0 emp_2wap_mf_a1 emp_2wap_mf_a2) (emp_2wap_mf_a emp_2wap_m_a emp_2wap_f_a)
+gen gender = 0
 lab var emp_2wap_mf_a "Labor force participation (%)"	
 lab var emp_2wap_m_a "Labor force participation, male (%)"	
 lab var emp_2wap_f_a "Labor force participation, female (%)"	

@@ -4,15 +4,15 @@
 
 	
 
-* Check that all indicators selected have a text:
+// * Check that all indicators selected have a text:
 import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
 drop d_*
 save "$data_processed\briefs_texts", replace
 
-use "$data_output\complete_series_wmd_${date}", clear
-merge m:1 name_portal using "$data_processed\briefs_texts", nogen
-count if (rank!=. & rank!=0 & missing(start_text))
-assert r(N)==0
+// use "$data_output\complete_series_wmd_${date}", clear
+// merge m:1 name_portal using "$data_processed\briefs_texts", nogen keep(match)
+// count if (rank!=. & rank!=0 & missing(start_text))
+// assert r(N)==0
 
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
@@ -48,6 +48,11 @@ set more off
 set maxvar 32000
 use "$data_output\data_briefs", replace
 
+*FIXMEEE
+gen hci_f = hci
+gen hci_m = hci
+gen uhci_f = uhci
+gen uhci_m = uhci
 *------------------------------Keep vars-----------------------------------*
 
 *keep wb* unicef_neomort* unicef_mealfreq* vacBCG* uisger02* lastnm_mmrt* unicef_care* lastnm_birth_reg* unicef_breastf* unicef_diarrhoea* uiscr1* lastnm_sec_ger* vacHEPBB* se_lpv_prim* uiscr2* eip_neet_mf_y* lastnm_afr* lastnm_ter_ger* une_2eap_mf_y* emp_nifl_mf_y* eap_2wap_mf_a_f* eap_2wap_mf_a_m* sp_dyn_le00_in* lastnm_probdeath_ncd* une_2eap_mf_a* emp_nifl_mf_a* fao_prev_fsec_all* per_sa_allsa_cov_pop_tot* fao_water_stress_all* fao_food_prices* fao_prev_fsec_adf* unicef_sanitation* fao_prev_fsec_adm * unicef_water*
@@ -233,7 +238,7 @@ local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
 display "Generating texts, please wait..."
-foreach ctry in `wb_country_codes' {
+foreach ctry in "AGO" {
 	foreach x in e b h l {
 		local i = 1 // Counter for texts
 		forvalues m = 1(1)`n`x'' {
@@ -395,16 +400,16 @@ foreach var in nostu asr psurv{
 replace `var' = `var'/100
 }
 
-foreach var in hci_table uhci_table hci_f_table uhci_f_table hci_m_table uhci_m_table hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu {
+foreach var in hci_table uhci_table hci_f_table uhci_f_table hci_m_table uhci_m_table hci psurv  asr nostu {
 gen `var'_t = strofreal(`var',"%04.2f")
 }
 
 * FIXME: ¿Esto se usa?
-foreach var in eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs{
+foreach var in eyrs qeyrs{
 gen `var'_t = strofreal(`var',"%4.1f")
 }
 
-foreach var in test_m test_f test{
+foreach var in test{
 gen `var'_t = strofreal(`var',"%4.0f")
 }
 

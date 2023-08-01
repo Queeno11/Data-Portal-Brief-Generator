@@ -36,11 +36,11 @@ dir.create('Briefs/Logs')
 source("HC_2page_functions.R")
 
 # #### FILTER ##########################
-# # Create a vector of the values you want to filter
-# selected_wbcodes <- c("AFG", "AUS", "ESP", "ISL", "ARG")
-# x <- subset(x, wbcode %in% selected_wbcodes)
-# countrynamet <- x[["wbcountryname"]]
-# countrycodes <- x[["wbcode"]]
+# Create a vector of the values you want to filter
+selected_wbcodes <- c("AGO")
+x <- subset(x, wbcode %in% selected_wbcodes)
+countrynamet <- x[["wbcountryname"]]
+countrycodes <- x[["wbcode"]]
 ######################################
 
 # Set progress bar
