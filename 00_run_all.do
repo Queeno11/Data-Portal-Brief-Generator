@@ -7,6 +7,7 @@ set more off
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"05_jul_2023" // Date when the full process is run
@@ -24,6 +25,11 @@ global date			  	"26_jul_2023" // Date when the full process is run
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"25_jul_2023" // Date when the full process is run
+>>>>>>> Stashed changes
+=======
+// global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+global date			  	"26_jul_2023" // Date when the full process is run
 >>>>>>> Stashed changes
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 >>>>>>> Stashed changes

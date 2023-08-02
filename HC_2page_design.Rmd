@@ -85,12 +85,17 @@ This two-page brief provides the 2020 Human Capital Index (HCI) released in Sept
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL}}###
 =======
 Only **`r round(( 1-x[which(x$wbcountryname == params$countrynamet), "not_employed"])*100)` percent** of working-age people in `r params$countrynamet` are employed. This results in a decreasing productivity by an additional  **`r round(100*x[which(x$wbcountryname == params$countrynamet), "not_employed"])` percent**. Thus, **a child born today is only `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment.
 >>>>>>> Stashed changes
 
 As the returns on human capital materialize through work, we introduce a utilization-adjusted Human Capital Index (UHCI) that adjust the HCI for underutilization, by taking into account the proportion of the employed working-age population. 
+=======
+`r x[which(x$wbcountryname == params$countrynamet), "uhci_text"]`
+
+>>>>>>> Stashed changes
 
 * In `r params$countrynamet`, adjusting the HCI for utilization leads to a decrease to `r round(x[which(x$wbcountryname == params$countrynamet), "uhci"])` percent. This suggests that nearly `r x[which(x$wbcountryname == params$countrynamet),"compare_uhci"]` of `r params$countrynamet`'s population is unable to fully leverage their skills and knowledge to contribute effectively to the economy.
 

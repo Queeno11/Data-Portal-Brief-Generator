@@ -185,6 +185,20 @@ gen nostu_text = ///
 + "This means that **" + strofreal(round((100-nostu),1)) +  "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
 replace nostu_text = "Internationally comparable data on stunting are not available for " + wbcountrynameb + "." if nostu==.
 
+*-------------------------------UHCI---------------------------------*
+*Gen variable for hci and uhci comparison:
+gen compare_uhci="more than half" if round(uhci)>50
+replace compare_uhci="less than half" if round(uhci)<50
+replace compare_uhci="half" if round(uhci)==50
+
+gen comparegender_uhci="higher" if round(uhci_m)>round(uhci_f)
+replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
+replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
+
+gen uhci_text = ///
+"Around **" + strofreal(round(not_employed*100)) + " percent** of working-age people in " + wbcountrynameb + " are not employed. This means they cannot use their human capital to increase their productivity, resulting in a decreasing productivity by an additional **" + strofreal(round(not_employed*100)) + " percent**. Thus, **a child born today is only " + strofreal(round(uhci*100)) + " percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment. Comparing by gender, the utilization-adjusted human capital is " + comparegender_uhci + " for males (" + strofreal(round(uhci_m*100)) + " percent) than for females (" + strofreal(round(uhci_f*100)) + " percent)."
+replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg)) + " percent** and the income group average is **" + strofreal(round(uhci_inc)) + " percent**." if uhci==.
+
 // GENDER COMPARISON 
 
 gen gender_comp_1= ///
@@ -286,6 +300,8 @@ foreach ctry in `wb_country_codes' {
 			** Generate main text
 			capture gen `x'`m'_start_text = ""
 			replace `x'`m'_start_text = "`start_text'" if wbcode=="`ctry'"
+			capture gen `x'`m'_no_data_start_text = ""
+			replace `x'`m'_no_data_start_text = "`no_data_start_text'" if wbcode=="`ctry'"
 
 			** Generate time text:
 <<<<<<< Updated upstream
@@ -367,6 +383,13 @@ foreach ctry in `wb_country_codes' {
 			drop selected
 			
 			local no_data_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc', while within the income group, this indicator is `inc_avg'`unit_reginc'."
+			
+			local no_data_reg_text "Internationally comparable data on this indicator is not available for `countryname'. The income group average for this indicator is `inc_avg'`unit_reginc'."
+			
+			local no_data_inc_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc'."
+			
+			local no_data_reginc_text "Internationally comparable data on this indicator is not available for `countryname'."
+
 
 			
 			*DROP TIME TEXT (Yanel - July 10th, 2023)
@@ -389,9 +412,25 @@ foreach ctry in `wb_country_codes' {
 			* No local text when local data is not available
 			replace `x'`m'_text = "`no_data_text'"  ///
 				if `indicator'==. & `indicator'_reg!=. & wbcode=="`ctry'"
+<<<<<<< Updated upstream
 			* Only no_data_text when no data is available
 			replace `x'`m'_text = "`no_data_text'"  ///
 				if `indicator'==. & (`indicator'_reg==.) & wbcode=="`ctry'"
+=======
+			* Only no_data_text when no data is available for that indicator 
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. wbcode=="`ctry'"
+			* Only no_data_inc_text when no data or income data is available
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc==. & wbcode=="`ctry'"
+			* Only no_data_reg_text when no data or regional data is available
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg==. & `indicator'_inc!=. & wbcode=="`ctry'"
+			* Only no_data_reginc_text when no data or regional or income data is available
+			replace `x'`m'_text = `x'`m'_no_data_start_text "`no_data_text'"  ///
+				if `indicator'==. & `indicator'_reg==. & `indicator'_inc==. & wbcode=="`ctry'"	
+			
+>>>>>>> Stashed changes
 				
 			** Generate text with a summary of changing indicators:
 			capture gen `x'`m'_change_up = 0
@@ -473,14 +512,6 @@ gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
 
-*Gen variable for hci and uhci comparison:
-gen compare_uhci="more than half" if round(uhci)>50
-replace compare_uhci="less than half" if round(uhci)<50
-replace compare_uhci="half" if round(uhci)==50
-
-gen comparegender_uhci="higher" if round(uhci_m)>round(uhci_f)
-replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
-replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
 save "$data_output\ordered_text", replace
 exit
