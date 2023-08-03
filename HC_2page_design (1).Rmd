@@ -131,7 +131,7 @@ knitr::include_graphics(gr2)
  
 $$\\[-3em]$$
 
-**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data (italicized and shown in parentheses) and progress over the last 5 years. The HCCIs are benchmarked against regional averages.
+The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data (italicized and shown in parentheses) and progress over the last 5 years. The HCCIs are benchmarked against regional averages.
 
 \vspace{1mm}
 

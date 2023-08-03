@@ -16,9 +16,9 @@ setwd(path)
 #################################
 ### Set the folders
 
-# Zip the last version of the briefs
-files2zip <- dir('Briefs', full.names = TRUE)
-zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
+# # Zip the last version of the briefs
+# files2zip <- dir('Briefs', full.names = TRUE)
+# zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
 
 # Delete the last version of the briefs (except the zip file)
 files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
@@ -36,11 +36,11 @@ dir.create('Briefs/Logs')
 source("HC_2page_functions.R")
 
 # #### FILTER ##########################
-# Create a vector of the values you want to filter
-selected_wbcodes <- c("AGO")
-x <- subset(x, wbcode %in% selected_wbcodes)
-countrynamet <- x[["wbcountryname"]]
-countrycodes <- x[["wbcode"]]
+# # Create a vector of the values you want to filter
+# selected_wbcodes <- c("AGO")
+# x <- subset(x, wbcode %in% selected_wbcodes)
+# countrynamet <- x[["wbcountryname"]]
+# countrycodes <- x[["wbcode"]]
 ######################################
 
 # Set progress bar

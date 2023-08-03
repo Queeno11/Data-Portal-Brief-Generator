@@ -34,6 +34,16 @@ display "Done!"
 *------------------------------------------------------------------------------*
 use "$data_output\data_briefs_allcountries", replace
 
+* Remove observations with no HCI
+drop if hci==.
+* Remove observations with no HCCI
+ds wbcode wbcountryname wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
+local hcci = r(varlist)
+egen has_hcci = rownonmiss(`hcci')
+drop if has_hcci == 0 // Kosovo is the only case
+drop has_hcci
+
+
 sort wbcode
 count
 numlist "1/`r(N)'"
@@ -98,7 +108,7 @@ local cc8 "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-	if !inlist(wbcode[`i'], "AGO") continue 
+// 	if !inlist(wbcode[`i'], "AGO") continue 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"

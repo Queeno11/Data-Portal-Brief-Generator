@@ -141,8 +141,6 @@
 	
 	keep if rank!=.
 	*----------------------Selection of indicators-------------------------*
-
-	
 	
 	gen selected_indicators = .
 	gen inv_year = 2500-vy_

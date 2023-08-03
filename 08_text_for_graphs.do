@@ -1,5 +1,5 @@
 *------------------------------------------------------------------------------*
-*								Text for graphs						   
+*								Text for graphs						 
 *------------------------------------------------------------------------------*
 
 	
@@ -22,7 +22,7 @@ local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
 display "Generating indicator locals, please wait..."
-qui forvalues i  = 1(1)`n_locals' {
+qui forvalues i = 1(1)`n_locals' {
 	gen selected = .
 	replace selected = 1 if _n==`i'
 	sort selected is_local
@@ -48,6 +48,12 @@ set more off
 set maxvar 32000
 use "$data_output\data_briefs", replace
 
+* Remove observations with no HCCI
+ds wbcode wbcountryname wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
+local hcci = r(varlist)
+egen has_hcci = rownonmiss(`hcci')
+drop if has_hcci == 0 // Kosovo is the only case
+drop has_hcci
 
 *------------------------------Keep vars-----------------------------------*
 
@@ -76,7 +82,7 @@ replace wbcountrynameb="the Czech Republic" if wbcountryname=="Czech Republic"
 replace wbcountrynameb="the Philippines" if wbcountryname=="Philippines"
 replace wbcountrynameb="the Russian Federation" if wbcountryname=="Russian Federation"
 replace wbcountrynameb="the Seychelles" if wbcountryname=="Seychelles"
-replace wbcountrynameb="the Slovak Republic" if wbcountryname=="Slovak Republic"  
+replace wbcountrynameb="the Slovak Republic" if wbcountryname=="Slovak Republic" 
 replace wbcountrynameb="the Solomon Islands" if wbcountryname=="Solomon Islands"
 replace wbcountrynameb="the United Arab Emirates" if wbcountryname=="United Arab Emirates"
 replace wbcountrynameb="the United Kingdom" if wbcountryname=="United Kingdom"
@@ -112,42 +118,42 @@ gen wbcountrynameB = cond(regexm(wbcountrynameb, "^the "), "T"+ substr(wbcountry
 
 *--------------------------------HCI index---------------------------------*
 gen hci_text_1 = ///
-"A child born in " + wbcountrynameb + " just before the pandemic will be **" + strofreal(round(hci*100,1)) + " percent**" ///
+"A child born in " + wbcountrynameb + " just before the pandemic will be **" + strofreal(round(hci*100,1)) + "%**" ///
 + " as productive when she grows up as she could be if she enjoyed complete education and full health." if hci!=.
 
 gen hci_text_2 = ///
-cond(hci>hci_reg & hci_reg<hci_lower & hci>hci_inc & hci_inc<hci_lower, ///                 
-"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci>hci_reg & hci_lower> hci_reg & hci>hci_inc & hci_lower<hci_inc, ///                        
-"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and slightly higher than " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///    
-cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc<hci_upper, ///                        
-"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///
-cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc>hci_upper, ///                        
-"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///
-cond(hci>hci_reg & hci_lower<hci_reg & hci>hci_inc & hci_lower>hci_inc, ///                      
-"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and higher than for " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + " percent).", ///
-cond(hci>hci_reg & hci_reg>hci_lower & hci>hci_inc & hci_inc>hci_lower, ///                       
-"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///    
-cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc<hci_upper, ///                       
-"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc>hci_upper, ///                       
-"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc<hci_lower, ///                     
-"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///  
-cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc>hci_lower, ///                          
-"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///
-cond(hci<hci_reg & hci_reg<hci_upper & hci<hci_inc & hci_inc<hci_upper, ///                         
-"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///     
-cond(hci<hci_reg & hci_upper> hci_reg & hci<hci_inc & hci_upper<hci_inc, ///                         
-"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", ///   
-cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc<hci_lower, ///                         
-"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc>hci_lower, ///                         
-"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci<hci_reg & hci_upper< hci_reg & hci<hci_inc & hci_upper>hci_inc, ///                         
-"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
-cond(hci<hci_reg & hci_reg>hci_upper & hci<hci_inc & hci_inc>hci_upper, ///                         
-"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + " percent) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + " percent).", /// 
+cond(hci>hci_reg & hci_reg<hci_lower & hci>hci_inc & hci_inc<hci_lower, /// 
+"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci>hci_reg & hci_lower> hci_reg & hci>hci_inc & hci_lower<hci_inc, /// 
+"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and slightly higher than " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc<hci_upper, /// 
+"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc>hci_upper, /// 
+"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(hci>hci_reg & hci_lower<hci_reg & hci>hci_inc & hci_lower>hci_inc, /// 
+"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and higher than for " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(hci>hci_reg & hci_reg>hci_lower & hci>hci_inc & hci_inc>hci_lower, /// 
+"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc<hci_upper, /// 
+"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc>hci_upper, /// 
+"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc<hci_lower, /// 
+"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc>hci_lower, /// 
+"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(hci<hci_reg & hci_reg<hci_upper & hci<hci_inc & hci_inc<hci_upper, /// 
+"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_upper> hci_reg & hci<hci_inc & hci_upper<hci_inc, /// 
+"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc<hci_lower, /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc>hci_lower, /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_upper< hci_reg & hci<hci_inc & hci_upper>hci_inc, /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(hci<hci_reg & hci_reg>hci_upper & hci<hci_inc & hci_inc>hci_upper, /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
 "")))))))))))))))) if hci!=.
 
 gen hci_text = hci_text_1 + " " + hci_text_2 + " " 
@@ -160,7 +166,7 @@ gen psurv_text = ///
 replace psurv_text = "Internationally comparable data on fraction of live births that will survive until age 5 are not available for " + wbcountrynameb + "." if psurv==.
 
 gen eyrs_text = ///
-"In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + " years**"  ///
+"In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + " years**" ///
 + " of school by her 18th birthday." if eyrs!=.
 replace eyrs_text = "Internationally comparable data on expected years of schooling are not available for " + wbcountrynameb + "." if eyrs==.
 
@@ -170,21 +176,25 @@ gen test_text = ///
 replace test_text = "Internationally comparable data on test scores are not available for " + wbcountrynameb + "." if test==.
 
 gen qeyrs_text = ///
-"Factoring in what children actually learn, expected years of school is only **" + strofreal(round(qeyrs,0.1)) + " years**."  if qeyrs!=.
+"Factoring in what children actually learn, expected years of school is only **" + strofreal(round(qeyrs,0.1)) + " years**." if qeyrs!=.
 replace qeyrs_text = "Internationally comparable data on quality adjusted years of schooling are not available for " + wbcountrynameb + "." if qeyrs==.
 
 gen asr_text = ///
-"Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" +  strofreal(round(asr,1)) + "**." ///
+"Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" + strofreal(round(asr,1)) + "**." ///
 + " This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
-"Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are **not** stunted." ///
-+ " This means that **" + strofreal(round((100-nostu),1)) +  "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
+"Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are **not stunted**." ///
++ " This means that **" + strofreal(round((100-nostu),1)) + "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
 replace nostu_text = "Internationally comparable data on stunting are not available for " + wbcountrynameb + "." if nostu==.
 
 *-------------------------------UHCI---------------------------------*
 *Gen variable for hci and uhci comparison:
+
+*Calculate implicit unemployment rate:
+gen not_employed = 1-(uhci/hci)
+
 gen compare_uhci="more than half" if round(uhci)>50
 replace compare_uhci="less than half" if round(uhci)<50
 replace compare_uhci="half" if round(uhci)==50
@@ -194,8 +204,8 @@ replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
 replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
 gen uhci_text = ///
-"Around **" + strofreal(round(not_employed*100)) + " percent** of working-age people in " + wbcountrynameb + " are not employed. This means they cannot use their human capital to increase their productivity, resulting in a decreasing productivity by an additional **" + strofreal(round(not_employed*100)) + " percent**. Thus, **a child born today is only " + strofreal(round(uhci*100)) + " percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment. Comparing by gender, the utilization-adjusted human capital is " + comparegender_uhci + " for males (" + strofreal(round(uhci_m*100)) + " percent) than for females (" + strofreal(round(uhci_f*100)) + " percent)."
-replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg)) + " percent** and the income group average is **" + strofreal(round(uhci_inc)) + " percent**." if uhci==.
+"The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI taking into account how many adults are not employed. The U-HCI for " + wbcountrynameb + " is **0" +  strofreal(round(uhci, 0.01)) + "**. Thus, children born today are only " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
+replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **0" + strofreal(round(uhci_reg, 0.01)) + "** and the income group average is **0" + strofreal(round(uhci_inc, 0.01)) + "**." if uhci==.
 
 // GENDER COMPARISON 
 
@@ -215,7 +225,7 @@ replace gender_text_1= ///
 // SES-COMPARISON 
 /* Not available online!!!!
 gen ses_hci_text_1= ///
-"The ratio in HCI between the richest and poorest 20 percent of the population in " + wbcountrynameb + ///
+"The ratio in HCI between the richest and poorest 20% of the population in " + wbcountrynameb + ///
 " is **" + strofreal(round(hci_ratio_q5q1,0.01),"%04.2f") + "** (global average: 1.35; global range: 1.12-1.68)." if hci_ratio_q5q1!=.
 replace ses_hci_text_1= "There are insufficient data to disaggregate the HCI by socio-economic groups." if hci_ratio_q5q1 ==.
 */
@@ -252,7 +262,7 @@ foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
 		local i = 1 // Counter for texts
 		forvalues m = 1(1)`n`x'' {
-			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
+			display "`ctry': local `x'`m'_`ctry' ``x'`m'_`ctry''"
 			gen selected = 1 if wbcode=="`ctry'"
 			sort selected // Put current country first so locals are from the current country
 			local indicator ``x'`m'_`ctry''
@@ -303,8 +313,8 @@ foreach ctry in `wb_country_codes' {
 			replace `x'`m'_no_data_start_text = "`no_data_start_text'" if wbcode=="`ctry'"
 
 			** Generate time text:
-			* Version 1. Example: ", changed from 7 percent (2021). // This remains unchanged since 2021."
-			local time_comparison_text ", compared to `ind_value_prev' `unit_time' in `ind_year_prev'"
+			* Version 1. Example: ", changed from 7% (2021). // This remains unchanged since 2021."
+			local time_comparison_text ", compared to `ind_value_prev'`unit_time' in `ind_year_prev'"
 			capture gen `x'`m'_time_text = ""
 			replace `x'`m'_time_text = ///
 			cond(`lower_than_prev', "`time_comparison_text'", ///
@@ -314,7 +324,7 @@ foreach ctry in `wb_country_codes' {
 
 			** Generate region and income text:
 			if mod(`i',2)==1 { // If i is odd
-				* Version 1. Example: "The indicator is lower than the regional average (83 percent)."
+				* Version 1. Example: "The indicator is lower than the regional average (83%)."
 				local reginc_text ". The indicator is"
 				capture gen `x'`m'_reginc_text = ""
 				replace `x'`m'_reginc_text = ///
@@ -367,16 +377,16 @@ foreach ctry in `wb_country_codes' {
 			replace `x'`m'_text = `x'`m'_start_text ///
 				if `indicator'!=. & `indicator'_prev==. & `indicator'_reg==. & wbcode=="`ctry'"
 			* Only no_data_text when no data is available for that indicator 
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'" ///
 				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* Only no_data_inc_text when no data or income data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'" ///
 				if `indicator'==. & `indicator'_reg!=. & `indicator'_inc==. & wbcode=="`ctry'"
 			* Only no_data_reg_text when no data or regional data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'" ///
 				if `indicator'==. & `indicator'_reg==. & `indicator'_inc!=. & wbcode=="`ctry'"
 			* Only no_data_reginc_text when no data or regional or income data is available
-			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'"  ///
+			replace `x'`m'_text = `x'`m'_no_data_start_text + ".** `no_data_text'" ///
 				if `indicator'==. & `indicator'_reg==. & `indicator'_inc==. & wbcode=="`ctry'"	
 			
 				
@@ -392,7 +402,9 @@ foreach ctry in `wb_country_codes' {
 			local i = `i' + 1
 		}
 	}
-}
+	/* }
+	if _rc == 0 display in red "Data for `ctry' not available" */
+}	
 
 capture gen change_up = e1_change_up+e2_change_up+e3_change_up+l1_change_up+l2_change_up+l3_change_up+h1_change_up+h2_change_up+h3_change_up+b1_change_up+b2_change_up+b3_change_up
 capture gen change_down = e1_change_down+e2_change_down+e3_change_down+l1_change_down+l2_change_down+l3_change_down+h1_change_down+h2_change_down+h3_change_down+b1_change_down+b2_change_down+b3_change_down
@@ -407,62 +419,28 @@ replace change_text = "Comparing with the previous available data, all the indic
 replace change_text = "Comparing with the previous available data, all the indicators decreased." if (change_up==0 & change_down!=0 & unchanged==0) 
 replace change_text = "Comparing with the previous available data, all the indicators remain unchanged." if (change_up==0 & change_down==0 & unchanged!=0) 
 
-*drop *_start_text *_time_text  *_reginc_text 
+*drop *_start_text *_time_text *_reginc_text 
 drop *_start_text *_reginc_text 
 display "Text correctly generated!"
 
 *-----------------Round values in hci variables for tables-----------------* 
 /*	
-foreach var in hci_m hci_f hci psurv_m psurv_f psurv  asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test {
+foreach var in hci_m hci_f hci psurv_m psurv_f psurv asr_m asr_f asr nostu_m nostu_f nostu eyrs_m eyrs_f eyrs qeyrs_m qeyrs_f qeyrs test_m test_f test {
 drop `var'_t
 }	
 */
 
-foreach var in hci uhci hci_f uhci_f hci_m uhci_m {
-gen `var'_table = `var'/100
-}
-
-
-foreach var in nostu asr psurv{
+foreach var in nostu asr psurv {
 replace `var' = `var'/100
 }
 
-foreach var in hci_table uhci_table hci_f_table uhci_f_table hci_m_table uhci_m_table hci psurv  asr nostu {
-gen `var'_t = strofreal(`var',"%04.2f")
-}
-
-* FIXME: ¿Esto se usa?
-foreach var in eyrs qeyrs{
-gen `var'_t = strofreal(`var',"%4.1f")
-}
-
-foreach var in test{
-gen `var'_t = strofreal(`var',"%4.0f")
-}
-
-foreach var of varlist *_t {
-replace `var' = "-" if `var'=="."
-tab `var'
-}
-
-foreach var in nostu asr psurv{
-replace `var' = `var'*100
+foreach var in hci uhci hci_f uhci_f hci_m uhci_m psurv asr nostu {
+	gen `var'_t = strofreal(`var',"%04.2f")
+	replace `var'_t = "-" if `var'==.
 }
 
 *---------------------------------Save-------------------------------------*	
 	
-/* keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t */
-	
-destring hci_t, replace
-replace hci_t = hci_t/100
-
-gen hci_t2 = strofreal(hci_t,"%04.2f")
-drop hci_t 
-rename hci_t2 hci_t
-
-
-*Calculate implicit unemployment rate:
-gen not_employed = 1-(uhci/hci)
 
 save "$data_output\ordered_text", replace
 exit

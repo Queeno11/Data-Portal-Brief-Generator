@@ -17,8 +17,7 @@ except:
     data_raw = rf"{root}\Data\Data_Raw"
     data_processed = rf"{root}\Data\Data_Processed"
     data_output = rf"{root}\Data\Data_Output"
-    date = "26_jul_2023"
-    extra = "_nosubt"
+    extra = ""
 
 sources = rf"{root}\Sources"
 briefs = rf"{root}\Briefs"
@@ -68,7 +67,7 @@ def add_header_and_footer(background, header, footer):
 df = pd.read_stata(rf"{data_output}\data_briefs.dta")
 # df = df[df.wbcode.isin(["AFG", "AUS", "SPA", "ISL", "ARG"])]
 
-headers = list_files_in_directory(rf"{sources}\\Header Images")
+headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 
 for country_data in df[["wbcode", "wbcountryname"]].itertuples():
     try:
