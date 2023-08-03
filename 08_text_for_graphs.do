@@ -122,39 +122,57 @@ gen hci_text_1 = ///
 + " as productive when she grows up as she could be if she enjoyed complete education and full health." if hci!=.
 
 gen hci_text_2 = ///
-cond(hci>hci_reg & hci_reg<hci_lower & hci>hci_inc & hci_inc<hci_lower, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)<round(hci_lower) & round(hci)>round(hci_inc) & round(hci_inc)<round(hci_lower), /// 
 "This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci>hci_reg & hci_lower> hci_reg & hci>hci_inc & hci_lower<hci_inc, /// 
+cond(round(hci)>round(hci_reg) & round(hci_lower)> round(hci_reg) & round(hci)>round(hci_inc) & round(hci_lower)<round(hci_inc), /// 
 "This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and slightly higher than " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc<hci_upper, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)<round(hci_lower) & round(hci)<round(hci_inc) & round(hci_inc)<round(hci_upper), /// 
 "This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
-cond(hci>hci_reg & hci_reg<hci_lower & hci<hci_inc & hci_inc>hci_upper, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)<round(hci_lower) & round(hci)<round(hci_inc) & round(hci_inc)>round(hci_upper), /// 
 "This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
-cond(hci>hci_reg & hci_lower<hci_reg & hci>hci_inc & hci_lower>hci_inc, /// 
+cond(round(hci)>round(hci_reg) & round(hci_lower)<round(hci_reg) & round(hci)>round(hci_inc) & round(hci_lower)>round(hci_inc), /// 
 "This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and higher than for " + incomegroup + " (" + strofreal(round(hci_inc*100,1)) + "%).", ///
-cond(hci>hci_reg & hci_reg>hci_lower & hci>hci_inc & hci_inc>hci_lower, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)>round(hci_lower) & round(hci)>round(hci_inc) & round(hci_inc)>round(hci_lower), /// 
 "This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc<hci_upper, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)>round(hci_lower) & round(hci)<round(hci_inc) & round(hci_inc)<round(hci_upper), /// 
 "This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci>hci_reg & hci_reg>hci_lower & hci<hci_inc & hci_inc>hci_upper, /// 
+cond(round(hci)>round(hci_reg) & round(hci_reg)>round(hci_lower) & round(hci)<round(hci_inc) & round(hci_inc)>round(hci_upper), /// 
 "This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc<hci_lower, /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)<round(hci_upper) & round(hci)>round(hci_inc) & round(hci_inc)<round(hci_lower), /// 
 "This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_reg<hci_upper & hci>hci_inc & hci_inc>hci_lower, /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)<round(hci_upper) & round(hci)>round(hci_inc) & round(hci_inc)>round(hci_lower), /// 
 "This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
-cond(hci<hci_reg & hci_reg<hci_upper & hci<hci_inc & hci_inc<hci_upper, /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)<round(hci_upper) & round(hci)<round(hci_inc) & round(hci_inc)<round(hci_upper), /// 
 "This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_upper> hci_reg & hci<hci_inc & hci_upper<hci_inc, /// 
+cond(round(hci)<round(hci_reg) & round(hci_upper)> round(hci_reg) & round(hci)<round(hci_inc) & round(hci_upper)<round(hci_inc), /// 
 "This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc<hci_lower, /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)>round(hci_upper) & round(hci)>round(hci_inc) & round(hci_inc)<round(hci_lower), /// 
 "This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_reg>hci_upper & hci>hci_inc & hci_inc>hci_lower, /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)>round(hci_upper) & round(hci)>round(hci_inc) & round(hci_inc)>round(hci_lower), /// 
 "This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_upper< hci_reg & hci<hci_inc & hci_upper>hci_inc, /// 
+cond(round(hci)<round(hci_reg) & round(hci_upper)< round(hci_reg) & round(hci)<round(hci_inc) & round(hci_upper)>round(hci_inc), /// 
 "This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) but slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-cond(hci<hci_reg & hci_reg>hci_upper & hci<hci_inc & hci_inc>hci_upper, /// 
-"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
-"")))))))))))))))) if hci!=.
+cond(round(hci)<round(hci_reg) & round(hci_reg)>round(hci_upper) & round(hci)<round(hci_inc) & round(hci_inc)>round(hci_upper), /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(round(hci)==round(hci_reg) & round(hci)==round(hci_inc), /// 
+"This is similar to the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)==round(hci_reg) & round(hci)>round(hci_inc) & round(hci_inc)<round(hci_lower), /// 
+"This is similar to the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)==round(hci_reg) & round(hci)>round(hci_inc) & round(hci_inc)>round(hci_lower), /// 
+"This is similar to the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and slightly higher than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", ///
+cond(round(hci)==round(hci_reg) & round(hci)<round(hci_inc) & round(hci_upper)<round(hci_inc), /// 
+"This is similar to the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)==round(hci_reg) & round(hci)<round(hci_inc) & round(hci_upper)>round(hci_inc), /// 
+"This is similar to the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and slightly lower than for " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)>round(hci_reg) & round(hci_lower)> round(hci_reg) & round(hci)==round(hci_inc), /// 
+"This is higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and similar to " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)>round(hci_reg) & round(hci_lower)<round(hci_reg) & round(hci)==round(hci_inc), /// 
+"This is slightly higher than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and similar to " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)<round(hci_reg) & round(hci_reg)>round(hci_upper) & round(hci)==round(hci_inc), /// 
+"This is lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and similar to " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+cond(round(hci)<round(hci_reg) & round(hci_upper)> round(hci_reg) & round(hci)==round(hci_inc), /// 
+"This is slightly lower than the average for the " + wbregion + " region (" + strofreal(round(hci_reg*100,1)) + "%) and similar to " + incomegroup +" (" + strofreal(round(hci_inc*100,1)) + "%).", /// 
+""))))))))))))))))))))))))) if hci!=.
 
 gen hci_text = hci_text_1 + " " + hci_text_2 + " " 
 replace hci_text = "The data on HCI is not available in " + wbcountrynameb + "." if hci==.
