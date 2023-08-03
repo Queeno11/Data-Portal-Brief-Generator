@@ -83,12 +83,12 @@ local c7 nostu
 local c8 uhci
 
 local lc1 "HUMAN CAPITAL INDEX"
-local lc2 "Fraction of live births that will survive until age 5"
+local lc2 "Proportion of live births that will survive until age 5"
 local lc3 "Expected Years of School"
 local lc4 "Average Harmonized Test Score"
 local lc5 "Learning-Adjusted Years of School"
-local lc6 "Fraction of 15-year-olds that will survive until age 60"
-local lc7 "Fraction of Children Under 5 Not Stunted"
+local lc6 "Proportion of 15-year-olds that will survive until age 60"
+local lc7 "Proportion of Children Under 5 Not Stunted"
 local lc8 "UTILIZATION-ADJUSTED HUMAN CAPITAL INDEX"
 
 local cc1 "15 119 157"

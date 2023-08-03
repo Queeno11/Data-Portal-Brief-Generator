@@ -163,7 +163,7 @@ replace hci_text = "The data on HCI is not available in " + wbcountrynameb + "."
 
 gen psurv_text = ///
 "Of every 100 children born in " + wbcountrynameb + ", **" + strofreal(round(psurv,1)) + "** survive to age 5." if psurv!=.
-replace psurv_text = "Internationally comparable data on fraction of live births that will survive until age 5 are not available for " + wbcountrynameb + "." if psurv==.
+replace psurv_text = "Internationally comparable data on proportion of live births that will survive until age 5 are not available for " + wbcountrynameb + "." if psurv==.
 
 gen eyrs_text = ///
 "In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + " years**" ///
@@ -180,7 +180,7 @@ gen qeyrs_text = ///
 replace qeyrs_text = "Internationally comparable data on quality adjusted years of schooling are not available for " + wbcountrynameb + "." if qeyrs==.
 
 gen asr_text = ///
-"Across " + wbcountrynameb + ", the fraction of 15-year-olds that will survive until age 60 is **" + strofreal(round(asr,1)) + "**." ///
+"Across " + wbcountrynameb + ", the proportion of 15-year-olds that will survive until age 60 is **" + strofreal(round(asr,1)) + "**." ///
 + " This statistic is a proxy for the range of health risks that a child born today would experience as an adult under current conditions." if asr!=.
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
@@ -204,7 +204,7 @@ replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
 replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
 gen uhci_text = ///
-"The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI taking into account how many adults are not employed. The U-HCI for " + wbcountrynameb + " is **0" +  strofreal(round(uhci, 0.01)) + "**. Thus, children born today are only " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
+"The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI by taking into account how many adults are not employed. The U-HCI for " + wbcountrynameb + " is **0" +  strofreal(round(uhci, 0.01)) + "**. Thus, children born today are only " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
 replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **0" + strofreal(round(uhci_reg, 0.01)) + "** and the income group average is **0" + strofreal(round(uhci_inc, 0.01)) + "**." if uhci==.
 
 // GENDER COMPARISON 

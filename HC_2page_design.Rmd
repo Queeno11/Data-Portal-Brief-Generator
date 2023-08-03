@@ -62,7 +62,7 @@ params:
 
 \vspace{2.3em}
 
-**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth. This brief tracks progress by `r params$countrynamet` in building and using human capital.** Page 1 presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. The data are from 2020. Page 2 presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle, based on the most recent data.
+**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth. This brief tracks progress by `r params$countrynamet` in building and using human capital.** Page 1 presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. The data are from 2020. Page 2 presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle.
 
 
 \vspace{0.5em}
@@ -81,7 +81,7 @@ params:
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX COMPONENTS}}###
 \vspace{-2mm}
 
-* **Fraction of live births that will survive until age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+* **Proportion of live births that will survive until age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
 
 * **Expected Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"eyrs_text"]`
 
@@ -89,9 +89,9 @@ params:
 
 * **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
-* **Fraction of 15-year-olds that will survive until age 60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+* **Proportion of 15-year-olds that will survive until age 60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
-* **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
+* **Proportion of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
 \vspace{-6mm}
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL INDEX}}###
@@ -131,7 +131,7 @@ knitr::include_graphics(gr2)
  
 $$\\[-3em]$$
 
-**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data (italicized and shown in parentheses) and progress over the last 5 years. The HCCIs are benchmarked against regional averages.
+**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data and progress over the last 5 years. The HCCIs are benchmarked against regional averages.
 
 \vspace{1mm}
 
