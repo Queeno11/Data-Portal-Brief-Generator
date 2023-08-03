@@ -93,11 +93,19 @@ foreach c in `wb_country_codes' {
 
 /* Loop with all countries */
 foreach i of local obs {
+<<<<<<< Updated upstream
 	*Unmute to run only one or some countries /
 	if (wbcode[`i'] != "AUS") continue 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
+=======
+// 	*Unmute to run only one or some countries /
+// 	if !inlist(wbcode[`i'], "AGO") continue 
+// 	*Unmute if the code suddenly stop to avoid generating all again*
+// 	local ct=wbcode[`i']
+// 	local graph_file "$charts\p1_`ct'_all.pdf"
+>>>>>>> Stashed changes
 // 	capture confirm file "`graph_file'"
 // 	if (_rc == 601 ) continue
 

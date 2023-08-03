@@ -59,7 +59,16 @@ params:
 \definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
 \newcommand\boldblue[1]{\textcolor{bondiblue}{\textbf{#1}}}
 
+<<<<<<< Updated upstream
 This two-page brief provides the 2020 Human Capital Index (HCI) released in September 2020, and a set of complementary indicators. The HCI measures the potential amount of human capital that a child born today can attain by age 18, conveying the productivity of the next generation of workers compared to a benchmark of complete education and full health. While the effects of COVID-19 on this index are yet to be measured due to the lack of data, we expect the post-pandemic HCI to be relatively lower due to significant global setbacks in deep learning and health. **Data collection efforts to allow updates to the HCI remain critical for all countries to inform policies and programs to address the setbacks to human capital.**
+=======
+\vspace{2.3em}
+
+
+**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth. This brief tracks progress by `r params$countrynamet` in building and using human capital.** Page 1 presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. The data are from 2020. Page 2 presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle, based on the most recent data.
+
+\vspace{0.5em}
+>>>>>>> Stashed changes
 
 \Begin{multicols}{2}
 
@@ -133,6 +142,8 @@ knitr::include_graphics(gr2)
 \vspace{3mm} 
 
 Human capital, a crucial ingredient for economic growth, is multi-dimensional and cumulatively built over the lifecycle. `r x[which(x$wbcountryname == params$countrynamet),"hcci_text"]` These selected HCCIs are based on the latest available data (\emph{italicized} and shown in parentheses) and benchmarked against regional and country income group averages. **They highlight where there is need for investment in people in each stage of life and for data collection and updates for evidence-based policy making.**
+
+The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data (italicized and shown in parentheses) and progress over the last 5 years. The HCCIs are benchmarked against regional averages
 
 \vspace{1mm}
 

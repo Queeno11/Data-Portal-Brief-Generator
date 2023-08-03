@@ -8,6 +8,7 @@ set more off
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"05_jul_2023" // Date when the full process is run
@@ -30,6 +31,11 @@ global date			  	"25_jul_2023" // Date when the full process is run
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 global date			  	"26_jul_2023" // Date when the full process is run
+>>>>>>> Stashed changes
+=======
+// global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+global date			  	"02_ago_2023" // Date when the full process is run
 >>>>>>> Stashed changes
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 >>>>>>> Stashed changes
@@ -76,12 +82,13 @@ do "$root\02_clean_data"
 // do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-// do "$root\07_graphs - w series${extra}.do"
+do "$root\07_graphs - w series${extra}.do"
 
 ** 08 - Generates text for the briefs
 // do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 shell Rscript "$root\09_create_Briefs.R" --args "$root" "$extra"
 =======
@@ -92,6 +99,11 @@ shell Rscript "$root\09_create_Briefs.R" --args "$root" "$extra"
 <<<<<<< Updated upstream
 // do "$root\10_create_excels.py"
 =======
+=======
+// shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"
+
+** 10 - Generate the Excels --Datasheet for each country
+>>>>>>> Stashed changes
 // python script "$root\10_add_header_and_footer.py"
 
 ** 11 - Generate the Excels --Datasheet for each country

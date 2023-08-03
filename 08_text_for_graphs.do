@@ -195,8 +195,12 @@ gen comparegender_uhci="higher" if round(uhci_m)>round(uhci_f)
 replace compare_uhci="lower" if round(uhci_m)<round(uhci_f)
 replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
+*Calculate implicit unemployment rate:
+gen not_employed = 1-(uhci/hci)
+
+*Gen UHCI text:
 gen uhci_text = ///
-"Around **" + strofreal(round(not_employed*100)) + " percent** of working-age people in " + wbcountrynameb + " are not employed. This means they cannot use their human capital to increase their productivity, resulting in a decreasing productivity by an additional **" + strofreal(round(not_employed*100)) + " percent**. Thus, **a child born today is only " + strofreal(round(uhci*100)) + " percent as productive** as they could be if they had access to proper health, education, and their future labor was fully utilized in employment. Comparing by gender, the utilization-adjusted human capital is " + comparegender_uhci + " for males (" + strofreal(round(uhci_m*100)) + " percent) than for females (" + strofreal(round(uhci_f*100)) + " percent)."
+"The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI taking into account how many adults are not employed. The U- HCI for " + wbcountrynameb + " is " +  strofreal(round(uhci)) + ". Thus, children born today are only " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
 replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg)) + " percent** and the income group average is **" + strofreal(round(uhci_inc)) + " percent**." if uhci==.
 
 // GENDER COMPARISON 
@@ -513,6 +517,10 @@ drop hci_t
 rename hci_t2 hci_t
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 save "$data_output\ordered_text", replace
 exit
 *--------------------------Merge to original base--------------------------*
