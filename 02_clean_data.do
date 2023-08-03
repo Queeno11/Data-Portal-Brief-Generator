@@ -25,7 +25,7 @@ import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unesco.xlsx", fir
 save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
 import excel "$data_raw\Country codes & metadata\wbcodes.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes", replace
-import excel "$data_raw\country_classification.xlsx", firstrow clear
+import excel "$data_raw\Country codes & metadata\country_classification.xlsx", firstrow clear
 save "$data_processed\country_class", replace
 
 
