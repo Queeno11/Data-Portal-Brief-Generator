@@ -88,7 +88,11 @@ This two-page brief provides the 2020 Human Capital Index (HCI) released in Sept
 
 * **Learning-adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
+<<<<<<< Updated upstream
 * **Adult Survival Rate.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+=======
+* **Survival Rate from ages 15-60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+>>>>>>> Stashed changes
 
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
