@@ -81,7 +81,7 @@ params:
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX COMPONENTS}}###
 \vspace{-2mm}
 
-* **Proportion of live births that will survive until age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
+* **Probability of Survival to Age 5.** `r x[which(x$wbcountryname == params$countrynamet),"psurv_text"]`
 
 * **Expected Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"eyrs_text"]`
 
@@ -89,9 +89,9 @@ params:
 
 * **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
-* **Proportion of 15-year-olds that will survive until age 60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+* **Survival Rate, ages 15-60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
-* **Proportion of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
+* **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
 \vspace{-6mm}
 ### \boldblue{U\small{TILIZATION-ADJUSTED HUMAN CAPITAL INDEX}}###
