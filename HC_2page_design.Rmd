@@ -89,7 +89,7 @@ params:
 
 * **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
-* **Survival Rate from Age 15-60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+* **Survival Rate, ages 15-60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
