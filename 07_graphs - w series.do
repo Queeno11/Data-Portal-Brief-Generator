@@ -228,7 +228,7 @@ foreach i of local obs {
 	
     twoway /// 
     (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
-    (scatteri `reg_pos'     `first_col_marker_pos', msize(8pt) `reg_marker_fmt') ///
+    (scatteri `reg_pos'     `first_col_marker_pos', msize(7.5pt) `reg_marker_fmt') ///
     (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
 	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
 	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(12pt) `legend_text_ops') ///
