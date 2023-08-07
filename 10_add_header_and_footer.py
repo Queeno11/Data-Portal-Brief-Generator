@@ -64,7 +64,7 @@ def add_header_and_footer(background, header, footer):
     return merged_image
 
 
-df = pd.read_stata(rf"{data_output}\data_briefs.dta")
+df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 # df = df[df.wbcode.isin(["AFG", "AUS", "SPA", "ISL", "ARG"])]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
@@ -103,5 +103,5 @@ for country_data in df[["wbcode", "wbcountryname"]].itertuples():
             save_all=True,
             append_images=[page_2],
         )
-    except:
-        print(f"Error with {wbcode}")
+    except Exception as exception:
+        print(f"Error with {wbcode}: {exception}")

@@ -21,7 +21,7 @@ header-includes:  \usepackage{fancyhdr}
   \usepackage{pagecolor}
   \pagecolor{white}
   \usepackage{fourier}
-  \usepackage[fontsize=8.7pt]{scrextend}
+  \usepackage[fontsize=9.1pt]{scrextend}
   \usepackage{float}
   \restylefloat{table}
   \usepackage{xcolor}
@@ -108,8 +108,8 @@ params:
                          &      &              & \\
 \textbf{ Human Capital and Utilization   } & \textbf{Boys} & \textbf{Girls} &  \textbf{Overall} \\\hline
 \vspace{-1mm} \\
-Human Capital Index &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_t"]` \\
-Utilization-Adjusted Human Capital Index & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_t"]` \\
+Human Capital Index (HCI) &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_t"]` \\
+Utilization-Adjusted HCI & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_t"]` \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
@@ -117,7 +117,7 @@ Utilization-Adjusted Human Capital Index & `r x[which(x$wbcountryname == params$
 \vspace{1mm} 
 \end{table}
 
-```{r gr2, out.height= "80%", fig.align = "right", echo=FALSE}
+```{r gr2, out.height= "82%", fig.align = "right", echo=FALSE}
 gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all", params$extra,".jpg")
 knitr::include_graphics(gr2)
 ```

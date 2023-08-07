@@ -184,7 +184,7 @@ gen psurv_text = ///
 replace psurv_text = "Internationally comparable data on proportion of live births that will survive until age 5 are not available for " + wbcountrynameb + "." if psurv==.
 
 gen eyrs_text = ///
-"In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + " years**" ///
+"In " + wbcountrynameb + ", a child who starts school at age 4 can expect to complete **" + strofreal(round(eyrs,0.1)) + "** years" ///
 + " of school by her 18th birthday." if eyrs!=.
 replace eyrs_text = "Internationally comparable data on expected years of schooling are not available for " + wbcountrynameb + "." if eyrs==.
 
@@ -194,7 +194,7 @@ gen test_text = ///
 replace test_text = "Internationally comparable data on test scores are not available for " + wbcountrynameb + "." if test==.
 
 gen qeyrs_text = ///
-"Factoring in what children actually learn, expected years of school is only **" + strofreal(round(qeyrs,0.1)) + " years**." if qeyrs!=.
+"Factoring in what children actually learn, expected years of school is only **" + strofreal(round(qeyrs,0.1)) + "** years." if qeyrs!=.
 replace qeyrs_text = "Internationally comparable data on quality adjusted years of schooling are not available for " + wbcountrynameb + "." if qeyrs==.
 
 gen asr_text = ///
@@ -203,7 +203,7 @@ gen asr_text = ///
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
-"Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are **not stunted**." ///
+"Approximately **" + strofreal(round(nostu,1)) + "** out of 100 children are not stunted." ///
 + " This means that **" + strofreal(round((100-nostu),1)) + "** out of 100 children are at risk of cognitive and physical limitations that can last a lifetime." if nostu!=.
 replace nostu_text = "Internationally comparable data on stunting are not available for " + wbcountrynameb + "." if nostu==.
 
