@@ -224,6 +224,7 @@ replace code = subinstr(code, ".", "_", .)
 rename y value
 reshape wide value, i(wbcode year gender) j(code) string
 rename value* *
+drop if countrycode=="AFE"|countrycode=="AFW"
 save "$data_processed\health_exp", replace
 
 *Out-of-school rate
