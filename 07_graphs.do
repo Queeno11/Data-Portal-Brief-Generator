@@ -215,11 +215,9 @@ foreach i of local obs {
     (scatter onesvec onesvec if hci==-999) ///
 	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(8) ///
 	  title("{fontface Utopia Semibold: UHCI}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
-	  name(title2, replace)
-
+	  name(title, replace)
 		
 	/* Legend */ 
-	
 	* Make abreaviation for the legend if it's too long
 	local full_region_text = "Average for `region'."
 	if length("`full_region_text'") > 35 {
@@ -238,20 +236,20 @@ foreach i of local obs {
 	}
 
 	
+	display "Legend"	
     twoway /// 
     (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
     (scatteri `reg_pos'     `first_col_marker_pos', msize(7.5pt) `reg_marker_fmt') ///
     (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
 	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
-	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(12pt) `legend_text_ops') ///
+	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'}", size(12pt) `legend_text_ops') ///
 	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(12pt) `legend_text_ops') ///
 	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(12pt) `legend_text_ops') ///
-      title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
+	  title("{fontface Utopia Semibold: UHCI}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
 	  name(notes, replace)
 	
-	/* Full Graph */
-	graph combine notes graph_c1  graph_c2  graph_c3  graph_c4 graph_c5 graph_c6 graph_c7 dummy title2 graph_c8, ///
-		rows(9) cols(1) xsize(4.4) ysize(8.3) graphregion(fcolor(white) lcolor(black) lwidth(medium) margin(0)) 
+	graph combine notes graph_c1  graph_c2  graph_c3  graph_c4 graph_c5 graph_c6 graph_c7 dummy title graph_c8, ///
+		rows(9) cols(1) xsize(4.4) ysize(8.3) graphregion(fcolor(white) lcolor(black) lwidth(medium) margin(0))  
 	/* graph export "$charts\p1_`ctry'_all.pdf", replace	 */
 	graph export "$charts\p1_`ctry'_all${extra}.jpg", replace width(3200)
 
