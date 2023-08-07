@@ -65,7 +65,7 @@ def add_header_and_footer(background, header, footer):
 
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
-# df = df[df.wbcode.isin(["AFG", "AUS", "SPA", "ISL", "ARG"])]
+df = df[df.wbcode.isin(["AUT"])]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 
