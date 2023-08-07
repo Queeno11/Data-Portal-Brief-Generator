@@ -223,12 +223,13 @@ replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
 gen uhci_text_1 = ///
 "The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI by taking into account how many adults are not employed. The U-HCI for " + wbcountrynameb + " is **" +  strofreal(round(uhci, 0.01), "%9.2f") + "**. Thus, children born today will be " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
-replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if uhci==.
+replace uhci_text_1 = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if uhci==.
+replace uhci_text_1 = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + " The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if (uhci==. & substr(wbcountrynameb, length(wbcountrynameb), 1)==".")
 
 gen uhci_text_2 = ///
-"The U-HCI for girls is even lower at " +  strofreal(round(uhci_f, 0.01), "%9.2f") + "."
-replace uhci_text_2 = "The U-HCI for boys is even lower at " +  strofreal(round(uhci_m, 0.01), "%9.2f") + "." if uhci_m<uhci_f
-replace uhci_text_2 = "The U-HCI for girls and boys are the same." if uhci_m<uhci_f
+" The U-HCI for girls is even lower at " +  strofreal(round(uhci_f), "%9.2f") + "."
+replace uhci_text_2 = " The U-HCI for boys is even lower at " +  strofreal(round(uhci_m), "%9.2f") + "." if uhci_m<uhci_f
+replace uhci_text_2 = " The U-HCI for girls and boys are the same." if uhci_m<uhci_f
 replace uhci_text_2 = "" if missing(uhci)
 
 gen uhci_text = uhci_text_1 + uhci_text_2

@@ -82,23 +82,23 @@ local c6 asr
 local c7 nostu
 local c8 uhci
 
-local lc1 "HUMAN CAPITAL INDEX"
+local lc1 "Human Capital Index"
 local lc2 "Probability of Survival to Age 5 (%)"
 local lc3 "Expected Years of School"
 local lc4 "Average Harmonized Test Scores"
 local lc5 "Learning-Adjusted Years of School"
 local lc6 "Survival Rate from Age 15-60 (%)"
 local lc7 "Fraction of Children Under 5 Not Stunted (%)"
-local lc8 "UTILIZATION-ADJUSTED HUMAN CAPITAL INDEX"
+local lc8 "Utilization-Adjusted Human Capital Index"
 
-local cc1 "15 119 157"
+local cc1 black // "15 119 157"
 local cc2 black
 local cc3 black
 local cc4 black
 local cc5 black
 local cc6 black
 local cc7 black
-local cc8 "15 119 157"
+local cc8 black // "15 119 157"
 	
 	
 *----------------------------Loop on countries-----------------------------*
@@ -108,7 +108,7 @@ local cc8 "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
- 	if !inlist(wbcode[`i'], "AUT") continue 
+ 	/* if !inlist(wbcode[`i'], "AUT") continue  */
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -131,14 +131,14 @@ foreach i of local obs {
 	* Legendsize(size(12pt) 12pt) 
     local legend_text_ops = "linegap(1.9) placement(east) justification(left)"
 
-    local country_pos = 1 // top - its y axis
-    local reg_pos = -0 // bottom
+    local country_pos = 0.6 // top - its y axis
+    local reg_pos = 0 // bottom
     local inc_pos = 0 // bottom
 	local time_pos = 0 // bottom
-    local first_col_marker_pos = 0 // left - its x axis
-    local first_col_text_pos = `first_col_marker_pos' + 0.05
+    local first_col_marker_pos = 0.05 // left - its x axis
+    local first_col_text_pos = `first_col_marker_pos' + 0.055
     local second_col_marker_pos = `first_col_marker_pos' + 2.05
-    local second_col_text_pos = `first_col_marker_pos' + 2.1
+    local second_col_text_pos = `second_col_marker_pos' + 0.055
 
 
 	*------------------------------First page------------------------------*
@@ -175,11 +175,11 @@ foreach i of local obs {
 
 			twoway ///
 			/// (scatter onesvec `c`m'' if `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
-			(scatter onesvec `c`m'' if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(23pt) mlabel(`c`m'') mlabsize(14pt) `this_country_marker_fmt') ///
-			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(12pt) `reg_marker_fmt') /// 
-			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(12pt) `inc_marker_fmt') /// 
+			(scatter onesvec `c`m'' if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(32pt) mlabel(`c`m'') mlabsize(17pt) `this_country_marker_fmt') ///
+			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') /// 
+			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
 			/// (scatter onesvec `c`m''_prev if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
-			, legend(off) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
 			  name(graph_c`m')
 		}
 		else {
@@ -198,40 +198,30 @@ foreach i of local obs {
 			
 			twoway ///
 			/// (scatter onesvec `c`m'' if `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
-			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(13pt) msymbol(D) mlc(black) mfcolor(sky)) ///
-			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(13pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
-			, legend(off) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=0) size(15pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(10pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(10pt)) xsize(4.4) ysize(1) graphregion(margin(b=5)) plotregion(margin(0)) ///
+			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') ///
+			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
+			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
 			  name(graph_c`m')
 			drop obs_`c`m''
 		}
 	}	
 
-	/* Dummy graph */
-	twoway (scatter onesvec onesvec if onesvec == -777.77)	, yline(0, lwidth(2pt) lp(solid) lc(black)) legend(off) xtitle("") ytitle("") yscale(off) ylabel(none) xscale(off) graphregion(margin(0)) xsize(4.4) ysize(1) plotregion(margin(0)) fysize(1) ///
-		name(dummy, replace)
-
-	/* Title for UHCI*/
-    twoway /// 
-    (scatter onesvec onesvec if hci==-999) ///
-	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(8) ///
-	  title("{fontface Utopia Semibold: UHCI}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
-	  name(title2, replace)
 
 		
 	/* Legend */ 
 	
 	* Make abreaviation for the legend if it's too long
-	local full_region_text = "Average for `region'."
+	local full_region_text = "Average for `region'"
 	if length("`full_region_text'") > 35 {
-		local region_text = "Avg. for `region'."
+		local region_text = "Avg. for `region'"
 	}
 	else {
 		local region_text = "`full_region_text'"
 	}
 
-	local full_income_text = "Average for `income2'."
+	local full_income_text = "Average for `income2'"
 	if length("`full_income_text'") > 40 {
-		local income_text = "Avg. for `income2'."
+		local income_text = "Avg. for `income2'"
 	}
 	else {
 		local income_text = "`full_income_text'"
@@ -239,20 +229,30 @@ foreach i of local obs {
 
 	
     twoway /// 
-    (scatteri `country_pos' `first_col_marker_pos', msize(8pt) `country_marker_fmt') ///
-    (scatteri `reg_pos'     `first_col_marker_pos', msize(7.5pt) `reg_marker_fmt') ///
-    (scatteri `inc_pos'     `second_col_marker_pos', msize(8pt) `inc_marker_fmt') ///
-	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(14) ///
-	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'.}", size(12pt) `legend_text_ops') ///
-	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(12pt) `legend_text_ops') ///
-	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(12pt) `legend_text_ops') ///
-      title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(22pt) margin(b=3) pos(12)) ///
+    (scatteri `country_pos' `first_col_marker_pos', msize(11pt) `country_marker_fmt') ///
+    (scatteri `reg_pos'     `first_col_marker_pos', msize(10.2pt) `reg_marker_fmt') ///
+    (scatteri `inc_pos'     `second_col_marker_pos', msize(11pt) `inc_marker_fmt') ///
+	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(17) ///
+	  text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country'}", size(16pt) `legend_text_ops') ///
+	  text(`reg_pos'     `first_col_text_pos'  "{fontface Utopia: `region_text'}", size(16pt) `legend_text_ops') ///
+	  text(`inc_pos'     `second_col_text_pos' "{fontface Utopia: `income_text'}", size(16pt) `legend_text_ops') ///
+      title("{fontface Utopia Semibold: HCI AND COMPONENTS}", span color("15 119 157") size(30pt) margin(b=3 t=5) pos(12)) ///
 	  name(notes, replace)
 	
+	/* Dummy graph */
+	twoway (scatter onesvec onesvec if onesvec == -999)	, yline(0, lwidth(2pt) lp(solid) lc(black)) legend(off) xtitle("") ytitle("") yscale(off) ylabel(none) xscale(off) graphregion(margin(0)) xsize(4.4) ysize(1) plotregion(margin(0)) fysize(1) ///
+		name(dummy, replace)
+
+	/* Title for UHCI*/
+    twoway /// 
+    (scatter onesvec onesvec if hci==-999) ///
+	, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) ysize(1) fysize(4) plotregion(margin(0)) ///
+	  title("{fontface Utopia Semibold: UHCI}", span color("15 119 157") size(30pt) margin(t=8 b=-5) pos(12)) ///
+	  name(title2, replace)
+
 	/* Full Graph */
 	graph combine notes graph_c1  graph_c2  graph_c3  graph_c4 graph_c5 graph_c6 graph_c7 dummy title2 graph_c8, ///
-		rows(9) cols(1) xsize(4.4) ysize(8.3) graphregion(fcolor(white) lcolor(black) lwidth(medium) margin(0)) 
-	/* graph export "$charts\p1_`ctry'_all.pdf", replace	 */
+		rows(11) cols(1) xsize(4.4) ysize(8.5) graphregion(fcolor(white) lcolor(black) lwidth(medium) margin(tiny)) 
 	graph export "$charts\p1_`ctry'_all${extra}.jpg", replace width(3200)
 
 	*------------------------------Second Page-----------------------------*
