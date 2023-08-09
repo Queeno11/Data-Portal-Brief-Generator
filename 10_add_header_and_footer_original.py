@@ -1,5 +1,3 @@
-# FIXME: This code requires like 20GB of RAM to run, so it's not really usable by anyone else. I'll have to find a way to make it more efficient.
-
 try:
     from sfi import Macro
 
@@ -67,11 +65,10 @@ def add_header_and_footer(background, header, footer):
 
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
-df = df.sort_values(by=["wbregion", "wbcode"])
 # df = df[df.wbcode.isin(["AUT"])]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
-images = {k: [] for k in df.wbregion.unique()}
+
 for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
     try:
         wbcode = country_data[1]
@@ -99,27 +96,15 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
         page_2 = add_header_and_footer(pdf[1], header, footer)
 
         # Save them
+        os.makedirs(rf"{briefs}\For print\{wbregion}", exist_ok=True)
         page_1.save(
-            rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
+            rf"{briefs}\For print\{wbregion}\{wbcountryname}{extra}.pdf",
             "PDF",
             mode="RGBA",
             resolution=100.0,
             save_all=True,
             append_images=[page_2],
         )
-        images[wbregion] += [page_1, page_2]
 
     except Exception as exception:
         print(f"Error with {wbcode}: {exception}")
-
-for region, imgs in images.items():
-    os.makedirs(rf"{briefs}\For print\{wbregion}", exist_ok=True)
-
-    imgs[0].save(
-        rf"{briefs}\For print\{region}\{region}{extra}.pdf",
-        "PDF",
-        mode="RGBA",
-        resolution=100.0,
-        save_all=True,
-        append_images=imgs[1:],
-    )
