@@ -152,101 +152,56 @@ foreach i of local obs {
 		gen obs_`c`m'' = 1 if `=scalar(r(N))'>0
 		replace obs_`c`m'' = 0 if `=scalar(r(N))'==0
 		replace obs_`c`m'' = 0 if `c`m''[`i']==0
-		if obs_`c`m'' != 0 {
-			* If we have data for the hci
-			drop obs_`c`m''
-			qui su `c`m'', d
-			scalar m1`c`m'' = `=scalar(r(max))'
-			scalar m2`c`m'' = `=scalar(r(min))'
-			scalar m25`c`m'' = `=scalar(r(p25))'
-			scalar m50`c`m'' = `=scalar(r(p50))'
-			scalar m75`c`m'' = `=scalar(r(p75))'
-			scalar m100`c`m'' = `=scalar(r(p100))'
-			scalar dif`c`m'' = `=scalar(m1`c`m'')' - `=scalar(m2`c`m'')'
-			scalar max`c`m'' = ceil(`=scalar(m1`c`m'')') 	
-			scalar min`c`m'' = floor(`=scalar(m2`c`m'')') 
-			scalar inter`c`m'' = (`=scalar(max`c`m'')'-`=scalar(min`c`m'')')/2
-			
-			* --- Fix scale for...
-			*	 health indicators
-			if `m'==2 | `m'==6 | `m'==7 {
-				if `=scalar(ctry_value)'<= 100 {
-					scalar max`c`m'' = 100
-				}
-				else {
-					scalar max`c`m'' = ceil(`=scalar(m1`c`m'')')
-				}
-			}
-			*	 test scores
-			if `m'==4 {
-				scalar max`c`m'' = 625 	
-				scalar min`c`m'' = 300 
-			}
-			*	 years of school
-			if `m'==3 | `m'==5 {
-				scalar max`c`m'' = 14	
-				scalar min`c`m'' = 0
-			}
 
-			* --- Markers format...
-			if `m'==1 | `m'==8 {
-				local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.2f)"
+		qui su `c`m'', d
+		scalar max`c`m'' = ceil(`=scalar(r(max))') 	
+		scalar min`c`m'' = floor(`=scalar(r(min))') 
+					
+		* --- Fix scale for...
+		*	 health indicators
+		if (`m'==2 | `m'==6 | `m'==7) & (`=scalar(ctry_value)'<= 100) {
+			scalar max`c`m'' = 100
+		}
+		*	 test scores
+		if `m'==4 {
+			scalar max`c`m'' = 625 	
+			scalar min`c`m'' = 300 
+		}
+		*	 years of school
+		if `m'==3 | `m'==5 {
+			scalar max`c`m'' = 14	
+			scalar min`c`m'' = 0
+		}
+
+		* --- Markers format...
+		if `m'==1 | `m'==8 {
+			local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.2f)"
+		}
+		else{ // Why there's no elif in stata :(
+			if `m'==3 | `m'==5 {
+				local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.1f)"
 			}
-			else{ // Why there's no elif in stata :(
-				if `m'==3 | `m'==5 {
-					local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.1f)"
-				}
-				else {
-					local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.0f)"
-				}
+			else {
+				local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.0f)"
 			}
-			* Actual graph 
+		}
+
+
+		if obs_`c`m'' != 0 {
+	
+			drop obs_`c`m''
+			* If we have data for the hci
 			twoway ///
-			/// (scatter onesvec `c`m'' if `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m'' if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(32pt) mlabel(`c`m'') mlabsize(22pt) mlabgap(4pt) `this_country_marker_fmt') ///
 			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') /// 
 			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
-			/// (scatter onesvec `c`m''_prev if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(13pt) msymbol(Oh) mlcolor(reddish) mcolor(reddish) mlwidth(thick)) ///   
 			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
 			  name(graph_c`m')
 		}
 		else {
+	
 			* If we dont have data, then plot only regional data
-			qui su `c`m'', d
-			scalar m1`c`m'' = `=scalar(r(max))'
-			scalar m2`c`m'' = `=scalar(r(min))'
-			scalar m25`c`m'' = `=scalar(r(p25))'
-			scalar m50`c`m'' = `=scalar(r(p50))'
-			scalar m75`c`m'' = `=scalar(r(p75))'
-			scalar m100`c`m'' = `=scalar(r(p100))'
-			scalar dif`c`m'' = `=scalar(m1`c`m'')' - `=scalar(m2`c`m'')'
-			scalar max`c`m'' = ceil(`=scalar(m1`c`m'')') 	
-			scalar min`c`m'' = floor(`=scalar(m2`c`m'')') 
-			scalar inter`c`m'' = (`=scalar(max`c`m'')'-`=scalar(min`c`m'')')/2
-			
-			* Fix scale for...
-			*	 health indicators
-			if `m'==2 | `m'==6 | `m'==7 {
-				if `=scalar(ctry_value)'<= 100 {
-					scalar max`c`m'' = 100
-				}
-				else {
-					scalar max`c`m'' = ceil(`=scalar(m1`c`m'')')
-				}
-			}
-			*	 test scores
-			if `m'==4 {
-				scalar max`c`m'' = 625 	
-				scalar min`c`m'' = 300 
-			}
-			*	 years of school
-			if `m'==3 | `m'==5 {
-				scalar max`c`m'' = 14	
-				scalar min`c`m'' = 2
-			}
-
 			twoway ///
-			/// (scatter onesvec `c`m'' if `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msymbol(Oh) msize(8pt) mcolor(dimgray*1.5)) ///
 			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') ///
 			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
 			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
@@ -324,26 +279,31 @@ foreach i of local obs {
 			replace obs_``x'`m''_`i' = 1 if ``x'`m'_`ctry''[`i']==.
 			if obs_``x'`m''_`i' == 0 continue
 			drop obs_``x'`m''_`i'
-			qui su ``x'`m'_`ctry'', d
-			scalar m1``x'`m'_`ctry'' = `=scalar(r(max))'
-			scalar m2``x'`m'_`ctry'' = `=scalar(r(min))'
-			scalar m25``x'`m'_`ctry'' = `=scalar(r(p25))'
-			scalar m50``x'`m'_`ctry'' = `=scalar(r(p50))'
-			scalar m75``x'`m'_`ctry'' = `=scalar(r(p75))'
-			scalar m100``x'`m'_`ctry'' = `=scalar(r(p100))'
-			scalar dif``x'`m'_`ctry'' = `=scalar(m1``x'`m'_`ctry'')' - `=scalar(m2``x'`m'_`ctry'')'
-			scalar max``x'`m'_`ctry'' = 20 * ceil(`=scalar(m1``x'`m'_`ctry'')'/20) 	
-			scalar min``x'`m'_`ctry'' = 20 * floor(`=scalar(m2``x'`m'_`ctry'')'/20) 
-			scalar inter``x'`m'_`ctry'' = (`=scalar(max``x'`m'_`ctry'')'-`=scalar(min``x'`m'_`ctry'')')/2
 			
+			foreach suffix in "_prev" "" {
+				capture {
+					qui su ``x'`m'_`ctry''`suffix', d
+					scalar max``x'`m'_`ctry''`suffix' = ceil(`=scalar(r(max))') 	
+					scalar min``x'`m'_`ctry''`suffix' = floor(`=scalar(r(min))') 
+				}
+				if _rc != 0 {
+					scalar max``x'`m'_`ctry''`suffix' = 0
+					scalar min``x'`m'_`ctry''`suffix' = .
+				}
+				noi display "``x'`m'_`ctry''`suffix' `=scalar(max``x'`m'_`ctry''`suffix')'"
+			}
+			scalar min``x'`m'_`ctry'' = min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)')
+			scalar max``x'`m'_`ctry'' = max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)')
+
 			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(40pt) mlabel(``x'`m'_`ctry'') mlabsize(33pt) mlabgap(6pt) `country_marker_fmt' mlabformat(%8.0f)) ///
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) `reg_marker_fmt') /// 
-			/// (scatter onesvec ``x'`m'_`ctry'' if ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msymbol(Oh) msize(12pt) mcolor(dimgray*1.5)) ///
-			/// (scatter onesvec ``x'`m'_`ctry''_inc if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(25pt) msymbol(S) mlc(black) mfcolor(orangebrown)) /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) color("245 202 195") `time_marker_fmt') /// 
-			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(24pt) pos(11))  xtitle("") ytitle("") yscale(range(0 0.5) lcolor(white)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) xsize(6) ysize(1) graphregion(margin(b=3)) plotregion(margin(0)) ///
+			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(24pt) pos(11))  xtitle("") ytitle("") ///
+			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g))  ///
+			  xscale(lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) ///
+			  xsize(6) ysize(1) graphregion(color(white) margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
 
