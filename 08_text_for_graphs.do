@@ -49,7 +49,7 @@ set maxvar 32000
 use "$data_output\data_briefs", replace
 
 * Remove observations with no HCCI
-ds wbcode wbcountryname wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
+ds wbcode wbcountryname wbcountrynameb wbcountrynameB wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
 local hcci = r(varlist)
 egen has_hcci = rownonmiss(`hcci')
 drop if has_hcci == 0 // Kosovo is the only case
@@ -59,62 +59,9 @@ drop has_hcci
 
 *keep wb* unicef_neomort* unicef_mealfreq* vacBCG* uisger02* lastnm_mmrt* unicef_care* lastnm_birth_reg* unicef_breastf* unicef_diarrhoea* uiscr1* lastnm_sec_ger* vacHEPBB* se_lpv_prim* uiscr2* eip_neet_mf_y* lastnm_afr* lastnm_ter_ger* une_2eap_mf_y* emp_nifl_mf_y* eap_2wap_mf_a_f* eap_2wap_mf_a_m* sp_dyn_le00_in* lastnm_probdeath_ncd* une_2eap_mf_a* emp_nifl_mf_a* fao_prev_fsec_all* per_sa_allsa_cov_pop_tot* fao_water_stress_all* fao_food_prices* fao_prev_fsec_adf* unicef_sanitation* fao_prev_fsec_adm * unicef_water*
 
-*----------------------------Country names---------------------------------*
-gen wbcountrynameb=""
-replace wbcountrynameb="the Comoros" if wbcountryname=="Comoros"
-replace wbcountrynameb="the DRC" if wbcountryname=="Congo, Dem. Rep. "
-replace wbcountryname="Democratic Republic of Congo" if wbcountryname=="Congo, Dem. Rep. "
-replace wbcountrynameb="the Republic of Congo" if wbcountryname=="Congo, Rep. "
-replace wbcountryname="Republic of Congo" if wbcountryname=="Congo, Rep. "
-replace wbcountrynameb="Egypt" if wbcountryname=="Egypt, Arab Rep. "
-replace wbcountryname="Arab Republic of Egypt" if wbcountryname=="Egypt, Arab Rep. "
-replace wbcountrynameb="the Gambia" if wbcountryname=="Gambia, The"
-replace wbcountryname="The Gambia" if wbcountryname=="Gambia, The"
-replace wbcountrynameb="Iran" if wbcountryname=="Iran, Islamic Rep. "
-replace wbcountryname="Islamic Republic of Iran" if wbcountryname=="Iran, Islamic Rep. "
-replace wbcountrynameb="the Republic of Korea" if wbcountryname=="Korea, Rep. "
-replace wbcountryname="Republic of Korea" if wbcountryname=="Korea, Rep. "
-replace wbcountrynameb="the Kyrgyz Republic" if wbcountryname=="Kyrgyz Republic"
-replace wbcountrynameb="North Macedonia" if wbcountryname=="North Macedonia"
-replace wbcountryname="North Macedonia" if wbcountryname=="North Macedonia"
-replace wbcountrynameb="the Netherlands" if wbcountryname=="Netherlands"
-replace wbcountrynameb="the Czech Republic" if wbcountryname=="Czech Republic"
-replace wbcountrynameb="the Philippines" if wbcountryname=="Philippines"
-replace wbcountrynameb="the Russian Federation" if wbcountryname=="Russian Federation"
-replace wbcountrynameb="the Seychelles" if wbcountryname=="Seychelles"
-replace wbcountrynameb="the Slovak Republic" if wbcountryname=="Slovak Republic" 
-replace wbcountrynameb="the Solomon Islands" if wbcountryname=="Solomon Islands"
-replace wbcountrynameb="the United Arab Emirates" if wbcountryname=="United Arab Emirates"
-replace wbcountrynameb="the United Kingdom" if wbcountryname=="United Kingdom"
-replace wbcountrynameb="the United States" if wbcountryname=="United States"
-replace wbcountrynameb="the West Bank and Gaza" if wbcountryname=="West Bank and Gaza"
-replace wbcountrynameb="the Republic of Yemen" if wbcountryname=="Yemen, Rep. "
-replace wbcountryname="Republic of Yemen" if wbcountryname=="Yemen, Rep. "
-replace wbcountrynameb="the Bahamas" if wbcountryname=="Bahamas, The"
-replace wbcountryname="The Bahamas" if wbcountryname=="Bahamas, The"
-replace wbcountrynameb="Taiwan" if wbcountryname=="Taiwan, China"
-replace wbcountryname="Taiwan" if wbcountryname=="Taiwan, China"
-replace wbcountrynameb="the Dominican Republic" if wbcountryname=="Dominican Republic"
-replace wbcountrynameb="CAR" if wbcountryname=="Central African Republic"
-replace wbcountryname="Central African Republic" if wbcountryname=="Central African Republic"
-replace wbcountrynameb="the Democratic People's Republic of Korea" if wbcountryname=="Korea, Dem. People's Rep. "
-replace wbcountryname="Democratic People's Republic of Korea" if wbcountryname=="Korea, Dem. People's Rep. "
-replace wbcountrynameb="Micronesia" if wbcountryname=="Micronesia, Fed. Sts. "
-replace wbcountryname="Federated States of Micronesia" if wbcountryname=="Micronesia, Fed. Sts. "
-replace wbcountrynameb="Macao" if wbcountryname=="Macao SAR, China"
-replace wbcountrynameb="Hong Kong" if wbcountryname=="Hong Kong SAR, China"
-replace wbcountrynameb="the Isle of Man" if wbcountryname=="Isle of Man"
-replace wbcountryname="Isle of Man" if wbcountryname=="Isle of Man"
-replace wbcountrynameb="the Lao PDR" if wbcountryname=="Lao PDR"
-replace wbcountryname="Lao People's Democratic Republic" if wbcountryname=="Lao PDR"
-replace wbcountrynameb="the Marshall Islands" if wbcountryname=="Marshall Islands"
-replace wbcountrynameb="the Northern Mariana Islands" if wbcountryname=="Northern Mariana Islands"
-replace wbcountrynameb="Syria" if wbcountryname=="Syrian Arab Republic"
-replace wbcountrynameb="Venezuela" if wbcountryname=="Venezuela, RB"
-replace wbcountrynameb="the Virgin Islands" if wbcountryname=="Virgin Islands (U.S.)"
-replace wbcountrynameb=wbcountryname if wbcountrynameb==""
-	
-gen wbcountrynameB = cond(regexm(wbcountrynameb, "^the "), "T"+ substr(wbcountrynameb, 2, .), wbcountrynameb)	
+
+*-----------------------------First paragraph-----------------------------*
+gen first_par = "**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth. This brief tracks progress by " + wbcountrynameb + " in building and using human capital.** "
 
 *--------------------------------HCI index---------------------------------*
 gen hci_text_1 = ///
@@ -223,12 +170,13 @@ replace compare_uhci="equal" if round(uhci_m)==round(uhci_f)
 
 gen uhci_text_1 = ///
 "The Utilization-adjusted Human Capital Index (U-HCI), scales down the HCI by taking into account how many adults are not employed. The U-HCI for " + wbcountrynameb + " is **" +  strofreal(round(uhci, 0.01), "%9.2f") + "**. Thus, children born today will be " + strofreal(round(uhci*100)) + "% as productive in adulthood as they could have been if they had access to full health and education, and they became fully employed adults."
-replace uhci_text = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if uhci==.
+replace uhci_text_1 = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + ". The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if uhci==.
+replace uhci_text_1 = "The data on the utilization-adjusted human capital index are not available for " + wbcountrynameb + " The regional average for this indicator is **" + strofreal(round(uhci_reg, 0.01), "%9.2f") + "** and the income group average is **" + strofreal(round(uhci_inc, 0.01), "%9.2f") + "**." if (uhci==. & substr(wbcountrynameb, length(wbcountrynameb), 1)==".")
 
 gen uhci_text_2 = ///
-"The U-HCI for girls is even lower at " +  strofreal(round(uhci_f, 0.01), "%9.2f") + "."
-replace uhci_text_2 = "The U-HCI for boys is even lower at " +  strofreal(round(uhci_m, 0.01), "%9.2f") + "." if uhci_m<uhci_f
-replace uhci_text_2 = "The U-HCI for girls and boys are the same." if uhci_m<uhci_f
+" The U-HCI for girls is even lower at " +  strofreal(round(uhci_f), "%9.2f") + "."
+replace uhci_text_2 = " The U-HCI for boys is even lower at " +  strofreal(round(uhci_m), "%9.2f") + "." if uhci_m<uhci_f
+replace uhci_text_2 = " The U-HCI for girls and boys are the same." if uhci_m<uhci_f
 replace uhci_text_2 = "" if missing(uhci)
 
 gen uhci_text = uhci_text_1 + uhci_text_2

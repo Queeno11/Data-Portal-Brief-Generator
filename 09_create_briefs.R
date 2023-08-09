@@ -35,13 +35,13 @@ dir.create('Briefs/Logs')
 # Run setup for database and functions
 source("HC_2page_functions.R")
 
-# #### FILTER ##########################
-# Create a vector of the values you want to filter
-selected_wbcodes <- c("AUT")
-x <- subset(x, wbcode %in% selected_wbcodes)
-countrynamet <- x[["wbcountryname"]]
-countrycodes <- x[["wbcode"]]
-# #####################################
+# # #### FILTER ##########################
+# # Create a vector of the values you want to filter
+# selected_wbcodes <- c("AUT")
+# x <- subset(x, wbcode %in% selected_wbcodes)
+# countrynamet <- x[["wbcountryname"]]
+# countrycodes <- x[["wbcode"]]
+# # #####################################
 
 # Set progress bar
 pb = txtProgressBar(min = 0, max = length(countrynamet), initial = 0, style=3) 
