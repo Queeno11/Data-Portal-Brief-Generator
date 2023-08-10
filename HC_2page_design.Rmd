@@ -60,14 +60,16 @@ params:
 \definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
 \newcommand\boldblue[1]{\textcolor{bondiblue}{\textbf{#1}}}
 
-\vspace{2.3em}
+\vspace{1em}
 
-`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` This page presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. Data are most recently available as for 2020. Next page presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle.
+`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` This page presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. Data are most recently available as of 2020. The back page presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle.
 
 
 \vspace{0.5em}
 
-\Begin{multicols}{2}
+\Begin{multicols}{2}  
+
+\raggedcolumns
 
 \vspace{-2mm}
 ### \boldblue{T\small{HE HUMAN CAPITAL INDEX}}###
@@ -89,7 +91,7 @@ params:
 
 * **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
 
-* **Survival Rate, ages 15-60.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
+* **Adult Survival Rate.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
 * **Fraction of Children Under 5 Not Stunted.** `r x[which(x$wbcountryname == params$countrynamet),"nostu_text"]`
 
@@ -99,30 +101,35 @@ params:
 
 `r x[which(x$wbcountryname == params$countrynamet), "uhci_text"]`
 
-### \boldblue{G\small{ENDER DIFFERENCES IN HUMAN CAPITAL AND UTILIZATION}}###
-\vspace{-7mm}
+<!-- \vspace{-2mm} -->
 \begin{table}[H]
 \renewcommand{\tabcolsep}{0.8mm}
 \begin{tabular}{m{0.29\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}>{\centering\arraybackslash}m{0.054\textwidth}}
-\\\textbf{     }   &    &             &  \\ \hline
-                         &      &              & \\
-\textbf{ Human Capital and Utilization   } & \textbf{Boys} & \textbf{Girls} &  \textbf{Overall} \\\hline
+
+ \multicolumn{4}{c}{\bf{Gender differences in Human Capital and Utilization}} \\\hline
+ \vspace{-1mm}   \\
+ & \textbf{Boys} & \textbf{Girls} &  \textbf{Overall} \\\hline
 \vspace{-1mm} \\
-Human Capital Index (HCI) &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_t"]` \\
+Human Capital Index &   `r x[which(x$wbcountryname == params$countrynamet),"hci_m_t"]` &   `r x[which(x$wbcountryname == params$countrynamet),"hci_f_t"]` &    `r x[which(x$wbcountryname == params$countrynamet),"hci_t"]` \\
 Utilization-Adjusted HCI & `r x[which(x$wbcountryname == params$countrynamet),"uhci_m_t"]`  &  `r x[which(x$wbcountryname == params$countrynamet),"uhci_f_t"]` & `r x[which(x$wbcountryname == params$countrynamet),"uhci_t"]` \\
                          & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &    
 \vspace{-4mm}
 \\\hline
+\multicolumn{4}{l}{\small{Note:} - \small{represents no internationally comparable data available.}} \\
 \end{tabular}
 \vspace{1mm} 
 \end{table}
 
-```{r gr2, out.height= "82%", fig.align = "right", echo=FALSE}
+\columnbreak
+
+```{r gr2, out.height= "69%", fig.align = "right", echo=FALSE}
 gr2 <- paste0("Graphs/p1_", x[which(x$wbcountryname == params$countrynamet),"wbcode"],"_all", params$extra,".jpg")
 knitr::include_graphics(gr2)
 ```
 
-\vfill
+\vspace{-5mm}
+\small Note: Missing symbols indicate the internationally comparable data are not available to generate the corresponding indicator.
+
 
 \End{multicols}
 
@@ -131,11 +138,13 @@ knitr::include_graphics(gr2)
  
 $$\\[-3em]$$
 
-**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data, benchmarked against regional averages. The figures also report country progress over the last 5 years.
+**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the last 5 years.
 
 \vspace{1mm}
 
-\Begin{multicols}{2}
+\Begin{multicols}{2} 
+
+\raggedcolumns
 
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
 
@@ -161,10 +170,16 @@ $$\\[-3em]$$
 * `r x[which(x$wbcountryname == params$countrynamet),"b2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"b3_text"]`
 
+\columnbreak 
 
-```{r gr3, out.height= "82%", fig.align = "right", echo=FALSE}
+```{r gr3, out.height= "86%", fig.align = "right", echo=FALSE}
 gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
 knitr::include_graphics(gr3)
 ```
+
+\vspace{-5mm}
+\small Note: Missing symbols indicate the internationally comparable data are not available to generate the corresponding indicator.
+
+<!-- \vspace(0.1mm) -->
 
 \End{multicols}
