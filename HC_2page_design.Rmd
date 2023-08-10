@@ -64,6 +64,10 @@ This two-page brief provides the 2020 Human Capital Index (HCI) released in Sept
 =======
 \vspace{2.3em}
 
+<<<<<<< Updated upstream
+=======
+`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` This page presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. Data are most recently available as for 2020. Next page presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle.
+>>>>>>> Stashed changes
 
 **Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth. This brief tracks progress by `r params$countrynamet` in building and using human capital.** Page 1 presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. The data are from 2020. Page 2 presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle, based on the most recent data.
 

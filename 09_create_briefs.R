@@ -54,7 +54,7 @@ for (i in 1:length(countrynamet)) {
     suppressWarnings(
       capture.output(
         render(
-          input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd", 
+          input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_2page_design.Rmd", 
           output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
           output_file = output_file, 
           params = list(countrynamet = country, extra = extra_text),
