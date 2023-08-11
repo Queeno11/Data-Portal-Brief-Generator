@@ -37,7 +37,7 @@ use "$data_output\data_briefs_allcountries", replace
 * Remove observations with no HCI
 drop if hci==.
 * Remove observations with no HCCI
-ds wbcode wbcountryname wbcountrynameb wbcountrynameB wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
+ds wbcode wbcountry* wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
 local hcci = r(varlist)
 egen has_hcci = rownonmiss(`hcci')
 drop if has_hcci == 0 // Kosovo is the only case
