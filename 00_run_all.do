@@ -34,10 +34,10 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // python script "$root\01_API_access.py"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
-// do "$root\02_clean_data"
+do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
-// do "$root\03_clean_metadata"
+do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
 // do "$root\04_missing_data"
@@ -46,16 +46,16 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Briefs
 
 ** 05 - Create Briefs Dataset
-// do "$root\05_brief_dataset.do"
+do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-// do "$root\06_indicators by country.do"
+do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
 // do "$root\07_graphs${extra}.do"
 
 ** 08 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do"
+do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
 shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"

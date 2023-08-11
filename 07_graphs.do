@@ -108,7 +108,7 @@ local cc8 black // "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
- 	if !inlist(wbcode[`i'], "ARG") continue 
+ 	/* if !inlist(wbcode[`i'], "ARG") continue  */
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
@@ -161,6 +161,9 @@ foreach i of local obs {
 		*	 health indicators
 		if (`m'==2 | `m'==6 | `m'==7) & (`=scalar(ctry_value)'<= 100) {
 			scalar max`c`m'' = 100
+			if `m'==6 {
+				scalar min`c`m'' = 50
+			}
 		}
 		*	 test scores
 		if `m'==4 {

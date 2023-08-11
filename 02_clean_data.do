@@ -224,6 +224,7 @@ replace code = subinstr(code, ".", "_", .)
 rename y value
 reshape wide value, i(wbcode year gender) j(code) string
 rename value* *
+drop if wbcode=="AFE"|wbcode=="AFW"
 save "$data_processed\health_exp", replace
 
 *Out-of-school rate
@@ -924,18 +925,19 @@ merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
 merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
-// *--------------------------------World Bank--------------------------------*	
-// wbopendata, indicator(SE.LPV.PRIM) latest long clear
-// rename countrycode wbcode
-// gen gender=0
-// keep year wbcode se_lpv_prim gender
-// save"$data_processed/learning_poverty", replace 
+*--------------------------------World Bank--------------------------------*	
+wbopendata, indicator(SE.LPV.PRIM) latest long clear
+rename countrycode wbcode
+gen gender=0
+keep year wbcode se_lpv_prim gender
+save"$data_processed/learning_poverty", replace 
 
 *------------------------------------UIS-----------------------------------*			
 import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
 drop if value==.
 drop magnitude qualifier
 gen indic = subinstr(indicator_id, ".", "_", .)
+replace VALUE=. if (MAGNITUDE=="NA"|MAGNITUDE=="NIL")
 keep if inlist(indic, "CR_3", "GER_01", "OAEPG_1", "OAEPG_2_GPV", "QUTP_1", "QUTP_2T3", "SCHBSP_1_WELEC", "XGDP_FSGOV", "XGOVEXP_IMF")
 rename (country_id value)(wbcode uis)
 keep wbcode uis year indic
