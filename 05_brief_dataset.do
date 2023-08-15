@@ -55,6 +55,11 @@
 	replace prevyear = year_3 if ok3==1 & prevyear==.
 	replace prevyear = year_2 if ok2==1 & prevyear==.
 	
+	* FIXME: Temporal fix for weird data
+	replace prevyear = 2017 if wbcode=="AZE" & code=="org_learning"
+	replace prevyear = 2015 if wbcode=="EGY" & code=="uiscr3"
+	replace prevyear = 2015 if wbcode=="TUR" & code=="uiscr3"
+	
 	/* Me quedo solo con el último año disponible + el de aprox 5 años antes */
 	keep if year==myear | year==prevyear
 	gen orderr = 0 if year==prevyear
