@@ -527,6 +527,8 @@ save "$data_processed\unesco_minprof_m_lowsec", replace
 
 *Youth literacy rate
 import excel "$data_raw\unesco_youthlit.xlsx", clear firstrow
+replace y2015=. if Country=="Egypt" // FIXME: This should not be here but further down the pipeline, in briefs section
+replace y2013=. if Country=="Jordan"
 bysort Country Region: gen n = _n
 reshape long y, i(Country Region n) j(year)
 drop n Region
@@ -938,7 +940,7 @@ keep year wbcode se_lpv_prim gender
 save"$data_processed/learning_poverty", replace 
 
 *------------------------------------UIS-----------------------------------*			
-import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
+import excel using "$data_raw\SDG_DATA_NATIONAL.xlsx", clear firstrow 
 replace value=. if (magnitude=="NA"|magnitude=="NIL")
 drop if value==.
 drop magnitude qualifier
@@ -997,6 +999,11 @@ reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
 
 save "$data_processed\complete_series_nometadata_$date$extra", replace
+
+* FIX:
+* Jordania Egipto y KZG en youth lit
+* Azerbaijan en org leanring, comparar 2020 vs 2017
+
 
 python:
 import pandas as pd

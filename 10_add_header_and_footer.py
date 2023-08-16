@@ -113,7 +113,7 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
         print(f"Error with {wbcode}: {exception}")
 
 for region, imgs in images.items():
-    os.makedirs(rf"{briefs}\For print\{wbregion}", exist_ok=True)
+    os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
 
     imgs[0].save(
         rf"{briefs}\For print\{region}\{region}{extra}.pdf",

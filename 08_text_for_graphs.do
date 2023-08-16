@@ -127,7 +127,7 @@ cond(round(h_hci)<round(h_hci_reg) & round(h_hci_upper)> round(h_hci_reg) & roun
 ""))))))))))))))))))))))))) if hci!=.
 
 gen hci_text = hci_text_1 + " " + hci_text_2 + " " 
-replace hci_text = "The data on HCI is not available in " + wbcountrynameb + "." if hci==.
+replace hci_text = "Data on HCI is not available in " + wbcountrynameb + "." if hci==.
 
 *-------------------------------Components---------------------------------*
 
@@ -150,7 +150,7 @@ gen qeyrs_text = ///
 replace qeyrs_text = "Internationally comparable data on quality adjusted years of schooling are not available for " + wbcountrynameb + "." if qeyrs==.
 
 gen asr_text = ///
-"Across " + wbcountrynameb + ", **" + strofreal(round(asr,1)) + "%** of 15-year-olds that survive until age 60." if asr!=.
+"Across " + wbcountrynameb + ", **" + strofreal(round(asr,1)) + "%** of 15-year-olds survive until age 60." if asr!=.
 replace asr_text = "Internationally comparable data on adult survival are not available for " + wbcountrynameb + "." if asr==.
 
 gen nostu_text = ///
@@ -184,9 +184,9 @@ gen uhci_text_2 = ///
 replace uhci_text_2 = "The U-HCI for boys is even lower at " +  strofreal(round(uhci_m,0.01), "%9.2f") + "." if round(uhci_m, 0.01)<round(uhci_f, 0.01)
 replace uhci_text_2 = "The U-HCI for girls and boys are the same." if round(uhci_m, 0.01)==round(uhci_f, 0.01)
 replace uhci_text_2 = "" if missing(uhci)
-replace uhci_text_2 = "Data are not available for producing gender disaggregated HCI and U-HCI" if (missing(uhci_m) & missing(uhci_f) & missing(hci_m) & missing(hci_f) & !missing(uhci))
-replace uhci_text_2 = "Data are not available for producing gender disaggregated U-HCI" if (missing(uhci_m) & missing(uhci_f) & !missing(hci_m) & !missing(hci_f) & !missing(uhci))
-replace uhci_text_2 = "Data are not available for producing gender disaggregated HCI" if (!missing(uhci_m) & !missing(uhci_f) & missing(hci_m) & missing(hci_f) & !missing(uhci))
+replace uhci_text_2 = "Data are not available for producing gender disaggregated HCIs and U-HCIs." if (missing(uhci_m) & missing(uhci_f) & missing(hci_m) & missing(hci_f) & !missing(uhci))
+replace uhci_text_2 = "Data are not available for producing gender disaggregated U-HCIs." if (missing(uhci_m) & missing(uhci_f) & !missing(hci_m) & !missing(hci_f) & !missing(uhci))
+replace uhci_text_2 = "Data are not available for producing gender disaggregated HCIs." if (!missing(uhci_m) & !missing(uhci_f) & missing(hci_m) & missing(hci_f) & !missing(uhci))
 
 gen uhci_text = uhci_text_1 + uhci_text_2
 
@@ -334,7 +334,7 @@ foreach ctry in `wb_country_codes' {
 			}
 			drop selected
 			
-			local no_data_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc'"
+			local no_data_text "Internationally comparable data on this indicator is not available for `countryname'. The regional average for this indicator is `reg_avg'`unit_reginc'."
 			
 			local no_data_reg_text "Internationally comparable data on this indicator is not available for `countryname'."
 			
@@ -413,8 +413,6 @@ foreach var in hci uhci hci_f uhci_f hci_m uhci_m psurv asr nostu {
 	replace `var'_t = "-" if `var'==.
 }
 destring hci_t, replace
-replace hci_t = hci_t/100
-
 gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t

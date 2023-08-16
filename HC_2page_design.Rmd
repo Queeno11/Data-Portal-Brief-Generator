@@ -62,8 +62,7 @@ params:
 
 \vspace{1em}
 
-`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` This page presents the Human Capital Index (HCI), its components parts, and relevant country benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. Data are most recently available as of 2020. The back page presents a set of Human Capital Complementary Indicators (HCCI) that show progress at each stage of the lifecycle.
-
+`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` This page presents the Human Capital Index (HCI), its components parts, and relevant benchmarks. The HCI quantifies how underinvestment in education and health for today’s children reduces future incomes. Data are the most recently available as of 2020. The back page presents a set of Human Capital Complementary Indicators (HCCI) that shows progress at each stage of the lifecycle.
 
 \vspace{0.5em}
 
@@ -87,9 +86,9 @@ params:
 
 * **Expected Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"eyrs_text"]`
 
-* **Average Harmonized Test Scores.** `r x[which(x$wbcountryname == params$countrynamet),"test_text"]`
-
 * **Learning-Adjusted Years of School.** `r x[which(x$wbcountryname == params$countrynamet),"qeyrs_text"]`
+
+* **Average Harmonized Test Scores.** `r x[which(x$wbcountryname == params$countrynamet),"test_text"]`
 
 * **Adult Survival Rate.** `r x[which(x$wbcountryname == params$countrynamet),"asr_text"]`
 
@@ -128,7 +127,7 @@ knitr::include_graphics(gr2)
 ```
 
 \vspace{-5mm}
-\small Note: Missing symbols indicate the internationally comparable data are not available to generate the corresponding indicator.
+\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding indicator.
 
 
 \End{multicols}
@@ -138,7 +137,7 @@ knitr::include_graphics(gr2)
  
 $$\\[-3em]$$
 
-**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the last 5 years.
+**The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
 
 \vspace{1mm}
 
@@ -178,7 +177,7 @@ knitr::include_graphics(gr3)
 ```
 
 \vspace{-5mm}
-\small Note: Missing symbols indicate the internationally comparable data are not available to generate the corresponding indicator.
+\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding indicator.
 
 <!-- \vspace(0.1mm) -->
 

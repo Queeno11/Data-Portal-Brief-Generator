@@ -74,7 +74,7 @@ qui foreach ctry in `wb_country_codes' {
 
             * Compute if the difference is greater than 20%
             local diff = abs(`ind_value' - `ind_value_prev')
-            if (`diff'/`ind_value_prev' > 0.2) & (`diff' != .) {
+            if (`diff'/`ind_value_prev' > 0.5) & (`diff' != .) {
                 noi display in red "`ctry': The value of `indicator' for `wbcountryname' in `year' is `ind_value' and the value for `year_prev' is `ind_value_prev'."
 
                 * Store in excel file
@@ -98,10 +98,10 @@ qui foreach ctry in `wb_country_codes' {
 
 * Potential errors by country
 frame change myexcel
-export excel "$data_output\potential_indicator_errors.xlsx", sheet("by country") firstrow(variables) replace
+export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by country") firstrow(variables) replace
 
 * Potential errors by indicator
 gen difference = latest_value - previous_value
 collapse (count) n=difference (p25) p25=difference (median) p50=difference (p75) p75=difference (mean) mean=difference, by(indicator_name)
 gsort -n
-export excel "$data_output\potential_indicator_errors.xlsx", sheet("by indicator") firstrow(variables)
+export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by indicator") firstrow(variables)

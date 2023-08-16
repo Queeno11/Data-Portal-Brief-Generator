@@ -40,7 +40,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
-// do "$root\04_missing_data"
+do "$root\04_missing_data"
 
 
 ***** Briefs
@@ -52,7 +52,7 @@ do "$root\03_clean_metadata"
 // do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-// do "$root\07_graphs${extra}.do"
+do "$root\07_graphs${extra}.do"
 
 ** 08 - Generates text for the briefs
 // do "$root\08_text_for_graphs.do"
@@ -64,7 +64,7 @@ do "$root\03_clean_metadata"
 // python script "$root\10_add_header_and_footer.py"
 
 ** 11 - Generate the Excels --Datasheet for each country
-// do "$root\11_create_excels.py"
+do "$root\11_create_excels.py"
 
 ** 12 - Raise potential errors in indicators data
-// do "$root\12_raise_potential_indicator_errors.do"
+do "$root\12_raise_potential_indicator_errors.do"

@@ -76,8 +76,8 @@ gen onesvec=0
 local c1 hci
 local c2 psurv
 local c3 eyrs
-local c4 test
-local c5 qeyrs
+local c4 qeyrs
+local c5 test
 local c6 asr
 local c7 nostu
 local c8 uhci
@@ -85,8 +85,8 @@ local c8 uhci
 local lc1 "Human Capital Index"
 local lc2 "Probability of Survival to Age 5 (%)"
 local lc3 "Expected Years of School"
-local lc4 "Average Harmonized Test Scores" 
-local lc5 "Learning-Adjusted Years of School"
+local lc4 "Learning-Adjusted Years of School"
+local lc5 "Average Harmonized Test Scores" 
 local lc6 "Survival Rate from Age 15-60 (%)"
 local lc7 "Fraction of Children Under 5 Not Stunted (%)"
 local lc8 "Utilization-Adjusted Human Capital Index"
@@ -166,12 +166,12 @@ foreach i of local obs {
 			}
 		}
 		*	 test scores
-		if `m'==4 {
+		if `m'==5 {
 			scalar max`c`m'' = 625 	
 			scalar min`c`m'' = 300 
 		}
 		*	 years of school
-		if `m'==3 | `m'==5 {
+		if `m'==3 | `m'==4 {
 			scalar max`c`m'' = 14	
 			scalar min`c`m'' = 0
 		}
@@ -181,7 +181,7 @@ foreach i of local obs {
 			local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.2f)"
 		}
 		else{ // Why there's no elif in stata :(
-			if `m'==3 | `m'==5 {
+			if `m'==3 | `m'==4 {
 				local this_country_marker_fmt = "`country_marker_fmt' mlabformat(%8.1f)"
 			}
 			else {
@@ -198,7 +198,7 @@ foreach i of local obs {
 			(scatter onesvec `c`m'' if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(32pt) mlabel(`c`m'') mlabsize(22pt) mlabgap(4pt) `this_country_marker_fmt') ///
 			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') /// 
 			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
-			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
+			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(17pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
 			  name(graph_c`m')
 		}
 		else {
@@ -207,7 +207,7 @@ foreach i of local obs {
 			twoway ///
 			(scatter onesvec `c`m''_reg if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `reg_marker_fmt') ///
 			(scatter onesvec `c`m''_inc if wbcode=="`ctry'" & `c`m'' > 0 & `c`m'' <=`=scalar(r(p100))', msize(16pt) `inc_marker_fmt') /// 
-			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(15pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(15pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
+			, legend(off) fysize(14) title("{fontface Utopia Semibold: `lc`m''}", color(`cc`m'') margin(b=10) size(21pt) pos(11)) xtitle("") ytitle("") yscale(range(0 0.25) lcolor(white)) ylabel(none) xlabel(,labsize(17pt) labgap(2pt) format(%8.3g)) xscale(lwidth(0.6pt)) graphregion(color(white)) xscale(range(`=scalar(min`c`m'')' `=scalar(max`c`m'')')) xlabel(`=scalar(min`c`m'')' `=scalar(max`c`m'')',labsize(17pt)) xsize(4.4) ysize(1) graphregion(margin(b=5 l=10 r=10)) plotregion(margin(0)) ///
 			  name(graph_c`m')
 			drop obs_`c`m''
 		}
@@ -295,8 +295,8 @@ foreach i of local obs {
 				}
 				noi display "``x'`m'_`ctry''`suffix' `=scalar(max``x'`m'_`ctry''`suffix')'"
 			}
-			scalar min``x'`m'_`ctry'' = min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)')
-			scalar max``x'`m'_`ctry'' = max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)')
+			scalar min``x'`m'_`ctry'' = round(min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)'), 10)
+			scalar max``x'`m'_`ctry'' = round(max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)'), 10)
 
 			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
@@ -304,7 +304,7 @@ foreach i of local obs {
 			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) `reg_marker_fmt') /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) color("245 202 195") `time_marker_fmt') /// 
 			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(24pt) pos(11))  xtitle("") ytitle("") ///
-			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(19pt) labgap(4pt) format(%8.3g))  ///
+			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(21pt) labgap(4pt) format(%8.3g))  ///
 			  xscale(lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) ///
 			  xsize(6) ysize(1) graphregion(color(white) margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
