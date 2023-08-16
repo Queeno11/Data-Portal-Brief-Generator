@@ -138,11 +138,6 @@ save "$data_processed\all_unicef", replace
 *--------------------------------------------------------------------------*
 *--------------------------------WDI online--------------------------------*
 *--------------------------------------------------------------------------*
-*Add usind  WDI API
-// wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR) latest long clear
-// rename countrycode wbcode
-// keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr
-//
 *****Marcos:	
 import excel using "$data_raw/wdi_1973-2022.xlsx", firstrow clear sheet(Data)
 /* bysort SeriesName: tab SeriesCode */
