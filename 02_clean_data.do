@@ -522,7 +522,10 @@ save "$data_processed\unesco_minprof_m_lowsec", replace
 
 *Youth literacy rate
 import excel "$data_raw\unesco_youthlit.xlsx", clear firstrow
+<<<<<<< Updated upstream
 *Correct outliers:
+=======
+>>>>>>> Stashed changes
 replace y2015=. if Country=="Egypt"
 replace y2013=. if Country=="Jordan"
 bysort Country Region: gen n = _n
