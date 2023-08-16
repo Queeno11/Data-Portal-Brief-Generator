@@ -150,6 +150,16 @@ drop if value==.
 export excel "$data_output\complete_series_wmd_${date}${extra}.xlsx", replace firstrow(variables)
 
 
+*DATA PORTAL:
+drop if (name=="Labor force participation rate (%), Female"|name=="Labor force participation rate (%), Male")
+drop if (name=="Male labor force participation rate (%), Male" | name=="Male labor force participation rate (%), Female")
+drop if (name=="Female labor force participation rate (%), Male"|name=="Female labor force participation rate (%), Female")
+replace name=="Labor force participation rate (%), Female" if name=="Female labor force participation rate (%)"
+replace name=="Labor force participation rate (%), Male" if name=="Male labor force participation rate (%)"
+replace date_download="$date_text" if source=="Unicef"
+save "$data_output\complete_dataportal_${date}${extra}", replace
+
+
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
 /* br wbcode wbregion wbincome year code gender value */
