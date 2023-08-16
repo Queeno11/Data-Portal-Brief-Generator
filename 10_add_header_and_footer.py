@@ -107,19 +107,19 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
             save_all=True,
             append_images=[page_2],
         )
-        images[wbregion] += [page_1, page_2]
+        # images[wbregion] += [page_1, page_2]
 
     except Exception as exception:
         print(f"Error with {wbcode}: {exception}")
 
-for region, imgs in images.items():
-    os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
+# for region, imgs in images.items():
+#     os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
 
-    imgs[0].save(
-        rf"{briefs}\For print\{region}\{region}{extra}.pdf",
-        "PDF",
-        mode="RGBA",
-        resolution=100.0,
-        save_all=True,
-        append_images=imgs[1:],
-    )
+#     imgs[0].save(
+#         rf"{briefs}\For print\{region}\{region}{extra}.pdf",
+#         "PDF",
+#         mode="RGBA",
+#         resolution=100.0,
+#         save_all=True,
+#         append_images=imgs[1:],
+#     )
