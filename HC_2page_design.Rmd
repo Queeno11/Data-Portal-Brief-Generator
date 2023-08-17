@@ -127,7 +127,7 @@ knitr::include_graphics(gr2)
 ```
 
 \vspace{-5mm}
-\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding indicator.
+\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.
 
 
 \End{multicols}
@@ -177,7 +177,7 @@ knitr::include_graphics(gr3)
 ```
 
 \vspace{-5mm}
-\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding indicator.
+\small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.
 
 <!-- \vspace(0.1mm) -->
 

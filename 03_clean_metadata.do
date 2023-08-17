@@ -154,8 +154,8 @@ export excel "$data_output\complete_series_wmd_${date}${extra}.xlsx", replace fi
 drop if (name=="Labor force participation rate (%), Female"|name=="Labor force participation rate (%), Male")
 drop if (name=="Male labor force participation rate (%), Male" | name=="Male labor force participation rate (%), Female")
 drop if (name=="Female labor force participation rate (%), Male"|name=="Female labor force participation rate (%), Female")
-replace name=="Labor force participation rate (%), Female" if name=="Female labor force participation rate (%)"
-replace name=="Labor force participation rate (%), Male" if name=="Male labor force participation rate (%)"
+replace name="Labor force participation rate (%), Female" if name=="Female labor force participation rate (%)"
+replace name="Labor force participation rate (%), Male" if name=="Male labor force participation rate (%)"
 replace date_download="$date_text" if source=="Unicef"
 save "$data_output\complete_dataportal_${date}${extra}", replace
 

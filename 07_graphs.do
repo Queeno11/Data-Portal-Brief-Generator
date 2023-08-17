@@ -159,7 +159,7 @@ foreach i of local obs {
 					
 		* --- Fix scale for...
 		*	 health indicators
-		if (`m'==2 | `m'==6 | `m'==7) & (`=scalar(ctry_value)'<= 100) {
+		if (`m'==2 | `m'==6 | `m'==7) & ((`=scalar(ctry_value)'<= 100) | (`=scalar(ctry_value)'==.)){
 			scalar max`c`m'' = 100
 			if `m'==6 {
 				scalar min`c`m'' = 50
@@ -295,8 +295,10 @@ foreach i of local obs {
 				}
 				noi display "``x'`m'_`ctry''`suffix' `=scalar(max``x'`m'_`ctry''`suffix')'"
 			}
-			scalar min``x'`m'_`ctry'' = round(min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)'), 10)
-			scalar max``x'`m'_`ctry'' = round(max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)'), 10)
+			scalar min``x'`m'_`ctry'' = min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)')
+			scalar min``x'`m'_`ctry'' = floor(`=scalar(min``x'`m'_`ctry'')' / 10) * 10
+			scalar max``x'`m'_`ctry'' = max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)')
+			scalar max``x'`m'_`ctry'' = ceil(`=scalar(max``x'`m'_`ctry'')' / 10) * 10
 
 			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
