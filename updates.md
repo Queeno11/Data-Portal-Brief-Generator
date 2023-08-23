@@ -14,7 +14,7 @@ Nico
 - Changed: 
 **Adolescent fertility rate.** The number of births for every 1,000 women (ages 15-19) is **`ind_value'** (`ind_year')
 for 
-**Adolescent fertility rate.** The number of births for every 1,000 women at ages 15-19 is **`ind_value'** (`ind_year')
+**Adolescent fertility rate.** The number of births for every 1,000 women ages 15-19 is **`ind_value'** (`ind_year')
 
 **Youth informal employment rate.** The percentage of youth (ages 15-24) involved in informal employment is **`ind_value'%** (`ind_year')
 for
