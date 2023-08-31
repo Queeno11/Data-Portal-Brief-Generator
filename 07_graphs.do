@@ -29,6 +29,12 @@ qui forvalues i  = 1(1)`n_locals' {
 assert mi(is_local)==0
 display "Done!"
 
+*--------------------------List of inverted graphs--------------------------*
+use "$data_processed\metadata_processed", clear
+
+keep if original_scale==0
+levelsof name_portal, local(inds_with_inverted_scale)
+
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
 *------------------------------------------------------------------------------*
@@ -127,7 +133,7 @@ foreach i of local obs {
 	local reg_marker_fmt = "msymbol(D) mlc(black) mfcolor(reddish)"
 	local inc_marker_fmt = "msymbol(S) mlc(black) mfcolor(orangebrown)"
 	local country_marker_fmt = "mlabcolor(edkblue) mlabposition(12) mlc(black) mfcolor(sky)"
-	local time_marker_fmt = "msymbol(S) mlc(black)"
+	local time_marker_fmt = "msymbol(T) mlc(black)"
 	* Legendsize(size(12pt) 12pt) 
     local legend_text_ops = "linegap(1.9) placement(east) justification(left)"
 
@@ -299,7 +305,24 @@ foreach i of local obs {
 			scalar min``x'`m'_`ctry'' = floor(`=scalar(min``x'`m'_`ctry'')' / 10) * 10
 			scalar max``x'`m'_`ctry'' = max(`=scalar(max``x'`m'_`ctry'')', `=scalar(max``x'`m'_`ctry''_prev)')
 			scalar max``x'`m'_`ctry'' = ceil(`=scalar(max``x'`m'_`ctry'')' / 10) * 10
+			
+			* Set scale to max 100 if neither the regional average, the current value and the previous one are greater than 100
+			if (`=scalar(max``x'`m'_`ctry'')'>100) & (``x'`m'_`ctry''[`i']<100) & (``x'`m'_`ctry''_prev[`i']<100) & (``x'`m'_`ctry''_reg[`i']<100) {
+			    scalar max``x'`m'_`ctry'' = 100
+			}
+			
+			* Change axis order if the indicator is good when decreasing
+			local order = ""
+			foreach ind of local inds_with_inverted_scale {
+				if "`ind'"=="``x'`m'_`ctry''" {
+					local order = "reverse"
+					display in red "Indicator `ind' has the axis reversed"
+				}				
+			}
+			if "`order'" == "" {
+				display in red "Indicator ``x'`m'_`ctry'' has the axis not reversed"
 
+			}
 			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(40pt) mlabel(``x'`m'_`ctry'') mlabsize(33pt) mlabgap(6pt) `country_marker_fmt' mlabformat(%8.0f)) ///
@@ -307,7 +330,7 @@ foreach i of local obs {
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) color("245 202 195") `time_marker_fmt') /// 
 			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=0) size(24pt) pos(11))  xtitle("") ytitle("") ///
 			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(21pt) labgap(4pt) format(%8.3g))  ///
-			  xscale(lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(17pt)) ///
+			  xscale(`order' lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')', labsize(17pt)) ///
 			  xsize(6) ysize(1) graphregion(color(white) margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
