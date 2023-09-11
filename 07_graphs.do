@@ -108,7 +108,12 @@ local cc8 black // "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
- 	/* if !inlist(wbcode[`i'], "ARG") continue  */
+// 	if !inlist(wbcode[`i'], ) continue
+//  	if !inlist(wbcode[`i'], "PLW", "VUT", "CHN", "PNG", "NRU", "SLB", "FSM") continue
+//  	if !inlist(wbcode[`i'], "UKR", "KAZ", "TJK", "HTI", "NIC", "LBN") continue
+//  	if !inlist(wbcode[`i'], "MAR", "YEM", "BWA", "SDN", "BFA", "GIN", "COM", "TCD") continue
+ 	if !inlist(wbcode[`i'], "ZWE", "TZA", "LSO", "COG", "NER", "CMR", "SLE", "AGO") continue
+
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
