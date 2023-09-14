@@ -85,7 +85,7 @@
 	rename value1 value
 	rename value0 pv
 	
-	drop if year<2017 	  // data too old
+	drop if year<2015
 	replace pv=. 		if prevyear<2015 // comparison too old
 	replace prevyear=. 	if prevyear<2015 // comparison too old
 
