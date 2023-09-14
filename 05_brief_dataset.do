@@ -80,8 +80,7 @@
 	/* Hago el reshape para que quede en variables separadas y así poder usar los mismos locals del do file de gráficos */
 	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)
 	collapse (max) year0 value0 year1 value1, by(wbcode wbcountryname wbregion wbincome gender code)
-	drop if year1<2015 & code!="uhci"
-	drop if year1<2010 & code=="uhci"
+	drop if year1<2015
 	rename year1 year
 	rename year0 prevyear
 	rename value1 value
