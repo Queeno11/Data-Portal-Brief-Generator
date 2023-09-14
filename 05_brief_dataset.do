@@ -75,17 +75,19 @@
 	keep if topic != ""
 	drop topic stage_life rank
 	
-	*FIXME
-// 	drop if (code=="se_lpv_prim" & missing(value))
 	/* Hago el reshape para que quede en variables separadas y así poder usar los mismos locals del do file de gráficos */
-	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)
+	drop if year>2022     // all of these are forecasts
+	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)	
+
 	collapse (max) year0 value0 year1 value1, by(wbcode wbcountryname wbregion wbincome gender code)
-	drop if year1<2015 & code!="uhci"
-	drop if year1<2010 & code=="uhci"
 	rename year1 year
 	rename year0 prevyear
 	rename value1 value
 	rename value0 pv
+	
+	drop if year<2017 	  // data too old
+	replace pv=. 		if prevyear<2015 // comparison too old
+	replace prevyear=. 	if prevyear<2015 // comparison too old
 
 *---------------------------------Reshape----------------------------------*
 
