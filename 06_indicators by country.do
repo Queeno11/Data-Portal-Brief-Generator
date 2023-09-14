@@ -78,7 +78,7 @@
 	
 	/**** Agregar vars nuevas acá ****/
 	
-	use "$data_output\data_briefs_allcountries", clear
+	use "$data_output\data_briefs___corte_2015", clear
 		
 	* Genero lista con las variables "indicadores" y "indicadores_year" 
 	global indicyear ""
