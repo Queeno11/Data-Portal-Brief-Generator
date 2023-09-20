@@ -68,7 +68,7 @@ def add_header_and_footer(background, header, footer):
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
-# df = df[df.wbcode.isin(["PSE"])]
+# df = df[df.wbcode.isin(["AUT"])]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 images = {k: [] for k in df.wbregion.unique()}
