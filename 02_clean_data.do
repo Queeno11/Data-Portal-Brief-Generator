@@ -250,6 +250,9 @@ merge 1:1 wbcode year gender using "$data_processed\educ_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\health_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
 merge 1:m wbcode year gender using "$data_processed\outschool", nogen
+replace wbcode="ZAR" if wbcode=="COD"
+replace wbcode="MNT" if wbcode=="MNE"
+replace wbcode="ROM" if wbcode=="ROU"
 save "$data_processed\all_wdi", replace
 
 *---------------------------------------------------------------------*
@@ -952,12 +955,13 @@ drop magnitude qualifier
 gen indic = subinstr(indicator_id, ".", "_", .)
 replace VALUE=. if (MAGNITUDE=="NA"|MAGNITUDE=="NIL")
 keep if inlist(indic, "CR_3", "GER_01", "OAEPG_1", "OAEPG_2_GPV", "QUTP_1", "QUTP_2T3", "SCHBSP_1_WELEC", "XGDP_FSGOV", "XGOVEXP_IMF")
-rename (country_id value)(wbcode uis)
-keep wbcode uis year indic
-reshape wide uis, i(wbcode year) j(indic) string
+rename (country_id value)(UNESCO_code uis)
+keep UNESCO_code uis year indic
+reshape wide uis, i(UNESCO_code year) j(indic) string
 rename uis* *
 gen gender = 0
-// merge m:m wbcode using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
+merge m:m UNESCO_code using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
+drop UNESCO_code UNESCO_countryname wbcountryname
 save "$data_processed/all_uis", replace 
 
 *------------------------ Utilization of HC (UHCI) ------------------------------*
