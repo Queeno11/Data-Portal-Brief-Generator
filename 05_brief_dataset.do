@@ -29,7 +29,7 @@
 
 	drop if gender!=0
 	drop if missing(gender)
-
+	
 	drop if year < 2015
 	drop if year > 2022
 *--------------------------------keep years--------------------------------*
@@ -84,6 +84,7 @@
 	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)
 	collapse (max) year0 value0 year1 value1, by(wbcode wbcountryname wbregion wbincome gender code)
 	drop if year1<2017 & code=="uhci"
+	
 	rename year1 year
 	rename year0 prevyear
 	rename value1 value
@@ -229,6 +230,12 @@ replace wbcountrynameb="the Virgin Islands" if wbcountryname=="Virgin Islands (U
 replace wbcountrynameb=wbcountryname if wbcountrynameb==""
 	
 gen wbcountrynameB = cond(regexm(wbcountrynameb, "^the "), "T"+ substr(wbcountrynameb, 2, .), wbcountrynameb)	
+
+
+	replace hci_f = . 	   if hci_f_year != hci_year
+	replace hci_f_year = . if hci_f_year != hci_year
+	replace hci_m = . 	   if hci_m_year != hci_year
+	replace hci_m_year = . if hci_m_year != hci_year
 
 *---------------------------------keep if----------------------------------*
 	save "$data_output\data_briefs_allcountries", replace

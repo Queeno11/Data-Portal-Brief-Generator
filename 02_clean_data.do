@@ -574,8 +574,8 @@ rename NATMON_IND code
 rename Time year
 drop if (code=="NERT_1_GPI"|code=="NERT_2_GPI"|code=="NERT_3_GPI")
 gen gender = 0 // Replace gender if it contains with _M_ or _F_
-replace gender = 1 if substr(code, -3, 3) == "_M_"
-replace gender = 2 if substr(code, -3, 3) == "_F_"
+replace gender = 1 if substr(code, -5, 3) == "_M_"
+replace gender = 2 if substr(code, -5, 3) == "_F_"
 replace code = subinstr(code, "_M_", "_", 1) // Remove gender from the indicator name
 replace code = subinstr(code, "_F_", "_", 1)
 bysort Country LOCATION year gender: gen n = _n

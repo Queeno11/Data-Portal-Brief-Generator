@@ -52,7 +52,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-do "$root\07_graphs${extra}.do"
+// do "$root\07_graphs${extra}.do"
 
 ** 08 - Generates text for the briefs
 do "$root\08_text_for_graphs.do"
