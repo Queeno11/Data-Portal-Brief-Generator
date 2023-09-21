@@ -138,54 +138,69 @@ save "$data_processed\all_unicef", replace
 *--------------------------------------------------------------------------*
 *--------------------------------WDI online--------------------------------*
 *--------------------------------------------------------------------------*
-*Add usind  WDI API
-// wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR) latest long clear
-// rename countrycode wbcode
-// keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr
-//
-*****Marcos:	
-import excel using "$data_raw/wdi_1973-2022.xlsx", firstrow clear sheet(Data)
-/* bysort SeriesName: tab SeriesCode */
-rename (SeriesCode CountryCode) (name wbcode)
-
-* Replace gender if contains .MA. or if it ends with .MA
-gen gender = 0
-replace gender = 1 if strpos(name, ".MA.") > 0
-replace gender = 1 if substr(name, -3, 3) == ".MA"
-replace gender = 2 if strpos(name, ".FE.") > 0
-replace gender = 2 if substr(name, -3, 3) == ".FE"
-
-* Remove gender from the indicator name
-replace name = subinstr(name, ".MA.", ".", 1)
-replace name = subinstr(name, ".FE.", ".", 1)
-* As the subinstr works from the left, we need to reverse the string to remove the last occurence of .MA or .FE (this avoids any potential bug generated from an indicator named .MA[something])
-replace name = reverse(subinstr(reverse(name), "AM.", "", 1))  if substr(name, -3, 3) == ".MA"
-replace name = reverse(subinstr(reverse(name), "EF.", "", 1))  if substr(name, -3, 3) == ".FE"
-
-* Replace . for _ to work as variable name
-replace name = subinstr(name, ".", "_", .)
-
-order wbcode name gender
-keep wbcode name gender v*
-reshape long v, i(wbcode name gender)
-rename _j year
-rename v v_
-destring v_, replace
-reshape wide v_, i(wbcode gender year) j(name) string
-rename v_* *
+*Add using  WDI API
+wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS) long clear
+rename countrycode wbcode
+gen gender=0
+keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr se_prm_uner_zs
+rename sp_ado_tfrt SP_ADO_TFRT
+rename sp_reg_brth_zs SP_REG_BRTH_ZS
+rename sh_sta_mmrt_ne SH_STA_MMRT_NE
+rename se_sec_enrr SE_SEC_ENRR
+rename se_ter_enrr SE_TER_ENRR
+rename sh_dth_ncom_zs SH_DTH_NCOM_ZS
+rename sp_dyn_le00_in SP_DYN_LE00_IN
+rename se_prm_cmpt_zs SE_PRM_CMPT_ZS
+rename se_sec_cmpt_lo_zs SE_SEC_CMPT_LO_ZS
+rename se_pre_enrr SE_PRE_ENRR
+rename se_prm_uner_zs SE_PRM_UNER_ZS
 save "$data_processed/wdi", replace
 
+
+// *****Marcos:	
+// import excel using "$data_raw/wdi_1973-2022.xlsx", firstrow clear sheet(Data)
+// /* bysort SeriesName: tab SeriesCode */
+// rename (SeriesCode CountryCode) (name wbcode)
+
+// * Replace gender if contains .MA. or if it ends with .MA
+// gen gender = 0
+// replace gender = 1 if strpos(name, ".MA.") > 0
+// replace gender = 1 if substr(name, -3, 3) == ".MA"
+// replace gender = 2 if strpos(name, ".FE.") > 0
+// replace gender = 2 if substr(name, -3, 3) == ".FE"
+
+// * Remove gender from the indicator name
+// replace name = subinstr(name, ".MA.", ".", 1)
+// replace name = subinstr(name, ".FE.", ".", 1)
+// * As the subinstr works from the left, we need to reverse the string to remove the last occurence of .MA or .FE (this avoids any potential bug generated from an indicator named .MA[something])
+// replace name = reverse(subinstr(reverse(name), "AM.", "", 1))  if substr(name, -3, 3) == ".MA"
+// replace name = reverse(subinstr(reverse(name), "EF.", "", 1))  if substr(name, -3, 3) == ".FE"
+//
+// * Replace . for _ to work as variable name
+// replace name = subinstr(name, ".", "_", .)
+//
+// order wbcode name gender
+// keep wbcode name gender v*
+// reshape long v, i(wbcode name gender)
+// rename _j year
+// rename v v_
+// destring v_, replace
+// reshape wide v_, i(wbcode gender year) j(name) string
+// rename v_* *
+// save "$data_processed/wdi", replace
+
 ****HCI
-import excel "$data_raw\hci_web.xlsx", clear firstrow
-rename IndicatorName name
-rename IndicatorCode code
-rename CountryCode wbcode
-drop CountryName
+wbopendata, indicator(HD.HCI.AMRT; HD.HCI.AMRT.FE; HD.HCI.AMRT.MA; HD.HCI.EYRS; HD.HCI.EYRS.FE; HD.HCI.EYRS.MA; HD.HCI.HLOS; HD.HCI.HLOS.FE; HD.HCI.HLOS.MA; HD.HCI.MORT; HD.HCI.MORT.FE; HD.HCI.MORT.MA; HD.HCI.STNT; HD.HCI.STNT.FE; HD.HCI.STNT.MA) clear
+// import excel "$data_raw\hci_web.xlsx", clear firstrow
+rename indicatorname name
+rename indicatorcode code
+rename countrycode wbcode
+drop countryname
 bysort name code wbcode: gen n = _n
-reshape long y, i(name code wbcode n) j(year)
+reshape long yr, i(name code wbcode n) j(year)
 drop n name
 drop if missing(code)
-* Replace gender if it ends with .MA or .FE
+*Replace gender if it ends with _ma or _fe
 gen gender = 0
 replace gender = 1 if substr(code, -3, 3) == ".MA"
 replace gender = 2 if substr(code, -3, 3) == ".FE"
@@ -193,9 +208,10 @@ replace gender = 2 if substr(code, -3, 3) == ".FE"
 replace code = reverse(subinstr(reverse(code), "AM.", "", 1))  if substr(code, -3, 3) == ".MA"
 replace code = reverse(subinstr(reverse(code), "EF.", "", 1))  if substr(code, -3, 3) == ".FE"
 replace code = subinstr(code, ".", "_", .)
-rename y value
+rename yr value
 reshape wide value, i(wbcode year gender) j(code) string
 rename value* *
+drop region regionname adminregion adminregionname incomelevel incomelevelname lendingtype lendingtypename 
 save "$data_processed\hci_web", replace
 
 *****New indicators: health and education expenditure
@@ -232,29 +248,29 @@ rename value* *
 drop if wbcode=="AFE"|wbcode=="AFW"
 save "$data_processed\health_exp", replace
 
-*Out-of-school rate
-import excel "$data_raw\wdi_outschool.xlsx", clear firstrow
-rename SeriesName name
-rename CountryCode wbcode
-rename CountryName wbcountryname
-rename SeriesCode code
-bysort name code wbcode: gen n = _n
-reshape long y, i(name code wbcode n) j(year)
-drop n
-drop if missing(name)
-gen gender = 0
-rename y SE_PRM_UNER_ZS
-keep wbcode year gender SE_PRM_UNER_ZS
-drop if missing(wbcode)
-destring SE_PRM_UNER_ZS, replace
-save "$data_processed\outschool", replace
+// *Out-of-school rate
+// import excel "$data_raw\wdi_outschool.xlsx", clear firstrow
+// rename SeriesName name
+// rename CountryCode wbcode
+// rename CountryName wbcountryname
+// rename SeriesCode code
+// bysort name code wbcode: gen n = _n
+// reshape long y, i(name code wbcode n) j(year)
+// drop n
+// drop if missing(name)
+// gen gender = 0
+// rename y SE_PRM_UNER_ZS
+// keep wbcode year gender SE_PRM_UNER_ZS
+// drop if missing(wbcode)
+// destring SE_PRM_UNER_ZS, replace
+// save "$data_processed\outschool", replace
 
 *--------------------------------all WDI------------------------------*
 use "$data_processed\hci_web", clear
 merge 1:1 wbcode year gender using "$data_processed\educ_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\health_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
-merge 1:m wbcode year gender using "$data_processed\outschool", nogen
+// merge 1:m wbcode year gender using "$data_processed\outschool", nogen
 replace wbcode="ZAR" if wbcode=="COD"
 replace wbcode="MNT" if wbcode=="MNE"
 replace wbcode="ROM" if wbcode=="ROU"
