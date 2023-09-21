@@ -29,6 +29,9 @@
 
 	drop if gender!=0
 	drop if missing(gender)
+
+	drop if year < 2015
+	drop if year > 2022
 *--------------------------------keep years--------------------------------*
 
 	/* Me quedo con último año disponible */
@@ -80,8 +83,7 @@
 	/* Hago el reshape para que quede en variables separadas y así poder usar los mismos locals del do file de gráficos */
 	reshape wide year value, i(wbcode wbcountryname wbregion wbincome gender code) j(orderr)
 	collapse (max) year0 value0 year1 value1, by(wbcode wbcountryname wbregion wbincome gender code)
-	drop if year1<2015 & code!="uhci"
-	drop if year1<2010 & code=="uhci"
+	drop if year1<2017 & code=="uhci"
 	rename year1 year
 	rename year0 prevyear
 	rename value1 value
