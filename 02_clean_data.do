@@ -190,7 +190,7 @@ save "$data_processed/wdi", replace
 // save "$data_processed/wdi", replace
 
 ****HCI
-wbopendata, indicator(HD.HCI.AMRT; HD.HCI.AMRT.FE; HD.HCI.AMRT.MA; HD.HCI.EYRS; HD.HCI.EYRS.FE; HD.HCI.EYRS.MA; HD.HCI.HLOS; HD.HCI.HLOS.FE; HD.HCI.HLOS.MA; HD.HCI.MORT; HD.HCI.MORT.FE; HD.HCI.MORT.MA; HD.HCI.STNT; HD.HCI.STNT.FE; HD.HCI.STNT.MA) clear
+wbopendata, indicator(HD.HCI.EYRS; HD.HCI.EYRS.FE; HD.HCI.EYRS.MA; HD.HCI.STNT; HD.HCI.STNT.FE; HD.HCI.STNT.MA; HD.HCI.HLOS; HD.HCI.HLOS.FE; HD.HCI.HLOS.MA; HD.HCI.OVRL; HD.HCI.OVRL.FE; HD.HCI.OVRL.LB.FE; HD.HCI.OVRL.UB.FE; HD.HCI.OVRL.LB; HD.HCI.OVRL.MA; HD.HCI.OVRL.LB.MA; HD.HCI.OVRL.UB.MA; HD.HCI.OVRL.UB; HD.HCI.LAYS; HD.HCI.LAYS.FE; HD.HCI.LAYS.MA; HD.HCI.MORT; HD.HCI.MORT.FE; HD.HCI.MORT.MA; HD.HCI.AMRT; HD.HCI.AMRT.FE; HD.HCI.AMRT.MA) clear
 // import excel "$data_raw\hci_web.xlsx", clear firstrow
 rename indicatorname name
 rename indicatorcode code
