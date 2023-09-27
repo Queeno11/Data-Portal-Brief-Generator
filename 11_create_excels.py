@@ -23,12 +23,14 @@ except:
     data_processed = rf"{portal}\Data\Data_Processed"
     data_output = rf"{portal}\Data\Data_Output"
     excels = rf"{portal}\Datasheets"
-    date = "05_jul_2023"
+    date = "31_jul_2023"
 
 ###### Read complete_series ######
 print("Loading data, this may take a while...")
 df = pd.read_stata(rf"{data_output}/complete_series_wmd_{date}.dta")
-df = df[df["rank"] != 0]  # Drop indicators that are already included in the HCI
+df = df[
+    df["rank"] > 0
+]  # Drop indicators that are already included in the HCI / are not ranked
 
 ## Format complete_series ##
 # Make stage_life ordered categorical
@@ -50,7 +52,7 @@ df.gender = df.gender.replace(
 ###### Read metadata ######
 metadata = pd.read_stata(rf"{data_processed}\metadata_processed.dta")
 metadata = metadata[
-    metadata["rank"] != 0
+    metadata["rank"] > 0
 ]  # Drop indicators that are already included in the HCI
 
 ###### Read footnotes ######
@@ -107,7 +109,187 @@ def drop_rows_until_not_nan(df):
 
 
 # Array of countries: array of tuples (wbcode, countryname)
-country_array = df[["wbcode", "wbcountryname"]].drop_duplicates().values
+country_list = [
+    "AUS",
+    "BRN",
+    "CHN",
+    "FJI",
+    "FSM",
+    "HKG",
+    "IDN",
+    "JPN",
+    "KHM",
+    "KIR",
+    "KOR",
+    "LAO",
+    "MAC",
+    "MHL",
+    "MMR",
+    "MNG",
+    "MYS",
+    "NRU",
+    "NZL",
+    "PHL",
+    "PLW",
+    "PNG",
+    "SGP",
+    "SLB",
+    "THA",
+    "TLS",
+    "TON",
+    "TUV",
+    "VNM",
+    "VUT",
+    "WSM",
+    "ALB",
+    "ARM",
+    "AUT",
+    "AZE",
+    "BEL",
+    "BGR",
+    "BIH",
+    "BLR",
+    "CHE",
+    "CYP",
+    "CZE",
+    "DEU",
+    "DNK",
+    "ESP",
+    "EST",
+    "FIN",
+    "FRA",
+    "GBR",
+    "GEO",
+    "GRC",
+    "HRV",
+    "HUN",
+    "IRL",
+    "ISL",
+    "ITA",
+    "KAZ",
+    "KGZ",
+    "LTU",
+    "LUX",
+    "LVA",
+    "MDA",
+    "MKD",
+    "MNE",
+    "NLD",
+    "NOR",
+    "POL",
+    "PRT",
+    "ROU",
+    "RUS",
+    "SRB",
+    "SVK",
+    "SVN",
+    "SWE",
+    "TJK",
+    "TUR",
+    "UKR",
+    "UZB",
+    "XKX",
+    "ARG",
+    "ATG",
+    "BRA",
+    "CHL",
+    "COL",
+    "CRI",
+    "DMA",
+    "DOM",
+    "ECU",
+    "GRD",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "JAM",
+    "KNA",
+    "LCA",
+    "MEX",
+    "NIC",
+    "PAN",
+    "PER",
+    "PRY",
+    "SLV",
+    "TTO",
+    "URY",
+    "VCT",
+    "ARE",
+    "BHR",
+    "DZA",
+    "EGY",
+    "IRN",
+    "IRQ",
+    "ISR",
+    "JOR",
+    "KWT",
+    "LBN",
+    "MAR",
+    "MLT",
+    "OMN",
+    "PSE",
+    "QAT",
+    "SAU",
+    "TUN",
+    "YEM",
+    "CAN",
+    "USA",
+    "AFG",
+    "BGD",
+    "BTN",
+    "IND",
+    "LKA",
+    "NPL",
+    "PAK",
+    "AGO",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BWA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COM",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "KEN",
+    "LBR",
+    "LSO",
+    "MDG",
+    "MLI",
+    "MOZ",
+    "MRT",
+    "MUS",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "RWA",
+    "SDN",
+    "SEN",
+    "SLE",
+    "SSD",
+    "SWZ",
+    "SYC",
+    "TCD",
+    "TGO",
+    "TZA",
+    "UGA",
+    "ZAF",
+    "ZMB",
+    "ZWE",
+]
+country_array = (
+    df[df.wbcode.isin(country_list)][["wbcode", "wbcountryname"]]
+    .drop_duplicates()
+    .values
+)
 
 # Loop over every country and sheets
 for wbcode, countryname in tqdm(country_array):
@@ -132,7 +314,7 @@ for wbcode, countryname in tqdm(country_array):
     # Note: The only sheet that is not in the dictionary is the "Graphs" one, that we add at the end
     ## Write the excels and format them ##
     with pd.ExcelWriter(
-        rf"{excels}/HCI_Data_September_2023_{wbcode}.xlsx", engine="xlsxwriter"
+        rf"{excels}/HCI_Data_September_2020_{wbcode}.xlsx", engine="xlsxwriter"
     ) as writer:
         workbook = writer.book
         # Set all diferent formats...
@@ -396,16 +578,23 @@ for wbcode, countryname in tqdm(country_array):
 
     # Add HCI sheets and protect excel
     try:
-        source = rf"{portal}\Data\HCI_Data\HCI_Data_September_2020_{wbcode}.xlsx"
-        destination = rf"{excels}\HCI_Data_July_2023_{wbcode}.xlsx"
+        source = (
+            rf"{portal}\Data\HCI_Data\HCI_Data_September_2020_{wbcode}_original.xlsx"
+        )
+        destination = rf"{excels}\HCI_Data_September_2020_{wbcode}.xlsx"
 
         wb_source = xw.Book(source)
         wb_dest = xw.Book(destination)
 
-        for sheet in range(1, 15):
+        for sheet in range(2, 15):
             ws_source = wb_source.sheets(sheet)
-            ws_source.api.Copy(Before=wb_dest.sheets(sheet).api)
+            ws_source.api.Copy(Before=wb_dest.sheets(sheet - 1).api)
 
+        # Put the first page at last so the excel starts with the index
+        ws_source = wb_source.sheets(1)
+        ws_source.api.Copy(Before=wb_dest.sheets(1).api)
+
+        # Protect sheets
         for sheet in wb_dest.sheets:
             sheet.api.Protect()
 

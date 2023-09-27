@@ -271,9 +271,9 @@ merge 1:1 wbcode year gender using "$data_processed\educ_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\health_exp", nogen
 merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
 // merge 1:m wbcode year gender using "$data_processed\outschool", nogen
-replace wbcode="ZAR" if wbcode=="COD"
-replace wbcode="MNT" if wbcode=="MNE"
-replace wbcode="ROM" if wbcode=="ROU"
+// replace wbcode="ZAR" if wbcode=="COD"
+// replace wbcode="MNT" if wbcode=="MNE"
+// replace wbcode="ROM" if wbcode=="ROU"
 save "$data_processed\all_wdi", replace
 
 *---------------------------------------------------------------------*
