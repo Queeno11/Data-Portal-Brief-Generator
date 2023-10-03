@@ -157,7 +157,14 @@ drop if (name=="Female labor force participation rate (%), Male"|name=="Female l
 replace name="Labor force participation rate (%), Female" if name=="Female labor force participation rate (%)"
 replace name="Labor force participation rate (%), Male" if name=="Male labor force participation rate (%)"
 replace date_download="$date_text" if source=="Unicef"
+
+* FIX de Labor force gender
+replace name_portal = "emp_2wap_a" if name_portal=="emp_2wap_f_a" | name_portal=="emp_2wap_m_a" | name_portal=="emp_2wap_mf_a"
+
+
+keep wbcode wbcountryname wbregion wbincome year code gender name description units scale value update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download
 save "$data_output\complete_dataportal_${date}${extra}", replace
+
 
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
