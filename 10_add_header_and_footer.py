@@ -66,9 +66,16 @@ def add_header_and_footer(background, header, footer):
     return merged_image
 
 
+Image.MAX_IMAGE_PIXELS = 1000000000
+
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
-df = df[df.wbcode.isin(["MNE"])]
+# df = df[df.wbcode.isin(["MAR"])]
+
+## REMOVE LATER
+done = os.listdir(r"D:\Laboral\World Bank\Data-Portal-Brief-Generator\Briefs\For Print")
+done_ctrys = [ctry.split(".")[0] for ctry in done]
+#####
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 images = {k: [] for k in df.wbregion.unique()}
@@ -78,10 +85,13 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
         wbcountryname = country_data[2]
         wbregion = country_data[3]
 
+        if wbcountryname in done_ctrys:
+            continue
+
         print(wbcode)
         pdf = convert_from_path(
             rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
-            size=(1700 * 2.5, 2200 * 2.5),
+            size=(1700 * 2.5 * 5, 2200 * 2.5 * 5),
         )  # This returns a list even for a 1 page pdf
 
         ## P1
@@ -100,7 +110,7 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
 
         # Save them
         page_1.save(
-            rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
+            rf"{briefs}\For Print\{wbcountryname}{extra}.pdf",
             "PDF",
             mode="RGBA",
             resolution=100.0,

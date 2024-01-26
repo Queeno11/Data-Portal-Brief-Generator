@@ -952,7 +952,7 @@ merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	
-wbopendata, indicator(SE.LPV.PRIM) latest long clear
+wbopendata, indicator(SE.LPV.PRIM) long clear
 rename countrycode wbcode
 gen gender=0
 keep year wbcode se_lpv_prim gender

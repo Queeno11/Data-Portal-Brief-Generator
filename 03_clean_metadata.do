@@ -159,13 +159,18 @@ replace name="Labor force participation rate (%), Male" if name=="Male labor for
 replace date_download="$date_text" if source=="Unicef"
 
 * FIX de Labor force gender
+replace gender = 1 if name=="Labor force participation rate (%), Male"
+replace gender = 2 if name=="Labor force participation rate (%), Female" 
+
 replace name_portal = "emp_2wap_a" if name_portal=="emp_2wap_f_a" | name_portal=="emp_2wap_m_a" | name_portal=="emp_2wap_mf_a"
+replace code = "emp_2wap_a" if code=="emp_2wap_f_a" | code=="emp_2wap_m_a" | code=="emp_2wap_mf_a"
 
 
 keep wbcode wbcountryname wbregion wbincome year code gender name description units scale value update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download
 save "$data_output\complete_dataportal_${date}${extra}", replace
 
-
+use "$data_output\complete_dataportal_${date}${extra}", replace
+export excel using "$data_output\complete_dataportal_${date}${extra}.xlsx", firstrow(variables) replace
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 

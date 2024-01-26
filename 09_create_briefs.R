@@ -21,13 +21,14 @@ setwd(path)
 # zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
 
 # # Delete the last version of the briefs (except the zip file)
-# files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
-# print(files2delete)
-# files2delete <- files2delete[!files2delete %in% 'Briefs/briefs_prev_version.zip']
-# unlink(files2delete, recursive=TRUE)
+files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
+print(files2delete)
+files2delete <- files2delete[!files2delete %in% 'Briefs/briefs_prev_version.zip']
+unlink(files2delete, recursive=TRUE)
 
 # Create log folder
-# dir.create('Briefs/Logs')
+dir.create('Briefs/Logs')
+dir.create('Briefs/For Print')
 
 #################################
 ### Run the briefs generator
@@ -35,13 +36,13 @@ setwd(path)
 # Run setup for database and functions
 source("HC_2page_functions.R")
 
-# #### FILTER ##########################
-# Create a vector of the values you want to filter
-selected_wbcodes <- c("MNE")
-x <- subset(x, wbcode %in% selected_wbcodes)
-countrynamet <- x[["wbcountryname"]]
-countrycodes <- x[["wbcode"]]
-# #####################################
+# # #### FILTER ##########################
+# # Create a vector of the values you want to filter
+# selected_wbcodes <- c("MNE")
+# x <- subset(x, wbcode %in% selected_wbcodes)
+# countrynamet <- x[["wbcountryname"]]
+# countrycodes <- x[["wbcode"]]
+# # #####################################
 
 # Set progress bar
 pb = txtProgressBar(min = 0, max = length(countrynamet), initial = 0, style=3) 
