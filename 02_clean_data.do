@@ -956,8 +956,26 @@ wbopendata, indicator(SE.LPV.PRIM) long clear
 rename countrycode wbcode
 gen gender=0
 keep year wbcode se_lpv_prim gender
-save"$data_processed/learning_poverty", replace 
+save"$data_processed/learning_poverty_t", replace 
 
+wbopendata, indicator(SE.LPV.PRIM.FE) long clear
+rename countrycode wbcode
+gen gender=2
+rename se_lpv_prim_fe se_lpv_prim
+keep year wbcode se_lpv_prim gender
+save"$data_processed/learning_poverty_f", replace 
+
+wbopendata, indicator(SE.LPV.PRIM.MA) long clear
+rename countrycode wbcode
+gen gender=1
+rename se_lpv_prim_ma se_lpv_prim
+keep year wbcode se_lpv_prim gender
+save"$data_processed/learning_poverty_m", replace 
+
+append using "$data_processed/learning_poverty_f"
+append using "$data_processed/learning_poverty_t"
+
+save"$data_processed/learning_poverty", replace
 *------------------------------------UIS-----------------------------------*			
 import excel using "$data_raw\SDG_DATA_NATIONAL.xlsx", clear firstrow 
 replace value=. if (magnitude=="NA"|magnitude=="NIL")
