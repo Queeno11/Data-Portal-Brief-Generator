@@ -167,9 +167,60 @@ replace code = "emp_2wap_a" if code=="emp_2wap_f_a" | code=="emp_2wap_m_a" | cod
 
 
 keep wbcode wbcountryname wbregion wbincome year code gender name description units scale value update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download
+save "$data_processed\dataportal_${date}${extra}", replace
+
+use "$data_processed\dataportal_${date}${extra}", replace
+
+
+*-------------------Generate Global and regional medians------------------------------* 
+
+* Global
+preserve
+collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender)
+gen wbcode = "WLD"
+gen wbcountryname = "Global median" 
+save "$data_processed\global_averages", replace
+restore
+
+* Regional medians
+preserve
+collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbregion)
+gen wbcountryname = wbregion
+gen wbcode = ""
+replace wbcode = "EAP" if wbcountryname=="East Asia & Pacific"
+replace wbcode = "ECA" if wbcountryname=="Europe & Central Asia"
+replace wbcode = "LAC" if wbcountryname=="Latin America & Caribbean"
+replace wbcode = "MENA" if wbcountryname=="Middle East & North Africa"
+replace wbcode = "NAR" if wbcountryname=="North America"
+replace wbcode = "SAR" if wbcountryname=="South Asia"
+replace wbcode = "SSA" if wbcountryname=="Sub-Saharan Africa"
+replace wbregion = ""
+save "$data_processed\region_averages", replace
+restore
+
+* Income medians
+preserve
+collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbincome)
+drop if wbincome==""
+gen wbcountryname = wbincome
+gen wbcode = ""
+replace wbcode = "HIC" if wbcountryname=="High income"
+replace wbcode = "LIC" if wbcountryname=="Low income"
+replace wbcode = "LMIC" if wbcountryname=="Lower middle income"
+replace wbcode = "UMIC" if wbcountryname=="Upper middle income"
+replace wbincome = ""
+save "$data_processed\income_averages", replace
+restore
+
+* Append aggregates
+append using "$data_processed\global_averages"
+append using "$data_processed\region_averages"
+append using "$data_processed\income_averages"
+
+*-------------------   Export complete dataportal   ------------------------------*  
+ 
 save "$data_output\complete_dataportal_${date}${extra}", replace
 
-use "$data_output\complete_dataportal_${date}${extra}", replace
 export excel using "$data_output\complete_dataportal_${date}${extra}.xlsx", firstrow(variables) replace
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
