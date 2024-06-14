@@ -135,7 +135,13 @@
 	
 	sort wbcode
 	
+	* Venezuela is not classified, replace with missing in the income group
+	replace data_scarcity_all_inc=. if wbincome==""
+    replace data_scarcity_10_inc=. if wbincome==""
+	replace data_scarcity_5_inc=. if wbincome==""
+	
 	save "$data_output\data_scarcity", replace
+	export excel "$data_output\data_scarcity.xlsx", firstrow(varlabels) replace
 	
 	****************************************************************************
 	*Unique indicators by gender

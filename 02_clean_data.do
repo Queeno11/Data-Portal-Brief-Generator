@@ -71,8 +71,7 @@ drop wbcountryname unicef_countryname unicef_code
 
 save "$data_processed\all_unicef", replace
 
-*<<<<<<< Updated upstream
-*=======
+
 // *UNICEF MARCOS 
 // *BCG vaccine
 // import excel using "$data_raw\vacbcg.xlsx", clear firstrow	
@@ -134,7 +133,7 @@ save "$data_processed\all_unicef", replace
 // drop wbname
 // save "$data_processed/all_unicef", replace 
 
-*>>>>>>> Stashed changes
+
 *--------------------------------------------------------------------------*
 *--------------------------------WDI online--------------------------------*
 *--------------------------------------------------------------------------*
@@ -525,10 +524,7 @@ save "$data_processed\unesco_minprof_m_lowsec", replace
 
 *Youth literacy rate
 import excel "$data_raw\unesco_youthlit.xlsx", clear firstrow
-<<<<<<< Updated upstream
 *Correct outliers:
-=======
->>>>>>> Stashed changes
 replace y2015=. if Country=="Egypt"
 replace y2013=. if Country=="Jordan"
 bysort Country Region: gen n = _n
@@ -932,21 +928,13 @@ merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
 merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
 save "$data_processed\all_ILO", replace
 
-<<<<<<< Updated upstream
+
 *--------------------------------World Bank--------------------------------*	
-// wbopendata, indicator(SE.LPV.PRIM) latest long clear
-// rename countrycode wbcode
-// gen gender=0
-// keep year wbcode se_lpv_prim gender
-// save"$data_processed/learning_poverty", replace 
-=======
-// *--------------------------------World Bank--------------------------------*	
-wbopendata, indicator(SE.LPV.PRIM) latest long clear
+wbopendata, indicator(SE.LPV.PRIM) long clear
 rename countrycode wbcode
 gen gender=0
 keep year wbcode se_lpv_prim gender
 save"$data_processed/learning_poverty", replace 
->>>>>>> Stashed changes
 
 *------------------------------------UIS-----------------------------------*			
 import delimited using "$data_raw\SDG_DATA_NATIONAL.csv", clear varnames(1) 
