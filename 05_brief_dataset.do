@@ -30,6 +30,7 @@
 	drop if gender!=0
 	drop if missing(gender)
 	
+	* FIXME: hacerlo dinamico
 	drop if year < 2015
 	drop if year > 2022
 *--------------------------------keep years--------------------------------*

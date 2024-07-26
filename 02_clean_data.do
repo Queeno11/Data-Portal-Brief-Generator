@@ -203,7 +203,22 @@ drop if indicatorcode=="NUTRITION_ANAEMIA_CHILDREN_PREV" & severity!="NA"
 drop if WHO_code=="NA"
 merge m:1 WHO_code using "$data_processed\Country codes\wbcodes_equiv_who", keep(3) nogen
 *  5,497 observation have missing countryname
-save "$data_processed/all_who"
+save "$data_processed/all_who", replace
+drop WHO_countryname title severity agegroup timedimensionvalue v1
+replace numericvalue="." if numericvalue=="NA"
+destring numericvalue, replace 
+rename numericvalue value 
+* standarized names to match 2023 version
+replace indicatorcode="insuf_activity" if indicatorcode=="NCD_PAC_ADO"
+replace indicatorcode="u5_anaemia" if indicatorcode=="NUTRITION_ANAEMIA_CHILDREN_PREV"
+replace indicatorcode="hypertension_30_79" if indicatorcode=="NCD_HYP_PREVALENCE_A"
+replace indicatorcode="obesity" if indicatorcode=="NCD_BMI_30A"
+replace indicatorcode="suicide_15_19" if indicatorcode=="SDGSUICIDE"
+*replace indicatorcode="u5_pneu_cs" if indicatorcode==""
+reshape wide value, i(wbcode wbcountryname gender year) j(indicatorcode) string
+rename value* *
+save "$data_processed/all_who", replace
+
 
 *ADDED VIA API WITH R
 // *who_activity
@@ -349,198 +364,206 @@ save "$data_processed/all_who"
 *-----------------------------------------------------------------------*
 *Unesco early childhood education
 //Add a y_ in the columns for years in excel
-import excel "$data_raw\unesco_ECedu.xlsx", clear firstrow
-rename Country UNESCO_countryname
-reshape long y, i(UNESCO_countryname) j(year)
-rename y ECedu
-lab var ECedu "Gross enrolment ratio, early childhood education (%)"
-gen gender = .
-replace gender = 0
-drop if missing(ECedu)
-save "$data_processed\unesco_ECedu", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_ECedu", nogen keep(3)
-keep wbcode year gender ECedu
-save "$data_processed\unesco_ECedu", replace
-
-
-*Unesco repetition rate   													// Include enrolment per grade?
-import excel "$data_raw\unesco_repetition.xlsx", clear firstrow
-rename NATMON_IND code
-keep if (code=="REPR_1_F_CP" | code=="REPR_1_M_CP" | code=="REPR_1_CP")
-gen gender = .
-replace gender = 2 if (code=="REPR_1_F_CP") 
-replace gender = 1 if (code=="REPR_1_M_CP") 
-replace gender = 0 if (code=="REPR_1_CP") 	
-rename Value repetition
-lab var repetition "Repetition rate in primary education (all grades)"
-rename Time year
-rename LOCATION UNESCO_code
-drop if missing(repetition)
-keep year repetition gender UNESCO_code 
-save "$data_processed\unesco_repetition", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_code using "$data_processed\unesco_repetition", nogen keep(3)
-keep repetition year gender wbcode
-save "$data_processed\unesco_repetition", replace
-
-*Unesco minimum proficiency in reading and math:
-*Reading, grades 2/3
-import excel "$data_raw\unesco_minprof_r_G23.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_r_g23
-gen gender=0
-save "$data_processed\unesco_minprof_r_g23", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_g23", nogen keep(3)
-keep wbcode year gender minprof_r_g23
-save "$data_processed\unesco_minprof_r_g23", replace
-
-*Reading, end primary
-import excel "$data_raw\unesco_minprof_r_endprim.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_r_endprim
-gen gender=0
-save "$data_processed\unesco_minprof_r_endprim", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_endprim", nogen keep(3)
-keep wbcode year gender minprof_r_endprim
-save "$data_processed\unesco_minprof_r_endprim", replace
-
-*Reading, end lower secondary
-import excel "$data_raw\unesco_minprof_r_lowsec.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_r_lowsec
-gen gender=0
-save "$data_processed\unesco_minprof_r_lowsec", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_lowsec", nogen keep(3)
-keep wbcode year gender minprof_r_lowsec
-save "$data_processed\unesco_minprof_r_lowsec", replace
-
-*Math, grades 2/3
-import excel "$data_raw\unesco_minprof_m_G23.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_m_g23
-gen gender=0
-save "$data_processed\unesco_minprof_m_g23", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_g23", nogen keep(3)
-keep wbcode year gender minprof_m_g23
-save "$data_processed\unesco_minprof_m_g23", replace
-
-*Math, end primary
-import excel "$data_raw\unesco_minprof_m_endprim.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_m_endprim
-gen gender=0
-save "$data_processed\unesco_minprof_m_endprim", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_endprim", nogen keep(3)
-keep wbcode year gender minprof_m_endprim
-save "$data_processed\unesco_minprof_m_endprim", replace
-
-*Math, end lower secondary
-import excel "$data_raw\unesco_minprof_m_lowsec.xlsx", clear firstrow
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y minprof_m_lowsec
-gen gender=0
-save "$data_processed\unesco_minprof_m_lowsec", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_lowsec", nogen keep(3)
-keep wbcode year gender minprof_m_lowsec
-save "$data_processed\unesco_minprof_m_lowsec", replace
-
-*Youth literacy rate
-import excel "$data_raw\unesco_youthlit.xlsx", clear firstrow
-replace y2015=. if Country=="Egypt" // FIXME: This should not be here but further down the pipeline, in briefs section
-replace y2013=. if Country=="Jordan"
-bysort Country Region: gen n = _n
-reshape long y, i(Country Region n) j(year)
-drop n Region
-rename Country UNESCO_countryname
-rename y youth_lit
-gen gender=0
-save "$data_processed\unesco_youthlit", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_youthlit", nogen keep(3)
-keep wbcode year gender youth_lit
-save "$data_processed\unesco_youthlit", replace
-
-*Out-of-school children, primary
-import excel "$data_raw\unesco_outschool.xlsx", clear firstrow
-drop FlagCodes Flags
-drop TIME
-rename NATMON_IND code
-gen gender = .
-replace gender = 2 if (code=="OFST_1_F_CP") 
-replace gender = 1 if (code=="OFST_1_M_CP") 
-replace gender = 0 if (code=="OFST_1_CP") 	
-drop if gender==.
-rename Country UNESCO_countryname
-rename LOCATION UNESCO_code
-rename Indicator name
-rename Time year
-rename Value out_school
-lab var out_school "Number of out-of-school children of primary school age"
-save "$data_processed\unesco_outschool", replace
-use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
-merge 1:m UNESCO_countryname using "$data_processed\unesco_outschool", nogen keep(3)
-keep wbcode year gender out_school
-save "$data_processed\unesco_outschool", replace
-
-**** Net enrolment rates:
-import excel "$data_raw\uis_netenrolment.xlsx", clear firstrow
-drop FlagCodes Flags
-drop TIME
-rename NATMON_IND code
-rename Time year
-drop if (code=="NERT_1_GPI"|code=="NERT_2_GPI"|code=="NERT_3_GPI")
-gen gender = 0 // Replace gender if it contains with _M_ or _F_
-replace gender = 1 if substr(code, -5, 3) == "_M_"
-replace gender = 2 if substr(code, -5, 3) == "_F_"
-replace code = subinstr(code, "_M_", "_", 1) // Remove gender from the indicator name
-replace code = subinstr(code, "_F_", "_", 1)
-bysort Country LOCATION year gender: gen n = _n
-reshape wide Value, i(Country LOCATION year gender n) j(code) string
-rename Value* *
-collapse (firstnm) NERT_1_CP NERT_2_CP NERT_3_CP, by(Country LOCATION year gender)
-rename Country UNESCO_countryname
-rename LOCATION UNESCO_code
-merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(3)
-keep wbcode year gender NERT_1_CP NERT_2_CP NERT_3_CP
-save "$data_processed\uis_netenrolment", replace
-*-----------------------------all UNESCO---------------------------------*
-use "$data_processed\unesco_ECedu", clear
-merge 1:1 wbcode year gender using "$data_processed\unesco_repetition", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_g23", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_endprim", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_lowsec", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_g23", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_endprim", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_lowsec", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_youthlit", nogen
-merge 1:1 wbcode year gender using "$data_processed\unesco_outschool", nogen
-merge 1:1 wbcode year gender using "$data_processed\uis_netenrolment", nogen
-save "$data_processed\all_unesco", replace
+* NOT FOUND
+// import excel "$data_raw\unesco_ECedu.xlsx", clear firstrow
+// rename Country UNESCO_countryname
+// reshape long y, i(UNESCO_countryname) j(year)
+// rename y ECedu
+// lab var ECedu "Gross enrolment ratio, early childhood education (%)"
+// gen gender = .
+// replace gender = 0
+// drop if missing(ECedu)
+// save "$data_processed\unesco_ECedu", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_ECedu", nogen keep(3)
+// keep wbcode year gender ECedu
+// save "$data_processed\unesco_ECedu", replace
+//
+//
+// *Unesco repetition rate   													// Include enrolment per grade?
+// * ADDED FROM UNESCO API
+// import excel "$data_raw\unesco_repetition.xlsx", clear firstrow
+// rename NATMON_IND code
+// keep if (code=="REPR_1_F_CP" | code=="REPR_1_M_CP" | code=="REPR_1_CP")
+// gen gender = .
+// replace gender = 2 if (code=="REPR_1_F_CP") 
+// replace gender = 1 if (code=="REPR_1_M_CP") 
+// replace gender = 0 if (code=="REPR_1_CP") 	
+// rename Value repetition
+// lab var repetition "Repetition rate in primary education (all grades)"
+// rename Time year
+// rename LOCATION UNESCO_code
+// drop if missing(repetition)
+// keep year repetition gender UNESCO_code 
+// save "$data_processed\unesco_repetition", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_code using "$data_processed\unesco_repetition", nogen keep(3)
+// keep repetition year gender wbcode
+// save "$data_processed\unesco_repetition", replace
+//
+// *Unesco minimum proficiency in reading and math:
+// *Reading, grades 2/3
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_r_G23.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_r_g23
+// gen gender=0
+// save "$data_processed\unesco_minprof_r_g23", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_g23", nogen keep(3)
+// keep wbcode year gender minprof_r_g23
+// save "$data_processed\unesco_minprof_r_g23", replace
+//
+// *Reading, end primary
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_r_endprim.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_r_endprim
+// gen gender=0
+// save "$data_processed\unesco_minprof_r_endprim", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_endprim", nogen keep(3)
+// keep wbcode year gender minprof_r_endprim
+// save "$data_processed\unesco_minprof_r_endprim", replace
+//
+// *Reading, end lower secondary
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_r_lowsec.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_r_lowsec
+// gen gender=0
+// save "$data_processed\unesco_minprof_r_lowsec", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_r_lowsec", nogen keep(3)
+// keep wbcode year gender minprof_r_lowsec
+// save "$data_processed\unesco_minprof_r_lowsec", replace
+//
+// *Math, grades 2/3
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_m_G23.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_m_g23
+// gen gender=0
+// save "$data_processed\unesco_minprof_m_g23", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_g23", nogen keep(3)
+// keep wbcode year gender minprof_m_g23
+// save "$data_processed\unesco_minprof_m_g23", replace
+//
+// *Math, end primary
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_m_endprim.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_m_endprim
+// gen gender=0
+// save "$data_processed\unesco_minprof_m_endprim", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_endprim", nogen keep(3)
+// keep wbcode year gender minprof_m_endprim
+// save "$data_processed\unesco_minprof_m_endprim", replace
+//
+// *Math, end lower secondary
+// * ADDED FROM SDGs UNESCO API
+// import excel "$data_raw\unesco_minprof_m_lowsec.xlsx", clear firstrow
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y minprof_m_lowsec
+// gen gender=0
+// save "$data_processed\unesco_minprof_m_lowsec", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_minprof_m_lowsec", nogen keep(3)
+// keep wbcode year gender minprof_m_lowsec
+// save "$data_processed\unesco_minprof_m_lowsec", replace
+//
+// *Youth literacy rate
+// import excel "$data_raw\unesco_youthlit.xlsx", clear firstrow
+// replace y2015=. if Country=="Egypt" // FIXME: This should not be here but further down the pipeline, in briefs section
+// replace y2013=. if Country=="Jordan"
+// bysort Country Region: gen n = _n
+// reshape long y, i(Country Region n) j(year)
+// drop n Region
+// rename Country UNESCO_countryname
+// rename y youth_lit
+// gen gender=0
+// save "$data_processed\unesco_youthlit", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_youthlit", nogen keep(3)
+// keep wbcode year gender youth_lit
+// save "$data_processed\unesco_youthlit", replace
+//
+// *Out-of-school children, primary
+// import excel "$data_raw\unesco_outschool.xlsx", clear firstrow
+// drop FlagCodes Flags
+// drop TIME
+// rename NATMON_IND code
+// gen gender = .
+// replace gender = 2 if (code=="OFST_1_F_CP") 
+// replace gender = 1 if (code=="OFST_1_M_CP") 
+// replace gender = 0 if (code=="OFST_1_CP") 	
+// drop if gender==.
+// rename Country UNESCO_countryname
+// rename LOCATION UNESCO_code
+// rename Indicator name
+// rename Time year
+// rename Value out_school
+// lab var out_school "Number of out-of-school children of primary school age"
+// save "$data_processed\unesco_outschool", replace
+// use "$data_processed\Country codes\wbcodes_equiv_unesco", clear
+// merge 1:m UNESCO_countryname using "$data_processed\unesco_outschool", nogen keep(3)
+// keep wbcode year gender out_school
+// save "$data_processed\unesco_outschool", replace
+//
+// **** Net enrolment rates:
+// import excel "$data_raw\uis_netenrolment.xlsx", clear firstrow
+// drop FlagCodes Flags
+// drop TIME
+// rename NATMON_IND code
+// rename Time year
+// drop if (code=="NERT_1_GPI"|code=="NERT_2_GPI"|code=="NERT_3_GPI")
+// gen gender = 0 // Replace gender if it contains with _M_ or _F_
+// replace gender = 1 if substr(code, -5, 3) == "_M_"
+// replace gender = 2 if substr(code, -5, 3) == "_F_"
+// replace code = subinstr(code, "_M_", "_", 1) // Remove gender from the indicator name
+// replace code = subinstr(code, "_F_", "_", 1)
+// bysort Country LOCATION year gender: gen n = _n
+// reshape wide Value, i(Country LOCATION year gender n) j(code) string
+// rename Value* *
+// collapse (firstnm) NERT_1_CP NERT_2_CP NERT_3_CP, by(Country LOCATION year gender)
+// rename Country UNESCO_countryname
+// rename LOCATION UNESCO_code
+// merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(3)
+// keep wbcode year gender NERT_1_CP NERT_2_CP NERT_3_CP
+// save "$data_processed\uis_netenrolment", replace
+// *-----------------------------all UNESCO---------------------------------*
+// use "$data_processed\unesco_ECedu", clear
+// merge 1:1 wbcode year gender using "$data_processed\unesco_repetition", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_g23", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_endprim", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_r_lowsec", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_g23", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_endprim", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_minprof_m_lowsec", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_youthlit", nogen
+// merge 1:1 wbcode year gender using "$data_processed\unesco_outschool", nogen
+// merge 1:1 wbcode year gender using "$data_processed\uis_netenrolment", nogen
+// save "$data_processed\all_unesco", replace
 
 *-----------------------------------------------------------------------*
 *--------------------------------FAO------------------------------------*
@@ -550,12 +573,12 @@ import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
 rename Area FAO_countryname
 gen gender = .
 replace gender = 0
-keep if ItemCode==21049
+keep if ItemCode=="21049"
 gen year = substr(Year,6,4)
 replace year=Year if missing(year)
 drop Year
 rename Value v21049
-replace v21049="0" if v21049=="<2.5"
+// replace v21049="0" if v21049=="<2.5"
 lab var v21049 "Prevalence of low birthweight (%)"
 drop if FlagDescription=="Missing value"
 destring v21049, replace
@@ -571,12 +594,12 @@ import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
 rename Area FAO_countryname
 gen gender = .
 replace gender = 0
-keep if ItemCode==210041
+keep if ItemCode=="210041"
 gen year = substr(Year,6,4)
 replace year=Year if missing(year)
 drop Year
 rename Value v210041
-replace v210041="0" if v210041=="<2.5"
+// replace v210041="0" if v210041=="<2.5"
 lab var v210041 "Prevalence of undernourishment (%) (3-year average, last year)"
 drop if FlagDescription=="Missing value"
 destring v210041, replace
@@ -592,7 +615,7 @@ import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
 rename Area FAO_countryname
 gen gender = .
 replace gender = 0
-keep if ItemCode==21026
+keep if ItemCode=="21026"
 gen year = substr(Year,6,4)
 replace year=Year if missing(year)
 drop Year
@@ -617,9 +640,9 @@ save "$data_processed\all_FAO", replace
 *-----------------------------------------------------------------------*
 *-----------------------------UNITED NATIONS----------------------------*
 *-----------------------------------------------------------------------*	
-*Forcibly displaced population:
+*Forcibly displaced population: * UPDATED
 **Includes: Internal displaced population (IDPs), Refugees, Asylum-seekers and others.
-import excel "$data_raw\UNHCR_Forced_Displacement.xlsx", clear firstrow
+import excel "$data_raw\UNHCR_Forced_Displacement", first clear
 rename CountryoforiginISO UNcode
 rename Year year
 rename IDPsofconcerntoUNHCR IDPs
@@ -641,7 +664,7 @@ keep wbcode year gender IDPs refugees A_seekers
 save "$data_processed\UNHCR_forced_displacement", replace
 
 
-*Population per country:
+*Population per country: *PENDING
 import excel "$data_raw\UN_population.xlsx", clear firstrow
 rename B UNname
 rename Year year
@@ -666,19 +689,19 @@ gen aseek_pop = (A_seekers/1000000)/population
 gen idp_pop = (IDPs/1000000)/population
 save "$data_processed\UN_forced_disp_rates", replace
 
-*Family planning:
-import excel "$data_raw\UN_family_planning.xlsx", clear firstrow
-keep if IndicatorName=="Demand for family planning satisfied by any method (Percent)"
-keep if Variant=="Median"
-keep if Category=="All women"
-keep if EstimateMethod=="Interpolation"
+*Family planning: UPDATED
+import delimited "$data_raw\UN_family_planning.csv", clear
+keep if indicatorname=="Demand for family planning satisfied by any method (Percent)"
+keep if variant=="Median"
+keep if category=="All women"
+keep if estimatemethod=="Interpolation"
 gen gender=.
-replace gender=2 if Sex=="Female"
-replace gender=1 if Sex=="Male"
-replace gender=0 if Sex=="Total"
-rename Location UNname
-rename Value met_fam_plan
-rename Time year
+replace gender=2 if sex=="Female"
+replace gender=1 if sex=="Male"
+replace gender=0 if sex=="Total"
+rename location UNname
+rename value met_fam_plan
+rename time year
 save "$data_processed\UN_family_planning", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
 merge 1:m UNname using "$data_processed\UN_family_planning", nogen keep(3)
@@ -744,11 +767,26 @@ lab var LUU_2LU4_SEX_AGE_RT_A_y "Youth composite measure of labour underutilizat
 lab var UNE_2EAP_SEX_AGE_RT_A_a "Adult unemployment (%)"
 lab var UNE_2EAP_SEX_AGE_RT_A_y "Youth unemployment (%)"
 
-save "$data_processed/all_ilo", replace
-merge 1:m wbcode using "$data_processed\Country codes\wbcodes_equiv_ILO", nogen keep(3)
-* NOT AVAILABLE: POTENTIAL LABOR FORCE. Use the one from last year for now
-merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor"
+* Match names with 2023 version to avoid problems with data portal
+gen emp_2wap_mf_a = EAP_DWAP_SEX_AGE_RT_A if gender==0
+gen emp_2wap_m_a = EAP_DWAP_SEX_AGE_RT_A if gender==1
+gen emp_2wap_f_a = EAP_DWAP_SEX_AGE_RT_A if gender==2
+drop EAP_DWAP_SEX_AGE_RT_A
+rename EIP_2WAP_SEX_AGE_RT_A_a eip_2wap_a
+rename EIP_2WAP_SEX_AGE_RT_A_y eip_2wap_y
+rename EIP_NEET_SEX_AGE_RT_A eip_neet_mf_y
+rename EMP_NIFL_SEX_AGE_RT_A_a emp_nifl_a
+rename EMP_NIFL_SEX_AGE_RT_A_y emp_nifl_y
+rename LUU_2LU4_SEX_AGE_RT_A_a luu_2lu4_mf_a 
+rename LUU_2LU4_SEX_AGE_RT_A_y luu_2lu4_mf_y
+rename UNE_2EAP_SEX_AGE_RT_A_a une_2eap_mf_a
+rename UNE_2EAP_SEX_AGE_RT_A_y une_2eap_mf_y
 
+save "$data_processed/all_ilo", replace
+merge m:1 ilocode using "$data_processed\Country codes\wbcodes_equiv_ILO", nogen keep(3)
+* NOT AVAILABLE: POTENTIAL LABOR FORCE. Use the one from last year for now
+merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor", nogen keep(3)
+save "$data_processed/all_ilo", replace
 
 
 
@@ -925,16 +963,16 @@ merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor"
 // save "$data_processed\ILO_highskill", replace
 
 *---------------------------------all ILO-----------------------------------*
-use "$data_processed\ILO_highskill", clear
-destring year, replace
-merge 1:1 wbcode year gender using "$data_processed/neet", nogen
-merge m:m wbcode year gender using "$data_processed/laborforce", nogen
-merge m:m wbcode year gender using "$data_processed/unemployment", nogen
-merge m:m wbcode year gender using "$data_processed/laborunderut", nogen
-merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen
-merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
-merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
-save "$data_processed\all_ILO", replace
+// use "$data_processed\ILO_highskill", clear
+// destring year, replace
+// merge 1:1 wbcode year gender using "$data_processed/neet", nogen
+// merge m:m wbcode year gender using "$data_processed/laborforce", nogen
+// merge m:m wbcode year gender using "$data_processed/unemployment", nogen
+// merge m:m wbcode year gender using "$data_processed/laborunderut", nogen
+// merge m:m wbcode year gender using "$data_processed/inactivityrate", nogen
+// merge m:m wbcode year gender using "$data_processed/potential_labor", nogen
+// merge m:m wbcode year gender using "$data_processed/informal_employment", nogen
+// save "$data_processed\all_ILO", replace
 
 *--------------------------------World Bank--------------------------------*	
 wbopendata, indicator(SE.LPV.PRIM) long clear
@@ -961,21 +999,41 @@ append using "$data_processed/learning_poverty_f"
 append using "$data_processed/learning_poverty_t"
 
 save"$data_processed/learning_poverty", replace
-*------------------------------------UIS-----------------------------------*			
-import excel using "$data_raw\SDG_DATA_NATIONAL.xlsx", clear firstrow 
-replace value=. if (magnitude=="NA"|magnitude=="NIL")
-drop if value==.
-drop magnitude qualifier
-gen indic = subinstr(indicator_id, ".", "_", .)
-keep if inlist(indic, "CR_3", "GER_01", "OAEPG_1", "OAEPG_2_GPV", "QUTP_1", "QUTP_2T3", "SCHBSP_1_WELEC", "XGDP_FSGOV", "XGOVEXP_IMF")
-rename (country_id value)(UNESCO_code uis)
-keep UNESCO_code uis year indic
-reshape wide uis, i(UNESCO_code year) j(indic) string
-rename uis* *
-gen gender = 0
-merge m:m UNESCO_code using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
+*------------------------------------UIS-----------------------------------*
+import excel using "$data_raw/SDG_Feb2024_long", clear firstrow	
+replace Value=. if (Metadata=="Magnitude NOT APPLICABLE"|Metadata=="Magnitude NIL")		
+drop if Value==.
+gen indic=""
+replace indic="OAEPG_1" if IndicatorNumber=="4.1.5" & strpos(IndicatorName, "primary")
+replace indic="OAEPG_2_GPV" if IndicatorNumber=="4.1.5" & strpos(IndicatorName, "lower secondary")
+replace indic="XGDP_FSGOV" if IndicatorNumber=="Education 2030 FFA"
+replace indic="XGOVEXP_IMF" if IndicatorNumber=="1.a.2"
+replace indic="youth_lit" if IndicatorNumber=="4.6.2"
+gen gender=0
+replace gender=1 if strpos(IndicatorName,"male")
+replace gender=2 if strpos(IndicatorName,"female")
+rename (Country Year) (UNESCO_countryname year)
+drop Target Region IndicatorName Metadata IndicatorNumber
+reshape wide Value, i(UNESCO_countryname year gender) j(indic) string
+rename Value* *
+merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
 drop UNESCO_code UNESCO_countryname wbcountryname
-save "$data_processed/all_uis", replace 
+save "$data_processed/uis2", replace
+
+// import excel using "$data_raw\SDG_DATA_NATIONAL.xlsx", clear firstrow 
+// replace value=. if (magnitude=="NA"|magnitude=="NIL")
+// drop if value==.
+// drop magnitude qualifier
+// gen indic = subinstr(indicator_id, ".", "_", .)
+// keep if inlist(indic, "CR_3", "GER_01", "OAEPG_1", "OAEPG_2_GPV", "QUTP_1", "QUTP_2T3", "SCHBSP_1_WELEC", "XGDP_FSGOV", "XGOVEXP_IMF")
+// rename (country_id value)(UNESCO_code uis)
+// keep UNESCO_code uis year indic
+// reshape wide uis, i(UNESCO_code year) j(indic) string
+// rename uis* *
+// gen gender = 0
+// merge m:m UNESCO_code using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
+// drop UNESCO_code UNESCO_countryname wbcountryname
+// save "$data_processed/all_uis", replace 
 
 *------------------------ Utilization of HC (UHCI) ------------------------------*
 import excel "$data_raw\UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
