@@ -5,11 +5,12 @@
 import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
 duplicates drop code, force
 replace code = lower(subinstr(code, ".", "_", .)) 
+
 save "$data_processed\metadata_processed", replace
 
 *-------------------------Add everything to database-------------------*
 use "$data_processed\complete_series_nometadata_$date$extra", clear
-
+drop if code=="MH_12"
 ** Add names
 replace code = lower(subinstr(code, ".", "_", .)) 
 // rename code code_merge

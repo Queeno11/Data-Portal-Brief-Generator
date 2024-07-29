@@ -23,13 +23,14 @@ base_url <- "https://unstats.un.org/SDGAPI/v1/sdg/Indicator/Data?indicator="
 
 all_data <- list()
 # Indicators
-  # 4.1.1: Proficiency in marh and reading by level
+  # 4.1.1: Proficiency in math and reading by level
   # 4.2.2: Completion rates
-  # 4.1.5: Percentage of children over-age for grade
-  # 4.6.2: Literacy rate
+  # 4.2.4: Net enrollment rate in a) pre-primary edu and b) early childhood educ development
+  # 4.1.5: Percentage of children over-age for grade (not available in this api)
+  # 4.6.2: Literacy rate (not available in this api)
   # 4.c.1: Qualified teachers
   # 4.a.1: Schools with access to electricity
-indicators = c("4.1.1", "4.2.2", "4.c.1", "4.a.1")
+indicators = c("4.1.1", "4.2.2", "4.2.4", "4.c.1", "4.a.1")
 # no data for "4.1.5", "4.6.2"
 for (indicator in indicators) {
 complete_url <- paste0(base_url, indicator, "&pageSize=10000")

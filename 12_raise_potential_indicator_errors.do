@@ -9,6 +9,8 @@ clear all
 set more off	
 set graph off
 
+gl data_output "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Output"
+
 *--------------------------Get selected indicators--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
@@ -105,3 +107,41 @@ gen difference = latest_value - previous_value
 collapse (count) n=difference (p25) p25=difference (median) p50=difference (p75) p75=difference (mean) mean=difference, by(indicator_name)
 gsort -n
 export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by indicator") firstrow(variables)
+
+
+*------------------------------------------------------------------------------*
+*------------------------Compare with previous version-------------------------*
+*------------------------------------------------------------------------------*
+
+
+use "$data_output/new_locals_23.dta", clear
+split local, gen(code)
+split code1, p(_) gen(country)
+drop code1
+rename (code2 country1 country2) (code position wbcode)
+keep wbcode position code
+drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
+order wbcode position code
+sort wbcode position code
+save "$data_output/new_locals_23_clean.dta", replace
+
+use "$data_output/new_locals.dta", clear
+split local, gen(code)
+split code1, p(_) gen(country)
+drop code1
+rename (code2 country1 country2) (code position wbcode)
+keep wbcode position code
+drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
+order wbcode position code
+sort wbcode position code
+save "$data_output/new_locals_24_clean.dta", replace
+
+use "$data_output/new_locals_23_clean.dta", clear
+merge 1:1 wbcode code using "$data_output/new_locals_24_clean.dta", keep(1)
+export excel "$data_output/list_changes.xlsx", replace
+* Chequear si hay algun indicador en particular con problemas:
+tab code 
+* Ver cambios que no se relacionan a emp_2wap:
+gen lfp=1 if (code=="emp_2wap_f_a"|code=="emp_2wap_m_a"|code=="emp_2wap_mf_a")
+egen has_lfp=sum(lfp), by(wbcode)
+keep if has_lfp==0

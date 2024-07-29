@@ -1,7 +1,7 @@
 *------------------------------------------------------------------------------*
 *---------------------------------Prepare data---------------------------------*
 *------------------------------------------------------------------------------*
-
+  
 	
 *--------------------------------Load data---------------------------------*
 
@@ -26,13 +26,20 @@
 	replace gender=0 if code=="hci_m" & gender==1
 	replace gender=0 if code=="uhci_f" & gender==2
 	replace gender=0 if code=="uhci_m" & gender==1
-
+	
+	*CHECK
+	drop if code=="emp_2wap_f_a" & gender!=2
+	drop if code=="emp_2wap_m_a" & gender!=1
+	replace gender=0 if code=="emp_2wap_f_a"
+	replace gender=0 if code=="emp_2wap_m_a"
+	
 	drop if gender!=0
 	drop if missing(gender)
 	
 	* FIXME: hacerlo dinamico
 	drop if year < 2015
-	drop if year > 2022
+	drop if year > 2023
+
 *--------------------------------keep years--------------------------------*
 
 	/* Me quedo con último año disponible */

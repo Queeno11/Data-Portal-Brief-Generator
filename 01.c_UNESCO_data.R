@@ -14,7 +14,7 @@ indicators <- c("NERT_1_CP", "NERT_1_F_CP", "NERT_1_M_CP",
                 "NERT_2_CP", "NERT_2_F_CP", "NERT_2_M_CP", 
                 "NERT_3_CP", "NERT_3_F_CP", "NERT_3_M_CP", 
                 "OFST_1_CP", "OFST_1_F_CP", "OFST_1_M_CP", 
-                "REPR_1_CP", "REPR_1_F_CP", "REPR_1_M_CP",
+                "REPR_1_CP", "REPR_1_F_CP", "REPR_1_M_CP"
                 )
 #indicators <- "QUTP.2T3"
 #NERT_1_CP = net enrollment primary

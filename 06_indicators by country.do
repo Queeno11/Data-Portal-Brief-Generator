@@ -23,7 +23,6 @@
 	*Gender: 0=total, 1=male, 2=female	
 	replace code = code + "_m" if gender==1
 	replace code = code + "_f" if gender==2
-	
 	keep wbcode code name year source description units rank gender topic stage_life
 	
 	rename name lbl
@@ -68,7 +67,7 @@
 
 	save "$data_processed\top_ranked_indicators", replace
 	frame change default
-	
+
 
 	**********************************2) INDICATORS*********************************
 
