@@ -101,12 +101,12 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
 
         page_1 = add_header_and_footer(pdf[0], header, footer)
 
-        ## P2
-        header_path = [header for header in headers if f"2-HCCB-{wbcode}" in header][0]
-        header = Image.open(header_path)
-        footer = Image.open(rf"{sources}\Footer Images\p2 footer.png")
+        # ## P2
+        # header_path = [header for header in headers if f"2-HCCB-{wbcode}" in header][0]
+        # header = Image.open(header_path)
+        # footer = Image.open(rf"{sources}\Footer Images\p2 footer.png")
 
-        page_2 = add_header_and_footer(pdf[1], header, footer)
+        # page_2 = add_header_and_footer(pdf[1], header, footer)
 
         # Save them
         page_1.save(
@@ -115,7 +115,7 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
             mode="RGBA",
             resolution=100.0,
             save_all=True,
-            append_images=[page_2],
+            # append_images=[page_2],
         )
         # images[wbregion] += [page_1, page_2]
 
