@@ -164,59 +164,69 @@ def query_indicator(indicator, database):
     return df
 
 def drops_irrelevant_index_levels(df):
-    
+
     indicator_0_to_5_years = [
-        'NT_ANT_HAZ_NE2', 'NT_ANT_WHZ_NE2', 
-        'NT_ANT_WHZ_NE3', 'NT_ANT_WHZ_PO2',
-        'NT_BF_EXBF'
+        "NT_ANT_HAZ_NE2",
+        "NT_ANT_WHZ_NE2",
+        "NT_ANT_WHZ_NE3",
+        "NT_ANT_WHZ_PO2",
+        "NT_BF_EXBF",
     ]
-    indicator_6_to_23_months =[
-        'NT_CF_MMF'
-    ]
+    indicator_6_to_23_months = ["NT_CF_MMF"]
+    indicator_36_to_59_months = ["ECD_CHLD_36-59M_LMPSL"]
     indicator_15_to_49_years = [
-        'MNCH_ANC1', 'MNCH_ANC4',
-        'MNCH_DEMAND_FP', 'MNCH_PNCMOM',
-        'MNCH_SAB', 'MNCH_ITNPREG', 
+        "MNCH_ANC1",
+        "MNCH_ANC4",
+        "MNCH_DEMAND_FP",
+        "MNCH_PNCMOM",
+        "MNCH_SAB",
+        "MNCH_ITNPREG",
     ]
     indicator_18_to_29_years = [
-        'PT_M_18-29_SX-V_AGE-18',
-        'PT_F_18-29_SX-V_AGE-18',
+        "PT_M_18-29_SX-V_AGE-18",
+        "PT_F_18-29_SX-V_AGE-18",
     ]
     indicator_15_to_24_years = [
-        'HVA_PREV_KNOW', 'HVA_PREV_KNOW_TEST', 
-        'HVA_PREV_CNDM_MULT'
+        "HVA_PREV_KNOW",
+        "HVA_PREV_KNOW_TEST",
+        "HVA_PREV_CNDM_MULT",
     ]
 
     
     # Replace COUNTRY with REF_AREA (SDMX standard)
-    df.index.names = ['REF_AREA' if idx=='COUNTRY' else idx for idx in df.index.names]
-    
-    indicador = df.index.get_level_values('INDICATOR').unique().values[0]
+    df.index.names = ["REF_AREA" if idx == "COUNTRY" else idx for idx in df.index.names]
+
+    indicador = df.index.get_level_values("INDICATOR").unique().values[0]
     indexes = df.index.names
     irrelevant_indexes = [
-        idx for idx in indexes if idx not in ['REF_AREA', 'INDICATOR', 'TIME_PERIOD', 'SEX', 'DATA_SOURCE']]
-    
+        idx
+        for idx in indexes
+        if idx not in ["REF_AREA", "INDICATOR", "TIME_PERIOD", "SEX", "DATA_SOURCE"]
+    ]
+
     for idx in irrelevant_indexes:
-        totals_mask = df.index.get_level_values(idx) == '_T'
+        totals_mask = df.index.get_level_values(idx) == "_T"
         if totals_mask.sum() > 0:
             df = df[totals_mask].droplevel(idx)
-        elif idx == 'AGE':
+        elif idx == "AGE":
             if indicador in indicator_0_to_5_years:
-                df = df[df.index.get_level_values('AGE').isin(['Y0T4','M0T5'])]
+                df = df[df.index.get_level_values("AGE").isin(["Y0T4", "M0T5"])]
             elif indicador in indicator_6_to_23_months:
-                df = df[df.index.get_level_values('AGE') == 'M6T23']
+                df = df[df.index.get_level_values("AGE") == "M6T23"]
+            elif indicador in indicator_36_to_59_months:
+                df = df[df.index.get_level_values("AGE") == "M36T59"]
             elif indicador in indicator_15_to_49_years:
-                df = df[df.index.get_level_values('AGE') == 'Y15T49']
+                df = df[df.index.get_level_values("AGE") == "Y15T49"]
             elif indicador in indicator_18_to_29_years:
-                df = df[df.index.get_level_values('AGE') == 'Y18T29']
+                df = df[df.index.get_level_values("AGE") == "Y18T29"]
             elif indicador in indicator_15_to_24_years:
-                df = df[df.index.get_level_values('AGE') == 'Y15T24']
+                df = df[df.index.get_level_values("AGE") == "Y15T24"]
             else:
                 df = df.droplevel(idx)
         else:
             df = df.droplevel(idx)
-    
-    assert df.index.duplicated().sum() == 0, 'There are duplicated rows.'
+
+    assert df.index.duplicated().sum() == 0, "There are duplicated rows."
     return df
 
 def format_dataframe(df, cl_ref_areas):

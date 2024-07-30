@@ -58,7 +58,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // do "$root\08_text_for_graphs.do"
 
 // ** 09 - Generate the PDFs with RMarkdown
-shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"
+// shell Rscript "$root\09_create_Briefs.R" "$root" "$extra"
 
 ** 10 - Generate the Excels --Datasheet for each country
 // python script "$root\10_add_header_and_footer.py"

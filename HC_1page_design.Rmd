@@ -49,6 +49,7 @@ header-includes:  \usepackage{fancyhdr}
   \usepackage{numprint}
   \usepackage{fbox}
   \renewcommand{\tightlist}{\setlength{\itemsep}{1ex}\setlength{\parskip}{0pt}}
+
   
 params:
   countrynamet: "Afghanistan"
@@ -62,9 +63,9 @@ params:
 
 \vspace{1em}
 
-`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle.** The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
+`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
 
-\vspace{1mm}
+\vspace{0.5mm}
 
 \Begin{multicols}{2} 
 
@@ -72,34 +73,51 @@ params:
 
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
 
+\vspace{-3mm}
+
 * `r x[which(x$wbcountryname == params$countrynamet),"l1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"l2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"l3_text"]`
 
+\vspace{-7mm}
+
 ### \boldblue{S\small{CHOOL AGE}}###
+
+\vspace{-3mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"e1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"e2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"e3_text"]`
 
+\vspace{-7mm}
+
 ### \boldblue{Y\small{OUTH}}###
+
+\vspace{-3mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"h1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"h2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"h3_text"]`
 
+\vspace{-7mm}
+
 ### \boldblue{A\small{DULTS \& ELDERLY}}###
+
+\vspace{-3mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"b1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"b2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"b3_text"]`
 
+\vspace{-7mm}
+
 \columnbreak 
 
-```{r gr3, out.height= "86%", fig.align = "right", echo=FALSE}
-gr3 <- paste0("Graphs/p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
+```{r gr3, out.height= "72%", fig.align = "right", echo=FALSE}
+gr3 <- paste0("p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
 knitr::include_graphics(gr3)
 ```
+
 
 \vspace{-5mm}
 \small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.

@@ -109,7 +109,7 @@ local cc8 black // "15 119 157"
 foreach i of local obs {
 	*Unmute to run only one or some countries /
 // 	if !inlist(wbcode[`i'], ) continue
-//  	if !inlist(wbcode[`i'], "MNE") continue
+  	if !inlist(wbcode[`i'], "AUS") continue
 //  	if !inlist(wbcode[`i'], "UKR", "KAZ", "TJK", "HTI", "NIC", "LBN") continue
 //  	if !inlist(wbcode[`i'], "MAR", "YEM", "BWA", "SDN", "BFA", "GIN", "COM", "TCD") continue
 //  	if !inlist(wbcode[`i'], "ZWE", "TZA", "LSO", "COG", "NER", "CMR", "SLE", "AGO") continue

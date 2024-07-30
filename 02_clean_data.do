@@ -12,6 +12,8 @@ cd "${root}"
 global portal    	  "$root\Data"
 global data_raw 	  "$portal\Data_Raw"
 global data_processed "$portal\Data_Processed" 
+global date			  	"26_jul_2024" // Date when the full process is run
+global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *------------------------Codes and Country names---------------------------*
 import excel "$data_raw\Country codes & metadata\wbcodes_equiv_ILO.xlsx", firstrow clear
@@ -186,37 +188,76 @@ replace gender=2 if strpos(indicator, "female")
 keep if indic!=""
 replace value="." if value=="NA"
 destring value, replace
-rename (time country) (year UNESCO_countryname)
+rename (time country) (year uncode)
 drop v1 indicator
-reshape wide value, i(UNESCO_countryname year gender) j(indic) string
+reshape wide value, i(uncode year gender) j(indic) string
 rename value* *
-merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
-drop UNESCO_code UNESCO_countryname wbcountryname
+drop if strpos(uncode, "40")
+merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3) 
+drop uncode code uncode wbcountryname
 save "$data_processed/uis_1", replace
 
 *UIS SDGs API
-import delimited "$data_raw/SDG_data", clear
+import delimited "$data_raw/dataSDG", clear
 gen indic=""
-replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="GRAD23"
-replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="PRIMAR"
-replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="LOWSEC"
-replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="GRAD23"
-replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="PRIMAR"
-replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="LOWSEC"
-replace indic="QUTP_1" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="PRIMAR"
-replace indic="QUTP_2T3" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="SECOND"
-replace indic="SCHBSP_1_WELEC" if series=="SE_ACS_ELECT" & dimensionseducationlevel=="PRIMAR"
+replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11A_0_G23"
+replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_1"
+replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_2"
+replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11A_0_G23"
+replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_1"
+replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_2"
+replace indic="QUTP_1" if series=="SE_TRA_GRDL" & education_lev=="ISCED11_1"
+replace indic="QUTP_2T3" if series=="SE_TRA_GRDL" & education_lev=="AGG_2_3"
+replace indic="SCHBSP_1_WELEC" if series=="SE_ACS_ELECT" & education_lev=="ISCED11_1"
+replace indic="CR_3" if series=="SE_TOT_CPLR" & education_lev=="ISCED11_2" & urbanisation=="_T" & income_wealth_quantile=="_T"
 drop if indic==""
 gen gender=0
-replace gender=1 if dimensionssex=="MALE"
-replace gender=2 if dimensionssex=="FEMALE"
-rename (geoareaname timeperiodstart) (UNESCO_countryname year)
-keep UNESCO_countryname year gender indic value
-reshape wide value, i(UNESCO_countryname year gender) j(indic) string
+replace gender=1 if sex=="M"
+replace gender=2 if sex=="F"
+rename (time_detail obs_value) (year value)
+keep ref_area year gender indic value
+reshape wide value, i(ref_area year gender) j(indic) string
 rename value* *
-merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
-drop UNESCO_code UNESCO_countryname wbcountryname
+rename ref_area code
+merge m:1 code using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
+* Chequeado: los que no mergean son continentes/income groups
+drop wbcountryname uncountryname code uncode
 save "$data_processed/uis_2", replace
+
+// import delimited "$data_raw/SDG_data", clear
+// gen indic=""
+// replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="GRAD23"
+// replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="PRIMAR"
+// replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="LOWSEC"
+// replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="GRAD23"
+// replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="PRIMAR"
+// replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="LOWSEC"
+// replace indic="QUTP_1" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="PRIMAR"
+// replace indic="QUTP_2T3" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="SECOND"
+// replace indic="SCHBSP_1_WELEC" if series=="SE_ACS_ELECT" & dimensionseducationlevel=="PRIMAR"
+// replace indic="CR_3" if series=="SE_TOT_CPLR" & dimensionseducationlevel=="UPPSEC" & dimensionslocation=="ALLAREA" & dimensionsquantile=="_T"
+// drop if indic==""
+// gen gender=0
+// replace gender=1 if dimensionssex=="MALE"
+// replace gender=2 if dimensionssex=="FEMALE"
+// rename (geoareaname timeperiodstart) (uncountryname year)
+// keep uncountryname year gender indic value
+// reshape wide value, i(uncountryname year gender) j(indic) string
+// rename value* *
+// *Correct names for turkey manualy for merge:
+// replace uncountryname="Türkiye" if uncountryname=="TÃ¼rkiye"
+// preserve
+// merge m:1 uncountryname using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3)
+// drop uncode uncountryname wbcountryname code
+// save "$data_processed/uis_2", replace
+// restore
+// gen uncode="CIV" if uncountryname=="CÃ´te d'Ivoire"
+// merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
+// drop wbcountryname uncountryname code uncode
+// save "$data_processed/uis_civ_fix", replace
+// use "$data_processed/uis_2", clear
+// append using "$data_processed/uis_civ_fix"
+// save "$data_processed/uis_2", replace
 
 *UIS SDGs download
 import excel using "$data_raw/SDG_Feb2024_long", clear firstrow	
@@ -234,18 +275,31 @@ drop if indic==""
 gen gender=0
 replace gender=1 if strpos(IndicatorName,"male")
 replace gender=2 if strpos(IndicatorName,"female")
-rename (Country Year) (UNESCO_countryname year)
+rename (Country Year) (uncountryname year)
 drop Target Region IndicatorName Metadata IndicatorNumber
-reshape wide Value, i(UNESCO_countryname year gender) j(indic) string
+reshape wide Value, i(uncountryname year gender) j(indic) string
 rename Value* *
-merge m:1 UNESCO_countryname using "$data_processed\Country codes\wbcodes_equiv_unesco", nogen keep(2 3) 
-drop UNESCO_code UNESCO_countryname wbcountryname
+* Fix names
+replace uncountryname="Netherlands (Kingdom of the)" if uncountryname=="Netherlands"
+replace uncountryname="State of Palestine" if uncountryname=="Palestine"
+preserve
+merge m:1 uncountryname using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3) 
+drop uncode uncountryname wbcountryname code
+save "$data_processed/uis_3", replace
+restore
+gen uncode="CIV" if uncountryname=="Côte d'Ivoire"
+merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
+drop wbcountryname uncountryname code uncode
+save "$data_processed/sdg_civ_fix", replace
+use "$data_processed/uis_3", clear
+append using "$data_processed/sdg_civ_fix"
 save "$data_processed/uis_3", replace
 
 *All UIS
 use "$data_processed/uis_1", clear
 merge 1:1 wbcode year gender using "$data_processed/uis_2", nogen
 merge 1:1 wbcode year gender using "$data_processed/uis_3", nogen
+drop uncountryname
 save "$data_processed/all_uis", replace
 
 *-----------------------------------------------------------------------*
@@ -477,7 +531,7 @@ merge 1:1 ilocode year gender using "$data_processed/eap_2wap_reshaped", nogen
 save "$data_processed/all_ilo", replace
 merge m:1 ilocode using "$data_processed\Country codes\wbcodes_equiv_ILO", nogen keep(3)
 * NOT AVAILABLE: POTENTIAL LABOR FORCE. Use the one from last year for now
-merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor", nogen keep(3)
+merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor", nogen
 drop ilocode ilocountryname wbcountryname
 save "$data_processed/all_ilo", replace
 

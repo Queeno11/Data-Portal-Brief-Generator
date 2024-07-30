@@ -61,7 +61,7 @@ print(data)
 str(data)
 dimensions <- data$structure$dimensions$observation
 indicators <- dimensions$values[[1]]$name
-countries <- dimensions$values[[2]]$name
+countries <- dimensions$values[[2]]$id
 time_periods <- dimensions$values[[3]]$name
 observations <- data$dataSets$observations
 

@@ -1,6 +1,8 @@
 library(rmarkdown)
 library(pbapply)
 library(utils)
+library(here)
+library(tinytex)
 
 args  <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
@@ -16,9 +18,9 @@ setwd(path)
 #################################
 ### Set the folders
 
-# # Zip the last version of the briefs
-# files2zip <- dir('Briefs', full.names = TRUE)
-# zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
+ # Zip the last version of the briefs
+ files2zip <- dir('Briefs', full.names = TRUE)
+ zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
 
 # # Delete the last version of the briefs (except the zip file)
 files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
@@ -30,6 +32,7 @@ unlink(files2delete, recursive=TRUE)
 dir.create('Briefs/Logs')
 dir.create('Briefs/For Print')
 
+
 #################################
 ### Run the briefs generator
 
@@ -38,10 +41,10 @@ source("HC_2page_functions.R")
 
 # # #### FILTER ##########################
 # # Create a vector of the values you want to filter
-# selected_wbcodes <- c("MNE")
-# x <- subset(x, wbcode %in% selected_wbcodes)
-# countrynamet <- x[["wbcountryname"]]
-# countrycodes <- x[["wbcode"]]
+selected_wbcodes <- c("AFG")
+x <- subset(x, wbcode %in% selected_wbcodes)
+countrynamet <- x[["wbcountryname"]]
+countrycodes <- x[["wbcode"]]
 # # #####################################
 
 # Set progress bar
@@ -52,21 +55,25 @@ for (i in 1:length(countrynamet)) {
     country <- countrynamet[i]
     wbcode <- countrycodes[i]
     
-    output_folder <- file.path("Briefs", country) 
+    output_folder <- file.path("D:/WB/Data-Portal-Brief-Generator", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
     dir.create(output_folder)
-
+    # Create graphs folder
+    # Copy necessary files to output directory
+    file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")),
+              to = output_folder,
+              overwrite = TRUE)
     ## Render Rmd to PDF
     suppressWarnings(
       capture.output(
         render(
           #input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd",
-          input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_2page_design.Rmd",
+          input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
           output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
           output_file = output_file, 
           params = list(countrynamet = country, extra = extra_text),
-          clean = TRUE,
-          quiet = TRUE,
+          clean = FALSE,
+          quiet = FALSE,
         )
       )
     )
