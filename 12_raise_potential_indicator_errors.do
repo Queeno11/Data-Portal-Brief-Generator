@@ -10,7 +10,7 @@ set more off
 set graph off
 
 gl data_output "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Output"
-
+gl date "26_jul_2024"
 *--------------------------Get selected indicators--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
@@ -123,7 +123,7 @@ keep wbcode position code
 drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
 order wbcode position code
 sort wbcode position code
-save "$data_output/new_locals_23_clean.dta", replace
+save "$data_output/new_locals_23_clean_${date}.dta", replace
 
 use "$data_output/new_locals.dta", clear
 split local, gen(code)
@@ -134,11 +134,11 @@ keep wbcode position code
 drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
 order wbcode position code
 sort wbcode position code
-save "$data_output/new_locals_24_clean.dta", replace
+save "$data_output/new_locals_24_clean_${date}.dta", replace
 
-use "$data_output/new_locals_23_clean.dta", clear
-merge 1:1 wbcode code using "$data_output/new_locals_24_clean.dta", keep(1)
-export excel "$data_output/list_changes.xlsx", replace
+use "$data_output/new_locals_23_clean_${date}.dta", clear
+merge 1:1 wbcode code using "$data_output/new_locals_24_clean_${date}.dta", keep(1)
+export excel "$data_output/list_changes_${date}.xlsx", replace
 * Chequear si hay algun indicador en particular con problemas:
 tab code 
 * Ver cambios que no se relacionan a emp_2wap:

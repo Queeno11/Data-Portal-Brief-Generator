@@ -19,8 +19,8 @@ setwd(path)
 ### Set the folders
 
  # Zip the last version of the briefs
- files2zip <- dir('Briefs', full.names = TRUE)
- zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
+ #files2zip <- dir('Briefs', full.names = TRUE)
+ #zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
 
 # # Delete the last version of the briefs (except the zip file)
 files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
@@ -41,8 +41,8 @@ source("HC_2page_functions.R")
 
 # # #### FILTER ##########################
 # # Create a vector of the values you want to filter
-selected_wbcodes <- c("AFG")
-x <- subset(x, wbcode %in% selected_wbcodes)
+#selected_wbcodes <- c("ALB")
+#x <- subset(x, wbcode %in% selected_wbcodes)
 countrynamet <- x[["wbcountryname"]]
 countrycodes <- x[["wbcode"]]
 # # #####################################
@@ -55,13 +55,13 @@ for (i in 1:length(countrynamet)) {
     country <- countrynamet[i]
     wbcode <- countrycodes[i]
     
-    output_folder <- file.path("D:/WB/Data-Portal-Brief-Generator", country) 
+    output_folder <- file.path("C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/Briefs", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
     dir.create(output_folder)
     # Create graphs folder
     # Copy necessary files to output directory
     file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")),
-              to = output_folder,
+              to = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator",
               overwrite = TRUE)
     ## Render Rmd to PDF
     suppressWarnings(

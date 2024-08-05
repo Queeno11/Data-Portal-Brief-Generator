@@ -70,6 +70,7 @@ params:
 \Begin{multicols}{2} 
 
 \raggedcolumns
+\vspace{-7mm}
 
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
 
@@ -118,10 +119,8 @@ gr3 <- paste0("p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], 
 knitr::include_graphics(gr3)
 ```
 
-
 \vspace{-5mm}
 \small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.
-
 <!-- \vspace(0.1mm) -->
 
 \End{multicols}

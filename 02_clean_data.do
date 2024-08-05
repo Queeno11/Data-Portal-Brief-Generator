@@ -380,7 +380,7 @@ save "$data_processed\all_FAO", replace
 *Forcibly displaced population: * UPDATED
 **Includes: Internal displaced population (IDPs), Refugees, Asylum-seekers and others.
 import excel "$data_raw\UNHCR_Forced_Displacement", first clear
-rename CountryoforiginISO UNcode
+rename CountryoforiginISO uncode
 rename Year year
 rename IDPsofconcerntoUNHCR IDPs
 rename Asylumseekers A_seekers
@@ -393,27 +393,27 @@ lab var IDPs "Change in the number of internal displaced population of concern t
 lab var A_seekers "Change in the number of asylum-seekers"
 lab var refugees "Change in the number of refugees under UNHCR´s mandate"
 lab var FD_others "Change in the number of other people of concern"
-keep year IDPs refugees A_seekers gender UNcode
+keep year IDPs refugees A_seekers gender uncode
 save "$data_processed\UNHCR_forced_displacement", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m UNcode using "$data_processed\UNHCR_forced_displacement", nogen keep(3)
+merge 1:m uncode using "$data_processed\UNHCR_forced_displacement", nogen keep(3)
 keep wbcode year gender IDPs refugees A_seekers
 save "$data_processed\UNHCR_forced_displacement", replace
 
 
 *Population per country: *PENDING
 import excel "$data_raw\UN_population.xlsx", clear firstrow
-rename B UNname
+rename B uncountryname
 rename Year year
 keep if Series=="Population mid-year estimates (millions)"
 rename Value population
 gen gender = .
 replace gender = 0
 lab var population "Population mid-year estimates (millions)"
-keep year population gender UNname
+keep year population gender uncountryname
 save "$data_processed\UN_population", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m UNname using "$data_processed\UN_population", nogen keep(3)
+merge 1:m uncountryname using "$data_processed\UN_population", nogen keep(3)
 keep wbcode year gender population
 drop if wbcode==""
 save "$data_processed\UN_population", replace
@@ -436,12 +436,12 @@ gen gender=.
 replace gender=2 if sex=="Female"
 replace gender=1 if sex=="Male"
 replace gender=0 if sex=="Total"
-rename location UNname
+rename location uncountryname
 rename value met_fam_plan
 rename time year
 save "$data_processed\UN_family_planning", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m UNname using "$data_processed\UN_family_planning", nogen keep(3)
+merge 1:m uncountryname using "$data_processed\UN_family_planning", nogen keep(3)
 keep wbcode gender met_fam_plan year
 save "$data_processed\UN_family_planning", replace
 *---------------------------------all UN-----------------------------------*
@@ -517,6 +517,7 @@ gen gender=0
 rename (EAP_2WAP_SEX_AGE_RT_A0 EAP_2WAP_SEX_AGE_RT_A1 EAP_2WAP_SEX_AGE_RT_A2) (emp_2wap_mf_a emp_2wap_m_a emp_2wap_f_a)
 save "$data_processed/eap_2wap_reshaped", replace
 restore
+drop emp_2wap_*
 merge 1:1 ilocode year gender using "$data_processed/eap_2wap_reshaped", nogen
 // rename EIP_2WAP_SEX_AGE_RT_A_a eip_2wap_a
 // rename EIP_2WAP_SEX_AGE_RT_A_y eip_2wap_y
