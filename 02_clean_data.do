@@ -401,15 +401,15 @@ keep wbcode year gender IDPs refugees A_seekers
 save "$data_processed\UNHCR_forced_displacement", replace
 
 
-*Population per country: *PENDING
-import excel "$data_raw\UN_population.xlsx", clear firstrow
-rename B uncountryname
+*Population per country:
+import excel "$data_raw\UN_population_2024.xlsx", clear firstrow
+rename Regionsubregioncountryorar uncountryname
 rename Year year
-keep if Series=="Population mid-year estimates (millions)"
-rename Value population
+*keep if Series=="Population mid-year estimates (millions)"
+gen population = Total*1000/1000000
 gen gender = .
 replace gender = 0
-lab var population "Population mid-year estimates (millions)"
+lab var population "Population estimates (millions)"
 keep year population gender uncountryname
 save "$data_processed\UN_population", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
@@ -423,7 +423,7 @@ use "$data_processed\UNHCR_Forced_Displacement", clear
 merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
 gen refug_pop = (refugees/1000000)/population
 gen aseek_pop = (A_seekers/1000000)/population
-gen idp_pop = (IDPs/1000000)/population
+gen idp_pop = (IDPs/1000)/population
 save "$data_processed\UN_forced_disp_rates", replace
 
 *Family planning: UPDATED
@@ -610,6 +610,14 @@ rename a_ value
 replace code="NUTRITION_ANAEMIA_CHILDREN_PREV" if code=="NUTRITION_ANAEMIA_CHILDREN"
 save "$data_processed\complete_series_nometadata_$date$extra", replace
 
+
+// * Add world value
+// collapse (mean) value, by(code gender year)
+// gen wbcode="World"
+// save "$data_processed/world_values", replace
+// use "$data_processed\complete_series_nometadata_$date$extra", clear
+// append using "$data_processed/world_values"
+// save "$data_processed\complete_series_nometadata_$date$extra", replace
 * FIX:
 * Jordania Egipto y KZG en youth lit
 * Azerbaijan en org leanring, comparar 2020 vs 2017

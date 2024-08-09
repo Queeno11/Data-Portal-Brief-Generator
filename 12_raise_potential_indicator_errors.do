@@ -10,6 +10,7 @@ set more off
 set graph off
 
 gl data_output "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Output"
+gl data_processed "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Processed"
 gl date "26_jul_2024"
 *--------------------------Get selected indicators--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
@@ -137,8 +138,23 @@ sort wbcode position code
 save "$data_output/new_locals_24_clean_${date}.dta", replace
 
 use "$data_output/new_locals_23_clean_${date}.dta", clear
-merge 1:1 wbcode code using "$data_output/new_locals_24_clean_${date}.dta", keep(1)
-export excel "$data_output/list_changes_${date}.xlsx", replace
+merge 1:1 wbcode code using "$data_output/new_locals_24_clean_${date}.dta", keep(1 2)
+merge m:1 wbcode using "$data_output/data_briefs", keep(3) nogen
+rename _merge m
+keep wbcode wbcountryname position code m
+rename code name_portal
+merge m:1 name_portal using "$data_processed/metadata_processed", keep(3) nogen
+keep wbcode wbcountryname position m name
+reshape wide name, i(wbcode wbcountryname position) j(m)
+rename (name1 name2) (v2023 v2024) 
+order wbcode wbcountryname position v2023 v2024
+foreach num in 1 2 3{
+replace position="Early childhood - `num'" if position=="l`num'"
+replace position="School age - `num'" if position=="e`num'"
+replace position="Youth - `num'" if position=="h`num'"
+replace position="Adults - `num'" if position=="b`num'"
+}
+export excel "$data_output/changes_briefs_${date}.xlsx", first(variables) replace 
 * Chequear si hay algun indicador en particular con problemas:
 tab code 
 * Ver cambios que no se relacionan a emp_2wap:
