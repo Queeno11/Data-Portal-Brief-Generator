@@ -73,7 +73,8 @@ df = df.sort_values(by=["wbregion", "wbcode"])
 # df = df[df.wbcode.isin(["MAR"])]
 
 ## REMOVE LATER
-done = os.listdir(r"D:\Laboral\World Bank\Data-Portal-Brief-Generator\Briefs\For Print")
+os.makedirs(rf"{briefs}\For Print", exist_ok=True)
+done = os.listdir(rf"{root}\Briefs\For Print")
 done_ctrys = [ctry.split(".")[0] for ctry in done]
 #####
 

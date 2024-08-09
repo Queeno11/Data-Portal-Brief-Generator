@@ -363,6 +363,7 @@ foreach i of local obs {
 	/* graph export "p2_`ctry'_stages.eps", replace */
 	graph export "$charts\p2_`ctry'_stages${extra}.jpg", replace width(3200) quality(100)
 	graph drop _all
+	break
 }
 
 
