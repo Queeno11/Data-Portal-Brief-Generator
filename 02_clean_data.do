@@ -140,12 +140,14 @@ replace gender = "2" if gender=="SEX_FMLE"
 replace gender = "0" if gender=="SEX_BTSX"
 replace gender = "." if gender=="NA"
 destring gender, replace
-* Adolescent suicide rate: keep age-standarized suicide rate for 15-19 years
-drop if indicatorcode=="SDGSUICIDE" & agegroup!="AGEGROUP_YEARS15-19"
+// * Adolescent suicide rate: keep age-standarized suicide rate for 15-19 years
+// drop if indicatorcode=="SDGSUICIDE" & agegroup!="AGEGROUP_YEARS15-19"
+drop if indicatorcode=="SDGSUICIDE"
 * Keep standard def in anaemia
 drop if indicatorcode=="NUTRITION_ANAEMIA_CHILDREN_PREV" & severity!="NA"
 * Drop missing countries
 drop if WHO_code=="NA"
+replace gender = 0 if indicatorcode=="SRHINSTITUTIONALBIRTH"
 merge m:1 WHO_code using "$data_processed\Country codes\wbcodes_equiv_who", keep(3) nogen
 *  5,497 observation have missing countryname
 save "$data_processed/all_who", replace
@@ -168,6 +170,28 @@ save "$data_processed/all_who", replace
 merge 1:1 wbcode year gender using "$data_processed\who_pneumonia_cs", nogen
 drop WHO_code wbcountryname
 rename NUTRITION_ANAEMIA_CHILDREN NUTRITION_ANAEMIA_CHILDREN_PREV
+save "$data_processed/all_who", replace
+
+
+* Add downloaded data for suicide rates, ages 15-19 (full series not available in API or interactive. You need to download the complete database from: https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/self-inflicted-injuries)
+import delimited "$data_raw/WHOMortalityDatabase", delim(",") clear
+keep if agegroupcode=="Age15_19" 
+rename deathrateper100000population SDGSUICIDE
+drop if missing(SDGSUICIDE)
+keep countrycode countryname year sex SDGSUICIDE
+rename (countrycode countryname) (WHO_code WHO_countryname)
+gen gender=.
+replace gender=0 if sex=="All"
+replace gender=1 if sex=="Male"
+replace gender=2 if sex=="Female"
+drop sex
+merge m:1 WHO_code using "$data_processed/Country codes/wbcodes_equiv_who", keep(3) nogen
+drop WHO_code WHO_countryname wbcountryname
+save "$data_processed/WHO_suicide", replace
+
+* Add to complete base
+use "$data_processed/all_who", clear
+merge 1:1 wbcode year gender using "$data_processed/WHO_suicide", nogen
 save "$data_processed/all_who", replace
 
 
@@ -206,10 +230,6 @@ replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=
 replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11A_0_G23"
 replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_1"
 replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_2"
-replace indic="QUTP_1" if series=="SE_TRA_GRDL" & education_lev=="ISCED11_1"
-replace indic="QUTP_2T3" if series=="SE_TRA_GRDL" & education_lev=="AGG_2_3"
-replace indic="SCHBSP_1_WELEC" if series=="SE_ACS_ELECT" & education_lev=="ISCED11_1"
-replace indic="CR_3" if series=="SE_TOT_CPLR" & education_lev=="ISCED11_2" & urbanisation=="_T" & income_wealth_quantile=="_T"
 drop if indic==""
 gen gender=0
 replace gender=1 if sex=="M"
@@ -224,76 +244,33 @@ merge m:1 code using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) n
 drop wbcountryname uncountryname code uncode
 save "$data_processed/uis_2", replace
 
-// import delimited "$data_raw/SDG_data", clear
-// gen indic=""
-// replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="GRAD23"
-// replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="PRIMAR"
-// replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_READ" & dimensionseducationlevel=="LOWSEC"
-// replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="GRAD23"
-// replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="PRIMAR"
-// replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & dimensionstypeofskill=="SKILL_MATH" & dimensionseducationlevel=="LOWSEC"
-// replace indic="QUTP_1" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="PRIMAR"
-// replace indic="QUTP_2T3" if series=="SE_TRA_GRDL" & dimensionseducationlevel=="SECOND"
-// replace indic="SCHBSP_1_WELEC" if series=="SE_ACS_ELECT" & dimensionseducationlevel=="PRIMAR"
-// replace indic="CR_3" if series=="SE_TOT_CPLR" & dimensionseducationlevel=="UPPSEC" & dimensionslocation=="ALLAREA" & dimensionsquantile=="_T"
-// drop if indic==""
-// gen gender=0
-// replace gender=1 if dimensionssex=="MALE"
-// replace gender=2 if dimensionssex=="FEMALE"
-// rename (geoareaname timeperiodstart) (uncountryname year)
-// keep uncountryname year gender indic value
-// reshape wide value, i(uncountryname year gender) j(indic) string
-// rename value* *
-// *Correct names for turkey manualy for merge:
-// replace uncountryname="Türkiye" if uncountryname=="TÃ¼rkiye"
-// preserve
-// merge m:1 uncountryname using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3)
-// drop uncode uncountryname wbcountryname code
-// save "$data_processed/uis_2", replace
-// restore
-// gen uncode="CIV" if uncountryname=="CÃ´te d'Ivoire"
-// merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
-// drop wbcountryname uncountryname code uncode
-// save "$data_processed/uis_civ_fix", replace
-// use "$data_processed/uis_2", clear
-// append using "$data_processed/uis_civ_fix"
-// save "$data_processed/uis_2", replace
-
-*UIS SDGs download
-import excel using "$data_raw/SDG_Feb2024_long", clear firstrow	
-replace Value=. if (Metadata=="Magnitude NOT APPLICABLE"|Metadata=="Magnitude NIL")		
-drop if Value==.
-gen indic=""
-replace indic="OAEPG_1" if IndicatorNumber=="4.1.5" & strpos(IndicatorName, "primary")
-replace indic="OAEPG_2_GPV" if IndicatorNumber=="4.1.5" & strpos(IndicatorName, "lower secondary")
-replace indic="XGDP_FSGOV" if IndicatorNumber=="Education 2030 FFA"
-replace indic="XGOVEXP_IMF" if IndicatorNumber=="1.a.2"
-replace indic="youth_lit" if IndicatorNumber=="4.6.2"
-replace indic="ECedu" if IndicatorNumber=="4.2.4" & strpos(IndicatorName,"Net enrolment rate, early childhood education,")
-replace indic="GER_01" if IndicatorNumber=="4.2.4" & strpos(IndicatorName,"Net enrolment rate, early childhood educational development")
-drop if indic==""
+* SDG data bulkdownload (https://uis.unesco.org/bdds)
+import delimited "$data_raw/SDG_DATA_NATIONAL", clear
+replace value=. if (magnitude=="NA"|magnitude=="NIL")
+drop if value==.
+drop magnitude qualifier
+gen indic = subinstr(indicator_id, ".", "_", .)
+gen tokeep=0
+replace tokeep=1 if inlist(indic, "CR_3", "CR_3_M", "CR_3_F", "GER_0", "GER_0_M", "GER_0_F", "GER_01", "GER_01_M", "GER_01_F")
+replace tokeep=1 if inlist(indic, "OAEPG_1", "OAEPG_1_M", "OAEPG_1_F", "OAEPG_2_GPV", "OAEPG_2_GPV_M", "OAEPG_2_GPV_F")
+replace tokeep=1 if inlist(indic, "QUTP_1", "QUTP_1_M", "QUTP_1_F", "QUTP_2T3", "QUTP_2T3_M", "QUTP_2T3_F", "SCHBSP_1_WELEC")
+replace tokeep=1 if inlist(indic, "XGDP_FSGOV", "XGOVEXP_IMF", "LR_AG15T24", "LR_AG15T24_M", "LR_AG15T24_F")
+drop if tokeep==0
+rename (country_id value)(uncode uis)
+keep uncode uis year indic
 gen gender=0
-replace gender=1 if strpos(IndicatorName,"male")
-replace gender=2 if strpos(IndicatorName,"female")
-rename (Country Year) (uncountryname year)
-drop Target Region IndicatorName Metadata IndicatorNumber
-reshape wide Value, i(uncountryname year gender) j(indic) string
-rename Value* *
-* Fix names
-replace uncountryname="Netherlands (Kingdom of the)" if uncountryname=="Netherlands"
-replace uncountryname="State of Palestine" if uncountryname=="Palestine"
-preserve
-merge m:1 uncountryname using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3) 
-drop uncode uncountryname wbcountryname code
+replace gender=1 if strpos(indic, "_M")
+replace gender=2 if strpos(indic, "_F") & indic!="XGDP_FSGOV"
+gen code=subinstr(indic, "_M", "",.)
+replace code=subinstr(indic, "_F", "", .) if gender==2 & indic!="XGDP_FSGOV"
+drop indic
+reshape wide uis, i(uncode year gender) j(code) string
+rename uis* *
+rename LR_AG15T24 youth_lit
+merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3)
+drop uncode wbcountryname code
 save "$data_processed/uis_3", replace
-restore
-gen uncode="CIV" if uncountryname=="Côte d'Ivoire"
-merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
-drop wbcountryname uncountryname code uncode
-save "$data_processed/sdg_civ_fix", replace
-use "$data_processed/uis_3", clear
-append using "$data_processed/sdg_civ_fix"
-save "$data_processed/uis_3", replace
+
 
 *All UIS
 use "$data_processed/uis_1", clear
