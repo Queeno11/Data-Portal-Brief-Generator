@@ -14,7 +14,7 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    root = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    root = r"D:\World Bank\Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{root}\Data\Data_Raw"
     data_processed = rf"{root}\Data\Data_Processed"
@@ -70,7 +70,7 @@ Image.MAX_IMAGE_PIXELS = 1000000000
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
-# df = df[df.wbcode.isin(["MAR"])]
+# df = df[df.wbcode.isin(["AUS", "ARG", "AFG", "ETH", "CAN", "JPN"])]
 
 ## REMOVE LATER
 os.makedirs(rf"{briefs}\For Print", exist_ok=True)
@@ -89,10 +89,13 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
         if wbcountryname in done_ctrys:
             continue
 
+        if wbcode == "BIH":
+            wbcode = "BIS"
         print(wbcode)
         pdf = convert_from_path(
             rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
-            size=(1700 * 2.5 * 5, 2200 * 2.5 * 5),
+            size=(1700 * 2.5 * 5, None),
+            dpi=300,
         )  # This returns a list even for a 1 page pdf
 
         ## P1
@@ -110,27 +113,27 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
         # page_2 = add_header_and_footer(pdf[1], header, footer)
 
         # Save them
-        page_1.save(
+        page_1.convert('RGB').save(
             rf"{briefs}\For Print\{wbcountryname}{extra}.pdf",
             "PDF",
-            mode="RGBA",
-            resolution=100.0,
-            save_all=True,
+            mode="RGB",
+            dpi=(300, 300),
+            # save_all=True,
             # append_images=[page_2],
         )
-        # images[wbregion] += [page_1, page_2]
+        images[wbregion] += [page_1]
 
     except Exception as exception:
         print(f"Error with {wbcode}: {exception}")
 
-# for region, imgs in images.items():
-#     os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
+for region, imgs in images.items():
+    os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
 
-#     imgs[0].save(
-#         rf"{briefs}\For print\{region}\{region}{extra}.pdf",
-#         "PDF",
-#         mode="RGBA",
-#         resolution=100.0,
-#         save_all=True,
-#         append_images=imgs[1:],
-#     )
+    imgs[0].save(
+        rf"{briefs}\For print\{region}\{region}{extra}.pdf",
+        "PDF",
+        mode="RGBA",
+        resolution=100.0,
+        save_all=True,
+        append_images=imgs[1:],
+    )

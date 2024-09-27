@@ -61,59 +61,63 @@ params:
 \definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
 \newcommand\boldblue[1]{\textcolor{bondiblue}{\textbf{#1}}}
 
-\vspace{1em}
+\vspace{0.5em}
 
 `r x[which(x$wbcountryname == params$countrynamet),"first_par"]` The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
 
-\vspace{0.5mm}
+\vspace{-6mm}
 
 \Begin{multicols}{2} 
 
+
+
 \raggedcolumns
-\vspace{-7mm}
+
+\textcolor{white}{--}
+
+\vspace{-5mm}
 
 ### \boldblue{E\small{ARLY CHILDHOOD}}###
 
-\vspace{-3mm}
+\vspace{-0.75mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"l1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"l2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"l3_text"]`
 
-\vspace{-7mm}
+\vspace{-6.5mm}
 
 ### \boldblue{S\small{CHOOL AGE}}###
 
-\vspace{-3mm}
+\vspace{-0.75mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"e1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"e2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"e3_text"]`
 
-\vspace{-7mm}
+\vspace{-6.5mm}
 
 ### \boldblue{Y\small{OUTH}}###
 
-\vspace{-3mm}
+\vspace{-0.75mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"h1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"h2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"h3_text"]`
 
-\vspace{-7mm}
+\vspace{-6.5mm}
 
 ### \boldblue{A\small{DULTS \& ELDERLY}}###
 
-\vspace{-3mm}
+\vspace{-0.75mm}
 
 * `r x[which(x$wbcountryname == params$countrynamet),"b1_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"b2_text"]`
 * `r x[which(x$wbcountryname == params$countrynamet),"b3_text"]`
 
-\vspace{-7mm}
 
 \columnbreak 
-
+\vspace{-10em}
 ```{r gr3, out.height= "72%", fig.align = "right", echo=FALSE}
 gr3 <- paste0("p2_", x[which(x$wbcountryname == params$countrynamet),"wbcode"], "_stages", params$extra,".jpg")
 knitr::include_graphics(gr3)

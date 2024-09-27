@@ -5,12 +5,22 @@ library(here)
 library(tinytex)
 
 args  <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 2) {
+
+
+if (length(args) == 0) {
   stop("To run the code, you must specify the path and the extra string as command-line arguments.")
 }
-
-path <- args[1]
-extra_text <- args[2]
+if (length(args) == 1) {
+  path <- args[1]
+  extra_text <- ""
+}
+if (length(args) == 2) {
+  path <- args[1]
+  extra_text <- args[2]
+}
+if (length(args) > 2) {
+  stop("Only one or two command-line arguments are allowed.")
+}
 
 print(path)
 setwd(path)
@@ -18,9 +28,9 @@ setwd(path)
 #################################
 ### Set the folders
 
- # Zip the last version of the briefs
- #files2zip <- dir('Briefs', full.names = TRUE)
- #zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
+# Zip the last version of the briefs
+# files2zip <- dir('Briefs', full.names = TRUE)
+# zip(zipfile = 'Briefs/briefs_prev_version', files = files2zip)
 
 # # Delete the last version of the briefs (except the zip file)
 files2delete <- list.files("Briefs", include.dirs = T, full.names = T, recursive = T)
@@ -41,10 +51,10 @@ source("HC_2page_functions.R")
 
 # # #### FILTER ##########################
 # # Create a vector of the values you want to filter
-#selected_wbcodes <- c("ALB")
-#x <- subset(x, wbcode %in% selected_wbcodes)
-countrynamet <- x[["wbcountryname"]]
-countrycodes <- x[["wbcode"]]
+# selected_wbcodes <- c("AUS", "ARG", "AFG", "ETH", "CAN", "JPN")
+# x <- subset(x, wbcode %in% selected_wbcodes)
+# countrynamet <- x[["wbcountryname"]]
+# countrycodes <- x[["wbcode"]]
 # # #####################################
 
 # Set progress bar
@@ -55,28 +65,31 @@ for (i in 1:length(countrynamet)) {
     country <- countrynamet[i]
     wbcode <- countrycodes[i]
     
-    output_folder <- file.path("C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/Briefs", country) 
+    output_folder <- file.path("D:/World Bank/Data-Portal-Brief-Generator/Briefs", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
     dir.create(output_folder)
-    # Create graphs folder
+
     # Copy necessary files to output directory
     file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")),
-              to = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator",
+              to = "D:/World Bank/Data-Portal-Brief-Generator",
               overwrite = TRUE)
+
     ## Render Rmd to PDF
     suppressWarnings(
       capture.output(
         render(
-          #input = "D:/Laboral/World Bank/Data-Portal-Brief-Generator/HC_2page_design.Rmd",
-          input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
+          input = "D:/World Bank/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
+          # input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
           output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
           output_file = output_file, 
           params = list(countrynamet = country, extra = extra_text),
           clean = FALSE,
-          quiet = FALSE,
+          quiet = TRUE,
         )
       )
     )
+    # Remove files
+    file.remove(file.path("D:/World Bank/Data-Portal-Brief-Generator", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")))
 
     ## Move the log to briefs/Logs folder
     log_filename <- paste0(country, extra_text, ".log")
