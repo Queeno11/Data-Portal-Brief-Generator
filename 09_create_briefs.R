@@ -6,25 +6,9 @@ library(tinytex)
 
 args  <- commandArgs(trailingOnly = TRUE)
 
-
-if (length(args) == 0) {
-  stop("To run the code, you must specify the path and the extra string as command-line arguments.")
-}
-if (length(args) == 1) {
-  path <- args[1]
-  extra_text <- ""
-}
-if (length(args) == 2) {
-  path <- args[1]
-  extra_text <- args[2]
-}
-if (length(args) > 2) {
-  stop("Only one or two command-line arguments are allowed.")
-}
-
-print(path)
-setwd(path)
-
+# print(path)
+setwd("D:/World Bank/Data-Portal-Brief-Generator")
+extra_text <- ""
 #################################
 ### Set the folders
 
@@ -67,27 +51,28 @@ for (i in 1:length(countrynamet)) {
     
     output_folder <- file.path("D:/World Bank/Data-Portal-Brief-Generator/Briefs", country) 
     output_file   <- file.path(output_folder, paste0(country, extra_text)) 
+    
     dir.create(output_folder)
-
+    
     # Copy necessary files to output directory
-    file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")),
+    file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".png")),
               to = "D:/World Bank/Data-Portal-Brief-Generator",
               overwrite = TRUE)
 
     ## Render Rmd to PDF
-    suppressWarnings(
-      capture.output(
-        render(
-          input = "D:/World Bank/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
-          # input = "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
-          output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
-          output_file = output_file, 
-          params = list(countrynamet = country, extra = extra_text),
-          clean = FALSE,
-          quiet = TRUE,
-        )
-      )
+    print(output_file)
+    print(country)
+    print(extra_text)
+    render(
+      input = "D:/World Bank/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
+      output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
+      output_file = output_file, 
+      params = list(countrynamet = country),
+      clean = FALSE,
+      quiet = TRUE,
     )
+
+    
     # Remove files
     file.remove(file.path("D:/World Bank/Data-Portal-Brief-Generator", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")))
 

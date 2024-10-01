@@ -28,9 +28,9 @@ excels = rf"{root}\Datasheets"
 import os
 import pandas as pd
 from tqdm import tqdm
-from PIL import Image
-from pdf2image import convert_from_path
+import fitz 
 
+footer_path = os.path.join(sources, "Footer Images", "p1 footer 2024.png")
 
 def list_files_in_directory(folder_path):
     file_list = []
@@ -39,34 +39,48 @@ def list_files_in_directory(folder_path):
             file_list.append(os.path.join(root, file))
     return file_list
 
+def add_header_and_footer(doc_path, header_path, out_path):
 
-def resize_image(image, new_width):
-    old_width = image.size[0]
-    old_height = image.size[1]
-    new_height = int(old_height * (new_width / old_width))
-    return image.resize((new_width, new_height)), new_height
+    # Open the existing PDF
+    doc = fitz.open(doc_path)
 
+    # Get the dimensions of the image
+    header = fitz.open(header_path)
+    header_width, header_height = header[0].rect.width, header[0].rect.height
+    header.close()
 
-def add_header_and_footer(background, header, footer):
-    # Resize the header and footer images to match the background size
-    new_width = background.size[0] + 2
-    header, new_height = resize_image(header, new_width)
-    footer, new_height = resize_image(footer, new_width)
-
-    # Create a new image with transparency
-    merged_image = Image.new("RGB", background.size)
-
-    # Paste the background image onto the new image
-    merged_image.paste(background, (0, 0))
-
-    # Paste the footer image onto the new image, using the alpha channel of the footer
-    merged_image.paste(footer, (-1, background.size[1] - new_height + 2), mask=footer)
-    merged_image.paste(header, (-1, -1), mask=header)
-
-    return merged_image
+    footer = fitz.open(footer_path)
+    footer_width, footer_height = footer[0].rect.width, footer[0].rect.height
+    footer.close()
 
 
-Image.MAX_IMAGE_PIXELS = 1000000000
+    page = doc[0]
+    # Get the page dimensions
+    page_width = page.rect.width
+    page_height = page.rect.height
+
+    # Calculate the rectangle where the image will be placed
+    # This example scales the image to fit the width of the page
+    header_rect = fitz.Rect(
+        0,  # x0: left side of the page
+        0,  # y0: top of the page
+        page_width,  # x1: right side of the page
+        header_height * (page_width / header_width)  # y1: maintain aspect ratio
+    )
+    footer_rect = fitz.Rect(
+        0,  # x0: left side of the page
+        page_height - footer_height * (page_width / footer_width),  # y0: bottom
+        page_width,  # x1: right side of the page
+        page_height  # y1: maintain aspect ratio
+    )
+
+    # Insert the image into the page
+    page.insert_image(header_rect, filename=header_path)
+    page.insert_image(footer_rect, filename=footer_path)
+
+    # Save the modified PDF to a new file
+    doc.ez_save(out_path)
+
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
@@ -81,59 +95,26 @@ done_ctrys = [ctry.split(".")[0] for ctry in done]
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 images = {k: [] for k in df.wbregion.unique()}
 for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
-    try:
-        wbcode = country_data[1]
-        wbcountryname = country_data[2]
-        wbregion = country_data[3]
+    # try:
+    wbcode = country_data[1]
+    wbcountryname = country_data[2]
+    wbregion = country_data[3]
 
-        if wbcountryname in done_ctrys:
-            continue
 
-        if wbcode == "BIH":
-            wbcode = "BIS"
-        print(wbcode)
-        pdf = convert_from_path(
-            rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf",
-            size=(1700 * 2.5 * 5, None),
-            dpi=300,
-        )  # This returns a list even for a 1 page pdf
+    if wbcountryname in done_ctrys:
+        continue
 
-        ## P1
-        header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
-        header = Image.open(header_path)
-        footer = Image.open(rf"{sources}\Footer Images\p1 footer.png")
+    if wbcode == "BIH":
+        wbcode = "BIS"
 
-        page_1 = add_header_and_footer(pdf[0], header, footer)
+    print(wbcode)
+    brief_path = rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf"
+    header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
+    out_folder = rf"{briefs}\For print\{wbregion}"
+    os.makedirs(out_folder, exist_ok=True)
+    out_path = rf"{out_folder}\{wbcountryname}{extra}.pdf"
 
-        # ## P2
-        # header_path = [header for header in headers if f"2-HCCB-{wbcode}" in header][0]
-        # header = Image.open(header_path)
-        # footer = Image.open(rf"{sources}\Footer Images\p2 footer.png")
+    add_header_and_footer(brief_path, header_path, out_path)
 
-        # page_2 = add_header_and_footer(pdf[1], header, footer)
-
-        # Save them
-        page_1.convert('RGB').save(
-            rf"{briefs}\For Print\{wbcountryname}{extra}.pdf",
-            "PDF",
-            mode="RGB",
-            dpi=(300, 300),
-            # save_all=True,
-            # append_images=[page_2],
-        )
-        images[wbregion] += [page_1]
-
-    except Exception as exception:
-        print(f"Error with {wbcode}: {exception}")
-
-for region, imgs in images.items():
-    os.makedirs(rf"{briefs}\For print\{region}", exist_ok=True)
-
-    imgs[0].save(
-        rf"{briefs}\For print\{region}\{region}{extra}.pdf",
-        "PDF",
-        mode="RGBA",
-        resolution=100.0,
-        save_all=True,
-        append_images=imgs[1:],
-    )
+    # except Exception as exception:
+    #     print(f"Error with {wbcode}: {exception}")

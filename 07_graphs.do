@@ -2,7 +2,7 @@
 *--------------------------------------Graphs----------------------------------*
 *------------------------------------------------------------------------------*
 
-* Fonts required; https://freefontsdownload.net/free-utopia-boldosf-font-149354.htm
+* Fonts required; https://badnoise.net/TypeRip/
 clear all
 set more off	
 set graph off
@@ -62,7 +62,7 @@ local nc 8
 local date: disp %tdCY-m-D date("`c(current_date)'", "DMY")
 disp "`date'"
 local notetext "Data are preliminary and subject to revision (as of `date')."
-graph set window fontface "Baskerville Old Face"
+graph set window fontface "Arial"
 set scheme s2color
 sort wbregion wbcode
 gen onesvec=0
@@ -108,8 +108,7 @@ local cc8 black // "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-// 	if !inlist(wbcode[`i'], ) continue
-//   	if !inlist(wbcode[`i'], "AUS", "ARG", "AFG", "ETH", "CAN", "JPN") continue
+//    	if !inlist(wbcode[`i'], "AUS", "ARG", "AFG", "ETH", "CAN", "JPN") continue
 
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
@@ -305,11 +304,11 @@ foreach i of local obs {
 			*local xtitle``x'`m'_`ctry'' = "subinstr("`l`x'`m'_`ctry''", "(", ")")"
 			twoway ///
 			(scatter onesvec ``x'`m'_`ctry'' if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(40pt) mlabel(``x'`m'_`ctry'') mlabsize(33pt) mlabgap(6pt) `country_marker_fmt' mlabformat(%8.0f)) ///
-			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) `reg_marker_fmt') /// 
+			(scatter onesvec ``x'`m'_`ctry''_reg if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(22pt) `reg_marker_fmt') /// 
 			(scatter onesvec ``x'`m'_`ctry''_prev if wbcode=="`ctry'" & ``x'`m'_`ctry'' > 0 & ``x'`m'_`ctry'' <=`=scalar(r(p100))', msize(20pt) color("245 202 195") `time_marker_fmt') /// 
-			, legend(off) title("{fontface Utopia Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=11) size(30pt) pos(11))  xtitle("") ytitle("") ///
-			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(21pt) labgap(4pt) format(%8.3g))  ///
-			  xscale(lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(26pt)) ///
+			, legend(off) title("{fontface Utopia Std Semibold: `l`x'`m'_`ctry''}", color(black) margin(b=11) size(30pt) pos(11))  xtitle("") ytitle("") ///
+			  yscale(lcolor(white) range(0 0.5)) ylabel(none) xlabel(,labsize(24pt) labgap(4pt) format(%8.3g))  ///
+			  xscale(lwidth(0.6pt) range(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')')) xlabel(`=scalar(min``x'`m'_`ctry'')' `=scalar(max``x'`m'_`ctry'')',labsize(28pt)) ///
 			  xsize(7) ysize(1.1) graphregion(color(white) margin(b=3)) plotregion(margin(0)) ///
 			  name(graph_`ctry'_`x'`m')
 		}
@@ -328,9 +327,9 @@ foreach i of local obs {
 		(scatteri `country_pos' `first_col_marker_pos', msize(12pt) `country_marker_fmt') ///
 		(scatteri `time_pos'    `first_col_marker_pos', msize(12pt) color("245 202 195") `time_marker_fmt') ///
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
-		, graphregion(color(white)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1) ///
-		title("{fontface Utopia Semibold: HC COMPLEMENTARY INDICATORS}", span color("15 119 157") size(33pt) margin(b=2.5 t=2) pos(12)) ///
-		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest Available Data for `country' (`ctry')}", size(21pt) `legend_text_ops') ///
+		, graphregion(color(white)) plotregion(margin(small)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1.5) ///
+		title("{fontface Utopia Std Semibold: HUMAN CAPITAL}" "{fontface Utopia Std Semibold: COMPLEMENTARY INDICATORS}", span color("15 119 157") size(34pt) margin(b=-1 t=0) pos(12) yoffset(2)) ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest available data for `country' (`ctry')}", size(21pt) `legend_text_ops') ///
 		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: `ctry' approx. 5 years before}", size(21pt)  `legend_text_ops') ///
 	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(21pt)  `legend_text_ops') ///
 		name(notes_`ctry', replace)
@@ -340,27 +339,27 @@ foreach i of local obs {
 	/* Combine all graphs by page and export */
 	graph combine graph_`ctry'_l1 graph_`ctry'_l2 graph_`ctry'_l3, ///
 		rows(3) cols(1) xsize(7) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: EARLY CHILDHOOD}", suffix color("15 119 157") size(22pt) linegap(1) pos(12) span) ///
+		title("{fontface Utopia Std Semibold: EARLY CHILDHOOD}", suffix color("15 119 157") size(23pt) linegap(1) pos(12) span) ///
 		name(stage_1, replace)
 	graph combine graph_`ctry'_e1 graph_`ctry'_e2 graph_`ctry'_e3, ///
 		rows(3) cols(1) xsize(7) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: SCHOOL AGE}", suffix color("15 119 157") size(22pt) linegap(1) pos(12) span) /// 
+		title("{fontface Utopia Std Semibold: SCHOOL AGE}", suffix color("15 119 157") size(23pt) linegap(1) pos(12) span) /// 
 		name(stage_2, replace)
 	graph combine graph_`ctry'_h1 graph_`ctry'_h2 graph_`ctry'_h3, ///
 		rows(3) cols(1) xsize(7) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: YOUTH}", suffix color("15 119 157") size(22pt) linegap(1) pos(12) span) ///
+		title("{fontface Utopia Std Semibold: YOUTH}", suffix color("15 119 157") size(23pt) linegap(1) pos(12) span) ///
 		name(stage_3, replace)
 	graph combine graph_`ctry'_b1 graph_`ctry'_b2 graph_`ctry'_b3, ///
 		rows(3) cols(1) xsize(7) graphregion(margin(zero) color(white)) ///
-		title("{fontface Utopia Semibold: ADULTS & ELDERLY}", suffix color("15 119 157") size(22pt) linegap(1) pos(12) span) ///
+		title("{fontface Utopia Std Semibold: ADULTS}", suffix color("15 119 157") size(23pt) linegap(1) pos(12) span) ///
 		name(stage_4, replace)
 	
 	graph combine notes_`ctry' stage_1 stage_2 stage_3 stage_4, rows(5) cols(1) xsize(7) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	/* graph export "$charts\p2_`ctry'_stages.pdf", replace */
 	/* graph export "p2_`ctry'_stages.eps", replace */
-	graph export "$charts\p2_`ctry'_stages${extra}.jpg", replace width(3200) quality(100)
+	graph export "$charts\p2_`ctry'_stages${extra}.png", replace width(3200)
 	graph drop _all
-	break
+	
 }
 
 

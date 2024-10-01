@@ -1,7 +1,7 @@
 
 
 ---
-title: "Guinea"
+title: "¨"
 output:
   pdf_document: 
     keep_tex: true
@@ -49,7 +49,7 @@ header-includes:  \usepackage{fancyhdr}
   \usepackage{numprint}
   \usepackage{fbox}
   \renewcommand{\tightlist}{\setlength{\itemsep}{1ex}\setlength{\parskip}{0pt}}
-
+  \renewcommand{\headrulewidth}{0pt}
   
 params:
   countrynamet: "Afghanistan"
@@ -63,7 +63,7 @@ params:
 
 \vspace{0.5em}
 
-**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by Guinea in building and using human capital. The Human Capital Complementary Indicators (HCCIs) offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
+**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by Oman in building and using human capital. The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
 
 \vspace{-6mm}
 
@@ -81,9 +81,9 @@ params:
 
 \vspace{-0.75mm}
 
-* **Neonatal mortality rate.** The neonatal mortality rate is **31** per 1,000 live births (2022), compared to 33 in 2017. The indicator is higher than the regional average.
-* **Participation rate in organized learning.** In 2020, **47%** of children who were one year younger than the official primary school entry age participated in an organized learning program, compared to 37% in 2015. The indicator is below the regional average.
-* **Minimum meal frequency.** The share of children ages 6-23 months who regularly consume an age-appropriate meal is **22%** (2018), compared to 24% in 2016. The indicator is lower than the regional average.
+* **Neonatal mortality rate.** The neonatal mortality rate is **5** per 1,000 live births (2022). This remains unchanged since 2017. The indicator is lower than the regional average.
+* **Participation rate in organized learning.** In 2021, **63%** of children one year younger than the official primary school entry age participated in an organized learning program, compared to 86% in 2016. The indicator is above the regional average.
+* **DTP vaccination rate, third dose.** In 2023, **99%** of infants received the third dose of the diphtheria, tetanus and pertussis vaccine. This remains unchanged since 2018. The indicator is higher than the regional average.
 
 \vspace{-6.5mm}
 
@@ -91,9 +91,9 @@ params:
 
 \vspace{-0.75mm}
 
-* **Child mortality rate.**  The mortality rate for children ages 5-14 is **17** per 1,000 children aged 5 (2022), compared to 20 in 2017. The indicator is higher than the regional average.
-* **Learning poverty.** In 2019, **83%** of children at the end-of-primary age could not read and understand a simple text, adjusted by out-of-school children. The indicator is above the regional average.
-* **Primary school completion rate.** The primary school completion rate at the official entrance age of the last grade of that level is  **63%** (2021), compared to 62% in 2016. The indicator is lower than the regional average.
+* **Child mortality rate.**  The mortality rate for children ages 5-14 is **2** per 1,000 children aged 5 (2022), compared to 3 in 2017. The indicator is lower than the regional average.
+* **Learning poverty.** In 2021, **41%** of children could not read and understand a simple text, by age 10, compared to 44% in 2016. The indicator is above the regional average.
+* **Primary school completion rate.** The primary school completion rate is  **87%** (by the official entrance age of the last grade) (2022), compared to 107% in 2017. The indicator is lower than the regional average.
 
 \vspace{-6.5mm}
 
@@ -101,25 +101,25 @@ params:
 
 \vspace{-0.75mm}
 
-* **Youth not in employment, education or training.** In 2019, **34%** of youth (ages 15-24) were not in employment, education or training. The indicator is higher than the regional average.
-* **Adolescent fertility rate.** The number of births for every 1,000 women ages 15-19 is **112** (2022), compared to 125 in 2017. The indicator is above the regional average.
-* **Youth literacy rate.** The share of youth (ages 15-24) who are literate is **60%** (2021), compared to 54% in 2018. The indicator is lower than the regional average.
+* **Youth literacy rate.** The share of youth (ages 15-24) who are literate is **100%** (2022), compared to 99% in 2017. The indicator is higher than the regional average.
+* **Adolescent fertility rate.** The number of births for every 1,000 women ages 15-19 is **10** (2022), compared to 16 in 2017. The indicator is below the regional average.
+* **Youth unemployment rate.** Unemployed youth as a share of the youth labor force (ages 15-24) is **7%** (2023), compared to 8% in 2018. The indicator is lower than the regional average.
 
 \vspace{-6.5mm}
 
-### \boldblue{A\small{DULTS \& ELDERLY}}###
+### \boldblue{A\small{DULTS}}###
 
 \vspace{-0.75mm}
 
-* **Life expectancy at birth.** Life expectancy at birth is **59** years (2022). This remains unchanged since 2017. The indicator is lower than the regional average.
-* **Female labor force participation rate.** Female labor force participation as a percentage of the female working-age population (ages 25+) is **50%** (2023), compared to 52% in 2018. The indicator is below the regional average.
-* **Adult unemployment rate.** Unemployed adults as a share of the adult labor force (ages +25) is **5%** (2023), compared to 4% in 2018. The indicator is lower than the regional average.
+* **Female labor force participation rate.** Female labor force participation as a percentage of the female working-age population (ages 25+) is **37%** (2023), compared to 36% in 2018. The indicator is higher than the regional average.
+* **Life expectancy at birth.** Life expectancy at birth is **74** years (2022), compared to 78 in 2017. The indicator is below the regional average.
+* **Adult unemployment rate.** Unemployed adults as a share of the adult labor force (ages 25+) is **1%** (2023). This remains unchanged since 2018. The indicator is lower than the regional average.
 
 
 \columnbreak 
 \vspace{-10em}
 
-\begin{flushright}\includegraphics[height=0.72\textheight]{p2_GIN_stages} \end{flushright}
+\begin{flushright}\includegraphics[height=0.72\textheight]{p2_OMN_stages} \end{flushright}
 
 \vspace{-5mm}
 \small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.
