@@ -4,8 +4,6 @@ library(utils)
 library(here)
 library(tinytex)
 
-args  <- commandArgs(trailingOnly = TRUE)
-
 # print(path)
 setwd("D:/World Bank/Data-Portal-Brief-Generator")
 extra_text <- ""
