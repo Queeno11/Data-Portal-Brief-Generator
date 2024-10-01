@@ -94,7 +94,7 @@ done_ctrys = [ctry.split(".")[0] for ctry in done]
 
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
 images = {k: [] for k in df.wbregion.unique()}
-for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
+for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(), total=df.shape[0]):
     # try:
     wbcode = country_data[1]
     wbcountryname = country_data[2]
@@ -107,7 +107,6 @@ for country_data in df[["wbcode", "wbcountryname", "wbregion"]].itertuples():
     if wbcode == "BIH":
         wbcode = "BIS"
 
-    print(wbcode)
     brief_path = rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf"
     header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
     out_folder = rf"{briefs}\For print\{wbregion}"
