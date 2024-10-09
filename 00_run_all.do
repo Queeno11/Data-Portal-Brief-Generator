@@ -32,6 +32,10 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 
 ** 01 - Collects indicators via APIs
 // python script "$root\01_API_access.py"
+// shell Rscript "$root\01.a_ILO_data.R" "$root" "$extra"
+// shell Rscript "$root\01.b_WHO_data.R" "$root" "$extra"
+// shell Rscript "$root\01.c_UNESCO_data.R" "$root" "$extra"
+// shell Rscript "$root\01.d_SDG_data.R" "$root" "$extra"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
 // do "$root\02_clean_data"

@@ -251,7 +251,7 @@ drop if value==.
 drop magnitude qualifier
 gen indic = subinstr(indicator_id, ".", "_", .)
 gen tokeep=0
-replace tokeep=1 if inlist(indic, "CR_3", "CR_3_M", "CR_3_F", "GER_0", "GER_0_M", "GER_0_F", "GER_01", "GER_01_M", "GER_01_F")
+replace tokeep=1 if inlist(indic, "CR_3", "CR_3_M", "CR_3_F", "NER_0_CP", "NER_0_M_CP", "NER_0_F_CP", "NER_01_CP", "NER_01_M_CP", "NER_01_F_CP")
 replace tokeep=1 if inlist(indic, "OAEPG_1", "OAEPG_1_M", "OAEPG_1_F", "OAEPG_2_GPV", "OAEPG_2_GPV_M", "OAEPG_2_GPV_F")
 replace tokeep=1 if inlist(indic, "QUTP_1", "QUTP_1_M", "QUTP_1_F", "QUTP_2T3", "QUTP_2T3_M", "QUTP_2T3_F", "SCHBSP_1_WELEC")
 replace tokeep=1 if inlist(indic, "XGDP_FSGOV", "XGOVEXP_IMF", "LR_AG15T24", "LR_AG15T24_M", "LR_AG15T24_F")
