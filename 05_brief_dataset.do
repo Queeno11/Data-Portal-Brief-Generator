@@ -251,6 +251,7 @@ gen wbcountrynameB = cond(regexm(wbcountrynameb, "^the "), "T"+ substr(wbcountry
 	save "$data_output\data_briefs_allcountries", replace
 	
 *--------------------------------save data---------------------------------*
-	keep if hci!=.
+	* Include all countries in the version 2024, also those without hci
+	*keep if hci!=.
 	
 	save "$data_output\data_briefs", replace
