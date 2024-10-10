@@ -30,7 +30,7 @@ import pandas as pd
 from tqdm import tqdm
 import fitz 
 
-footer_path = os.path.join(sources, "Footer Images", "p1 footer 2024.png")
+footer_path = os.path.join(sources, "Footer Images", "Footer - QR HC Data Portal.png")
 
 def list_files_in_directory(folder_path):
     file_list = []
