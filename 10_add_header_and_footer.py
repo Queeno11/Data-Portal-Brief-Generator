@@ -108,6 +108,3 @@ for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(
 
     except Exception as exception:
         print(f"Error with {wbcode}: {exception}")
-        
-    # except Exception as exception:
-    #     print(f"Error with {wbcode}: {exception}")
