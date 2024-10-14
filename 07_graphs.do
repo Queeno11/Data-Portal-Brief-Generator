@@ -34,9 +34,8 @@ display "Done!"
 *------------------------------------------------------------------------------*
 use "$data_output\data_briefs_allcountries", replace
 
-* Version 2024: Keep all countries 
-// * Remove observations with no HCI
-// drop if hci==.
+** Version 2024: Keep all countries 
+
 * Remove observations with no HCCI
 ds wbcode wbcountry* wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
 local hcci = r(varlist)
@@ -110,19 +109,19 @@ local cc8 black // "15 119 157"
 foreach i of local obs {
 	*Unmute to run only one or some countries /
 //    	if !inlist(wbcode[`i'], "AUS", "ARG", "AFG", "ETH", "CAN", "JPN") continue
-
+	qui capture {
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
 	local graph_file "$charts\p1_`ct'_all.pdf"
 // 	capture confirm file "`graph_file'"
 // 	if (_rc == 601 ) continue
-
+	
 	local ctry=wbcode in `i'
 	local region=wbregion in `i'
 	local income=wbincomegroup in `i'
 	local income2=incomegroup in `i'
 	local country=wbcountrynameb in `i'	
-	display "`country'"
+	noi display "`country'"
 		
 	*-------------------------------FORMATS--------------------------------*
 	* Markers
@@ -276,7 +275,7 @@ foreach i of local obs {
 
 	qui foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
-			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
+// 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
 			qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
 			gen obs_``x'`m''_`i' = 1 if `=scalar(r(N))'>0
 			replace obs_``x'`m''_`i' = 0 if `=scalar(r(N))'==0
@@ -292,10 +291,11 @@ foreach i of local obs {
 					scalar min``x'`m'_`ctry''`suffix' = floor(`=scalar(r(min))') 
 				}
 				if _rc != 0 {
+					* FIXME: aca esta el error de todos los casos. Hay alguna forma de evitar que entre acá?
 					scalar max``x'`m'_`ctry''`suffix' = 0
 					scalar min``x'`m'_`ctry''`suffix' = .
 				}
-				noi display "``x'`m'_`ctry''`suffix' `=scalar(max``x'`m'_`ctry''`suffix')'"
+// 				display "``x'`m'_`ctry''`suffix' `=scalar(max``x'`m'_`ctry''`suffix')'"
 			}
 			scalar min``x'`m'_`ctry'' = min(`=scalar(min``x'`m'_`ctry'')', `=scalar(min``x'`m'_`ctry''_prev)')
 			scalar min``x'`m'_`ctry'' = floor(`=scalar(min``x'`m'_`ctry'')' / 10) * 10
@@ -360,6 +360,8 @@ foreach i of local obs {
 	/* graph export "p2_`ctry'_stages.eps", replace */
 	graph export "$charts\p2_`ctry'_stages${extra}.png", replace width(3200)
 	graph drop _all
+	}
+	if (_rc == 601 ) display in red "ERROR CON `ct'"
 	
 }
 

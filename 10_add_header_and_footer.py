@@ -86,34 +86,28 @@ df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
 # df = df[df.wbcode.isin(["AUS", "ARG", "AFG", "ETH", "CAN", "JPN"])]
 
-## REMOVE LATER
 os.makedirs(rf"{briefs}\For Print", exist_ok=True)
-done = os.listdir(rf"{root}\Briefs\For Print")
-done_ctrys = [ctry.split(".")[0] for ctry in done]
-#####
-
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
-images = {k: [] for k in df.wbregion.unique()}
 for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(), total=df.shape[0]):
     # try:
     wbcode = country_data[1]
     wbcountryname = country_data[2]
     wbregion = country_data[3]
 
-
-    if wbcountryname in done_ctrys:
-        continue
-
     if wbcode == "BIH":
         wbcode = "BIS"
 
-    brief_path = rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf"
-    header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
-    out_folder = rf"{briefs}\For print\{wbregion}"
-    os.makedirs(out_folder, exist_ok=True)
-    out_path = rf"{out_folder}\{wbcountryname}{extra}.pdf"
+    try:
+        brief_path = rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf"
+        header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
+        out_folder = rf"{briefs}\For print\{wbregion}"
+        os.makedirs(out_folder, exist_ok=True)
+        out_path = rf"{out_folder}\{wbcountryname}{extra}.pdf"
 
-    add_header_and_footer(brief_path, header_path, out_path)
+        add_header_and_footer(brief_path, header_path, out_path)
 
+    except Exception as exception:
+        print(f"Error with {wbcode}: {exception}")
+        
     # except Exception as exception:
     #     print(f"Error with {wbcode}: {exception}")

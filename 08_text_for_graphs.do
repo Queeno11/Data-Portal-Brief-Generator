@@ -412,7 +412,7 @@ foreach var in hci uhci hci_f uhci_f hci_m uhci_m psurv asr nostu {
 	gen `var'_t = strofreal(`var',"%04.2f")
 	replace `var'_t = "-" if `var'==.
 }
-destring hci_t, replace
+destring hci_t, replace force
 gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
