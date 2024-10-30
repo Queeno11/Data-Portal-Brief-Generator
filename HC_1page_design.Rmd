@@ -63,7 +63,7 @@ params:
 
 \vspace{0.5em}
 
-`r x[which(x$wbcountryname == params$countrynamet),"first_par"]` The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
+`r x[which(x$wbcountryname == params$countrynamet),"first_par"]`
 
 \vspace{-6mm}
 

@@ -60,7 +60,9 @@ drop has_hcci
 *keep wb* unicef_neomort* unicef_mealfreq* vacBCG* uisger02* lastnm_mmrt* unicef_care* lastnm_birth_reg* unicef_breastf* unicef_diarrhoea* uiscr1* lastnm_sec_ger* vacHEPBB* se_lpv_prim* uiscr2* eip_neet_mf_y* lastnm_afr* lastnm_ter_ger* une_2eap_mf_y* emp_nifl_mf_y* eap_2wap_mf_a_f* eap_2wap_mf_a_m* sp_dyn_le00_in* lastnm_probdeath_ncd* une_2eap_mf_a* emp_nifl_mf_a* fao_prev_fsec_all* per_sa_allsa_cov_pop_tot* fao_water_stress_all* fao_food_prices* fao_prev_fsec_adf* unicef_sanitation* fao_prev_fsec_adm * unicef_water*
 
 *-----------------------------First paragraph-----------------------------*
-gen first_par = "**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by " + wbcountrynameb + " in building and using human capital. "
+gen first_par = "**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by " + wbcountrynameb + " in building and using human capital. The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years."
+
+replace first_par = "**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by Ukraine in building and using human capital. The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years. Since the Russia's invasion of Ukraine is causing staggering losses to people and the economy, this brief shows only relevant indicators from which data after the invasion (2022) is available." if wbcode=="UKR"
 
 *--------------------------------HCI index---------------------------------*
 gen hci_text_1 = ///
@@ -338,6 +340,11 @@ foreach ctry in `wb_country_codes' {
 			
 			local no_data_reg_text "Internationally comparable data on this indicator is not available for `countryname'."
 			
+			if "`ctry'"=="UKR" {
+				local no_data_text "Data on this indicator is not available for Ukraine after the Russia's invasion (2022). The regional average for this indicator is `reg_avg'`unit_reginc'."
+				
+				local no_data_reg_text "Data on this indicator is not available for Ukraine after the Russia's invasion (2022)."			    
+			}
 
 			
 
@@ -417,6 +424,7 @@ gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
 
+stop
 *---------------------------------Save-------------------------------------*	
 	
 /* keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t */
