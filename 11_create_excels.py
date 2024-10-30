@@ -17,13 +17,13 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    portal = r"D:\World Bank\Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
     data_output = rf"{portal}\Data\Data_Output"
     excels = rf"{portal}\Datasheets"
-    date = "31_jul_2023"
+    date = "26_jul_2024"
 
 ###### Read complete_series ######
 print("Loading data, this may take a while...")
@@ -286,7 +286,9 @@ country_list = [
     "ZWE",
 ]
 country_array = (
-    df[df.wbcode.isin(country_list)][["wbcode", "wbcountryname"]]
+    df
+    # [df.wbcode.isin(country_list)]
+    [["wbcode", "wbcountryname"]]
     .drop_duplicates()
     .values
 )
@@ -562,7 +564,7 @@ for wbcode, countryname in tqdm(country_array):
         worksheet.write(
             2, 1, "Human Capital Complementary Indicators (HCCI): Graphs", title_format
         )
-        worksheet.write(2, 16, "Human Capital Index (HCI): Graphs", title_format)
+        # worksheet.write(2, 16, "Human Capital Index (HCI): Graphs", title_format)
 
         ### Add Graphs as images
         worksheet.insert_image(
@@ -570,11 +572,11 @@ for wbcode, countryname in tqdm(country_array):
             rf"{portal}\Graphs\p2_{wbcode}_stages.jpg",
             {"x_scale": 0.25, "y_scale": 0.25},
         )
-        worksheet.insert_image(
-            "Q5",
-            rf"{portal}\Graphs\p1_{wbcode}_all.jpg",
-            {"x_scale": 0.25, "y_scale": 0.25},
-        )
+        # worksheet.insert_image(
+        #     "Q5",
+        #     rf"{portal}\Graphs\p1_{wbcode}_all.jpg",
+        #     {"x_scale": 0.25, "y_scale": 0.25},
+        # )
 
     # Add HCI sheets and protect excel
     try:
