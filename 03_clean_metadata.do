@@ -57,8 +57,11 @@ replace code = name_portal
 
 ** Add wb county data
 merge m:1 wbcode using "$data_processed\country_class"
-drop if _merge!=3 
+// drop if _merge!=3 
 drop _merge
+
+* NEW: keep original aggregates
+replace wbregion="Aggregates" if (wbcode=="WLD"|wbcode=="HIC"|wbcode=="LIC"|wbcode=="LMC"|wbcode=="UMC"|wbcode=="EAS"|wbcode=="LCN"|wbcode=="SSF"|wbcode=="ECS"|wbcode=="SAS"|wbcode=="MEA"|wbcode=="NAC") 
 
 
 *-------------------------------HCI + HCCI---------------------------------*
@@ -170,8 +173,8 @@ compress
 
 replace download_link = "https://databank.worldbank.org/source/world-development-indicators" if download_link=="https://datacatalog.worldbank.org/public-licenses#cc-by"
 
-drop if wbcode=="WLD"
-drop if wbregion==""
+// drop if wbcode=="WLD"
+// drop if wbregion==""
 save "$data_output\complete_series_wmd_${date}${extra}", replace
 
 * FIXME: i have to drop the missing in order to export the excel file as it supports only 1 million rows. Check with portal team...
@@ -205,128 +208,138 @@ use "$data_processed\dataportal_${date}${extra}", replace
 
 
 *-------------------Generate Global and regional medians------------------------------* 
-
-* Global
-preserve
-collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender)
-gen wbcode = "WLD"
-gen wbcountryname = "Global median" 
-save "$data_processed\global_median", replace
-restore
-
-preserve
-collapse (mean) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender)
-gen wbcode = "WLD_mean"
-gen wbcountryname = "Global mean" 
-save "$data_processed\global_averages", replace
-restore
-
-* Regional medians
-preserve
-collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbregion)
-gen wbcountryname = wbregion
-gen wbcode = ""
-replace wbcode = "EAP" if wbcountryname=="East Asia & Pacific"
-replace wbcode = "ECA" if wbcountryname=="Europe & Central Asia"
-replace wbcode = "LAC" if wbcountryname=="Latin America & Caribbean"
-replace wbcode = "MENA" if wbcountryname=="Middle East & North Africa"
-replace wbcode = "NAR" if wbcountryname=="North America"
-replace wbcode = "SAR" if wbcountryname=="South Asia"
-replace wbcode = "SSA" if wbcountryname=="Sub-Saharan Africa"
-replace wbregion = ""
-save "$data_processed\region_averages", replace
-restore
-
-* Income medians
-preserve
-collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbincome)
-drop if wbincome==""
-gen wbcountryname = wbincome
-gen wbcode = ""
-replace wbcode = "HIC" if wbcountryname=="High income"
-replace wbcode = "LIC" if wbcountryname=="Low income"
-replace wbcode = "LMIC" if wbcountryname=="Lower middle income"
-replace wbcode = "UMIC" if wbcountryname=="Upper middle income"
-replace wbincome = ""
-save "$data_processed\income_averages", replace
-restore
-
-* Append aggregates
-append using "$data_processed\global_median"
-append using "$data_processed\global_averages"
-append using "$data_processed\region_averages"
-append using "$data_processed\income_averages"
+//
+// * Global
+// preserve
+// collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender)
+// gen wbcode = "WLD"
+// gen wbcountryname = "Global median" 
+// save "$data_processed\global_median", replace
+// restore
+//
+// preserve
+// collapse (mean) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender)
+// gen wbcode = "WLD_mean"
+// gen wbcountryname = "Global mean" 
+// save "$data_processed\global_averages", replace
+// restore
+//
+// * Regional medians
+// preserve
+// collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbregion)
+// gen wbcountryname = wbregion
+// gen wbcode = ""
+// replace wbcode = "EAP" if wbcountryname=="East Asia & Pacific"
+// replace wbcode = "ECA" if wbcountryname=="Europe & Central Asia"
+// replace wbcode = "LAC" if wbcountryname=="Latin America & Caribbean"
+// replace wbcode = "MENA" if wbcountryname=="Middle East & North Africa"
+// replace wbcode = "NAR" if wbcountryname=="North America"
+// replace wbcode = "SAR" if wbcountryname=="South Asia"
+// replace wbcode = "SSA" if wbcountryname=="Sub-Saharan Africa"
+// replace wbregion = ""
+// save "$data_processed\region_averages", replace
+// restore
+//
+// * Income medians
+// preserve
+// collapse (median) value (first) name description units scale update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download, by(year code gender wbincome)
+// drop if wbincome==""
+// gen wbcountryname = wbincome
+// gen wbcode = ""
+// replace wbcode = "HIC" if wbcountryname=="High income"
+// replace wbcode = "LIC" if wbcountryname=="Low income"
+// replace wbcode = "LMIC" if wbcountryname=="Lower middle income"
+// replace wbcode = "UMIC" if wbcountryname=="Upper middle income"
+// replace wbincome = ""
+// save "$data_processed\income_averages", replace
+// restore
+//
+// * Append aggregates
+// append using "$data_processed\global_median"
+// append using "$data_processed\global_averages"
+// append using "$data_processed\region_averages"
+// append using "$data_processed\income_averages"
 
 *-------------------   Export complete dataportal   ------------------------------*  
+*Collapse Labor force participation
+replace gender=2 if code=="emp_2wap_f_a"
+replace gender=1 if code=="emp_2wap_m_a"
+replace code="emp_2wap_mf_a" if (code=="emp_2wap_f_a"|code=="emp_2wap_m_a")
  
 save "$data_output\complete_dataportal_${date}${extra}", replace
 
 export excel using "$data_output\complete_dataportal_${date}${extra}.xlsx", firstrow(variables) replace
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
-import excel "$data_output\complete_dataportal_${date}${extra}", firstrow clear
-/* br wbcode wbregion wbincome year code gender value */
 
-drop if wbregion==""
-
-by code year wbregion gender, sort: egen median_reg = median(value) 
-
-by code year wbincome gender, sort: egen median_income = median(value) 
-
-*by code year gender, sort: egen mean_world = mean(value) 
-
-by code year gender, sort: egen nr_countries = count(value)  // max 206/217 paises 
-
-label var median_reg "Regional median value"
-label var median_income "Income Group median value"
-// label var mean_world "World mean value"
-label var nr_countries "Number of countries"
-
-sort wbcode year code gender
-
-drop units scale update timespan minyear maxyear source download_link note
-
-*export excel "$data_processed\benchmarking_${date}_all.xlsx", replace firstrow(variables)
-// expand 2
-// bysort wbcode year code: gen flag = _n == 2
-// replace wbcode="WORLD" if flag==1
-// replace wbcountryname="World (mean)" if flag==1
-// replace wbregion="" if flag==1
-// replace wbincome="" if flag==1
-// replace median_reg=. if flag==1
-// replace median_income=. if flag==1
-// replace value = mean_world if flag==1
-// sort wbcode year 
-
-*drop flag mean_world
-
-// levelsof name, local(names)
-// sort year name
-// foreach c in `names' {
-//     twoway line median_world year if name == "`c'", lcolor(blue) lpattern(solid) || line mean_world year if name == "`c'", lcolor(red) lpattern(dash) title("`c'") xtitle("Year") ytitle("`c'") legend(order(1 "Median World" 2 "Mean World"))
-// // 	
-// 		   graph export "timeseries_`c'.png", as(png) replace
-// }
-
-save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
-*use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
-
-**************************************alison - 29 marzo 2023*************************************************
-*keep the last available year for the 49 variables contained in the Country Briefs (including gender split)*
-*************************************************************************************************************
+// import excel "$data_output\complete_dataportal_${date}${extra}", firstrow clear
+// /* br wbcode wbregion wbincome year code gender value */
+// //
+// // drop if wbregion==""
+// //
+// // by code year wbregion gender, sort: egen median_reg = median(value) 
+// //
+// // by code year wbincome gender, sort: egen median_income = median(value) 
 //
-// keep if /*Early Childhood*/ code =="unicef_neomort" | code =="unicef_mealfreq" | code =="uisger02" | code =="lastnm_mmrt" | code =="unicef_care" | code =="lastnm_birth_reg" | code =="unicef_breastf" | code =="uisger02f" | code =="vacbcg" | code =="unicef_diarrhoea" | code =="uisger02m" /*School Age*/ | code =="uiscr1" | code =="lastnm_sec_ger" | code =="uiscr2" | code =="vachepbb" | code =="se_lpv_prim" | code =="se_lpv_prim_fe" | code =="uiscr1f" | code =="se_lpv_prim_ma" |code =="uiscr1m" | /*Youth*/ code =="eip_neet_mf_y" | code =="lastnm_afr" | code =="lastnm_ter_ger" | code =="une_2eap_f_y" | code =="eip_neet_f_y" | code =="une_2eap_mf_y" | code =="une_2eap_m_y" | code =="eip_neet_m_y" | /*Adults & Elderly*/ code =="eap_2wap_f_a" | code =="lastnm_probdeath_ncd" | code =="eap_2wap_m_a" | code =="sp_dyn_le00_fe_in" | code =="sp_dyn_le00_in" | code =="sp_dyn_le00_ma_in" /*ordenar*/ | code =="vacBCG" | code =="vacHEPBB" | code =="eip_2wap_a" /*before: vacbcg vachepbb eap_2wap_f_a*/
-
-*tab code gender if year ==2021
-
-drop if year != 2021 
-
-drop if nr_countries == 0 //maybe delete in the future all those with value==0 too 
-
-*see if they have enough countries for comparison
-*tab nr_countries code 
-
-export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
+// *by code year gender, sort: egen mean_world = mean(value) 
+//
+// *NEW: calculate number of countries excluding aggregates
+//
+//
+// drop if wbregion=="Aggregates"
+//
+// by code year gender, sort: egen nr_countries = count(value)  // max 206/217 paises 
+//
+// label var median_reg "Regional median value"
+// label var median_income "Income Group median value"
+// // label var mean_world "World mean value"
+// label var nr_countries "Number of countries"
+//
+// sort wbcode year code gender
+//
+// drop units scale update timespan minyear maxyear source download_link note
+//
+// *export excel "$data_processed\benchmarking_${date}_all.xlsx", replace firstrow(variables)
+// // expand 2
+// // bysort wbcode year code: gen flag = _n == 2
+// // replace wbcode="WORLD" if flag==1
+// // replace wbcountryname="World (mean)" if flag==1
+// // replace wbregion="" if flag==1
+// // replace wbincome="" if flag==1
+// // replace median_reg=. if flag==1
+// // replace median_income=. if flag==1
+// // replace value = mean_world if flag==1
+// // sort wbcode year 
+//
+// *drop flag mean_world
+//
+// // levelsof name, local(names)
+// // sort year name
+// // foreach c in `names' {
+// //     twoway line median_world year if name == "`c'", lcolor(blue) lpattern(solid) || line mean_world year if name == "`c'", lcolor(red) lpattern(dash) title("`c'") xtitle("Year") ytitle("`c'") legend(order(1 "Median World" 2 "Mean World"))
+// // // 	
+// // 		   graph export "timeseries_`c'.png", as(png) replace
+// // }
+//
+// save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
+// *use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
+//
+// **************************************alison - 29 marzo 2023*************************************************
+// *keep the last available year for the 49 variables contained in the Country Briefs (including gender split)*
+// *************************************************************************************************************
+// //
+// // keep if /*Early Childhood*/ code =="unicef_neomort" | code =="unicef_mealfreq" | code =="uisger02" | code =="lastnm_mmrt" | code =="unicef_care" | code =="lastnm_birth_reg" | code =="unicef_breastf" | code =="uisger02f" | code =="vacbcg" | code =="unicef_diarrhoea" | code =="uisger02m" /*School Age*/ | code =="uiscr1" | code =="lastnm_sec_ger" | code =="uiscr2" | code =="vachepbb" | code =="se_lpv_prim" | code =="se_lpv_prim_fe" | code =="uiscr1f" | code =="se_lpv_prim_ma" |code =="uiscr1m" | /*Youth*/ code =="eip_neet_mf_y" | code =="lastnm_afr" | code =="lastnm_ter_ger" | code =="une_2eap_f_y" | code =="eip_neet_f_y" | code =="une_2eap_mf_y" | code =="une_2eap_m_y" | code =="eip_neet_m_y" | /*Adults & Elderly*/ code =="eap_2wap_f_a" | code =="lastnm_probdeath_ncd" | code =="eap_2wap_m_a" | code =="sp_dyn_le00_fe_in" | code =="sp_dyn_le00_in" | code =="sp_dyn_le00_ma_in" /*ordenar*/ | code =="vacBCG" | code =="vacHEPBB" | code =="eip_2wap_a" /*before: vacbcg vachepbb eap_2wap_f_a*/
+//
+// *tab code gender if year ==2021
+//
+// drop if year != 2021 
+//
+// drop if nr_countries == 0 //maybe delete in the future all those with value==0 too 
+//
+// *see if they have enough countries for comparison
+// *tab nr_countries code 
+//
+// export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
 
 *-----------------Calculate indicators by category-------------------------* // melanie - 29 marzo 2023
 /*
