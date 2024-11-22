@@ -33,6 +33,8 @@ save "$data_processed\metadata_processed", replace
 use "$data_processed\complete_series_nometadata_$date$extra", clear
 drop if code=="MH_12"
 drop if code=="EAP_2WAP_SEX_AGE_RT_A"
+* Drop own calculations from the main database
+drop if (code=="high_skill"|code=="youth_adult_un")
 
 ** Drop projections
 drop if year>2024
@@ -62,7 +64,7 @@ drop _merge
 
 * NEW: keep original aggregates
 replace wbregion="Aggregates" if (wbcode=="WLD"|wbcode=="HIC"|wbcode=="LIC"|wbcode=="LMC"|wbcode=="UMC"|wbcode=="EAS"|wbcode=="LCN"|wbcode=="SSF"|wbcode=="ECS"|wbcode=="SAS"|wbcode=="MEA"|wbcode=="NAC") 
-
+drop if wbregion==""
 
 *-------------------------------HCI + HCCI---------------------------------*
 
@@ -272,74 +274,69 @@ export excel using "$data_output\complete_dataportal_${date}${extra}.xlsx", firs
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
-// import excel "$data_output\complete_dataportal_${date}${extra}", firstrow clear
-// /* br wbcode wbregion wbincome year code gender value */
-// //
-// // drop if wbregion==""
-// //
-// // by code year wbregion gender, sort: egen median_reg = median(value) 
-// //
-// // by code year wbincome gender, sort: egen median_income = median(value) 
-//
-// *by code year gender, sort: egen mean_world = mean(value) 
-//
-// *NEW: calculate number of countries excluding aggregates
-//
-//
-// drop if wbregion=="Aggregates"
-//
-// by code year gender, sort: egen nr_countries = count(value)  // max 206/217 paises 
-//
-// label var median_reg "Regional median value"
-// label var median_income "Income Group median value"
-// // label var mean_world "World mean value"
-// label var nr_countries "Number of countries"
-//
-// sort wbcode year code gender
-//
-// drop units scale update timespan minyear maxyear source download_link note
-//
-// *export excel "$data_processed\benchmarking_${date}_all.xlsx", replace firstrow(variables)
-// // expand 2
-// // bysort wbcode year code: gen flag = _n == 2
-// // replace wbcode="WORLD" if flag==1
-// // replace wbcountryname="World (mean)" if flag==1
-// // replace wbregion="" if flag==1
-// // replace wbincome="" if flag==1
-// // replace median_reg=. if flag==1
-// // replace median_income=. if flag==1
-// // replace value = mean_world if flag==1
-// // sort wbcode year 
-//
-// *drop flag mean_world
-//
-// // levelsof name, local(names)
-// // sort year name
-// // foreach c in `names' {
-// //     twoway line median_world year if name == "`c'", lcolor(blue) lpattern(solid) || line mean_world year if name == "`c'", lcolor(red) lpattern(dash) title("`c'") xtitle("Year") ytitle("`c'") legend(order(1 "Median World" 2 "Mean World"))
-// // // 	
-// // 		   graph export "timeseries_`c'.png", as(png) replace
-// // }
-//
-// save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
-// *use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
-//
+import excel "$data_output\complete_dataportal_${date}${extra}", firstrow clear
+/* br wbcode wbregion wbincome year code gender value */
+
+drop if wbregion=="Aggregates"
+
+by code year wbregion gender, sort: egen median_reg = median(value) 
+
+by code year wbincome gender, sort: egen median_income = median(value) 
+
+*by code year gender, sort: egen mean_world = mean(value) 
+
+by code year gender, sort: egen nr_countries = count(value)  // max 206/217 paises 
+
+label var median_reg "Regional median value"
+label var median_income "Income Group median value"
+// label var mean_world "World mean value"
+label var nr_countries "Number of countries"
+
+sort wbcode year code gender
+
+drop units scale update timespan minyear maxyear source download_link note
+
+*export excel "$data_processed\benchmarking_${date}_all.xlsx", replace firstrow(variables)
+// expand 2
+// bysort wbcode year code: gen flag = _n == 2
+// replace wbcode="WORLD" if flag==1
+// replace wbcountryname="World (mean)" if flag==1
+// replace wbregion="" if flag==1
+// replace wbincome="" if flag==1
+// replace median_reg=. if flag==1
+// replace median_income=. if flag==1
+// replace value = mean_world if flag==1
+// sort wbcode year 
+
+*drop flag mean_world
+
+// levelsof name, local(names)
+// sort year name
+// foreach c in `names' {
+//     twoway line median_world year if name == "`c'", lcolor(blue) lpattern(solid) || line mean_world year if name == "`c'", lcolor(red) lpattern(dash) title("`c'") xtitle("Year") ytitle("`c'") legend(order(1 "Median World" 2 "Mean World"))
+// // 	
+// 		   graph export "timeseries_`c'.png", as(png) replace
+// }
+
+save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
+use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
+
 // **************************************alison - 29 marzo 2023*************************************************
 // *keep the last available year for the 49 variables contained in the Country Briefs (including gender split)*
 // *************************************************************************************************************
 // //
 // // keep if /*Early Childhood*/ code =="unicef_neomort" | code =="unicef_mealfreq" | code =="uisger02" | code =="lastnm_mmrt" | code =="unicef_care" | code =="lastnm_birth_reg" | code =="unicef_breastf" | code =="uisger02f" | code =="vacbcg" | code =="unicef_diarrhoea" | code =="uisger02m" /*School Age*/ | code =="uiscr1" | code =="lastnm_sec_ger" | code =="uiscr2" | code =="vachepbb" | code =="se_lpv_prim" | code =="se_lpv_prim_fe" | code =="uiscr1f" | code =="se_lpv_prim_ma" |code =="uiscr1m" | /*Youth*/ code =="eip_neet_mf_y" | code =="lastnm_afr" | code =="lastnm_ter_ger" | code =="une_2eap_f_y" | code =="eip_neet_f_y" | code =="une_2eap_mf_y" | code =="une_2eap_m_y" | code =="eip_neet_m_y" | /*Adults & Elderly*/ code =="eap_2wap_f_a" | code =="lastnm_probdeath_ncd" | code =="eap_2wap_m_a" | code =="sp_dyn_le00_fe_in" | code =="sp_dyn_le00_in" | code =="sp_dyn_le00_ma_in" /*ordenar*/ | code =="vacBCG" | code =="vacHEPBB" | code =="eip_2wap_a" /*before: vacbcg vachepbb eap_2wap_f_a*/
-//
-// *tab code gender if year ==2021
-//
-// drop if year != 2021 
-//
-// drop if nr_countries == 0 //maybe delete in the future all those with value==0 too 
-//
-// *see if they have enough countries for comparison
-// *tab nr_countries code 
-//
-// export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
+
+*tab code gender if year ==2021
+
+drop if year != 2021 
+
+drop if nr_countries == 0 //maybe delete in the future all those with value==0 too 
+
+*see if they have enough countries for comparison
+*tab nr_countries code 
+save "$data_output\benchmarking_${date}_2021", replace
+export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
 
 *-----------------Calculate indicators by category-------------------------* // melanie - 29 marzo 2023
 /*
