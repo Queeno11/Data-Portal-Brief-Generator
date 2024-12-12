@@ -80,10 +80,14 @@ save "$data_processed\all_unicef", replace
 *--------------------------------WDI online--------------------------------*
 *--------------------------------------------------------------------------*
 *Add using  WDI API
-wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS) long clear
+// wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; per_sa_ct.adq_pop_tot; per_sa_ct.bry_q1_tot; per_sa_allsa.ben_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_sa_allsa.adq_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.adq_pop_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ik.adq_pop_tot; per_sa_sf.bry_q1_tot) long clear
+
+* Drop ASPIRE indicators and add the new ones
+wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; SH.STA.BFED.ZS; SE.XPD.TOTL.GB.ZS; SE.XPD.TOTL.GD.ZS; SH.STA.BRTC.ZS; SH.MLR.NETS.ZS; SL.TLF.CACT.NE.ZS; SH.DYN.NMRT; SE.PRM.UNER; SH.STA.WAST.ZS; SH.STA.ORTH; SH.STA.ANVC.ZS; SP.POP.TOTL; SH.STA.BASS.ZS; SH.ANM.CHLD.ZS; SH.STA.BRTW.ZS; SH.STA.BRTC.ZS; SH.H2O.BASW.ZS; SH.STA.HYGN.ZS; SE.PRM.TCAQ.ZS; SE.SEC.TCAQ.ZS; SH.STA.STNT.ME.ZS; SH.DYN.MORT; SH.SVR.WAST.ZS; SH.STA.OWGH.ME.ZS; SE.ADT.1524.LT.ZS; SL.UEM.NEET.ME.ZS; SL.UEM.1524.NE.ZS; SH.FPL.SATM.ZS; SE.PRM.OENR.ZS) long clear
+
 rename countrycode wbcode
 gen gender=0
-keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr se_prm_uner_zs se_xpd_ctot_zs sh_xpd_chex_gd_zs
+keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr se_prm_uner_zs se_xpd_ctot_zs sh_xpd_chex_gd_zs per_*
 rename sp_ado_tfrt SP_ADO_TFRT
 rename sp_reg_brth_zs SP_REG_BRTH_ZS
 rename sh_sta_mmrt_ne SH_STA_MMRT_NE
