@@ -3,8 +3,8 @@ set more off
 
 *----------------------------------Set up---------------------------------*
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-// global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
-global root "E:\Data-Portal-Brief-Generator"
+global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+// global root "E:\Data-Portal-Brief-Generator"
 global date			  	"26_jul_2024" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
@@ -26,15 +26,15 @@ global excels			"$root\Datasheets"            // FIXME: check if i like this
 import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
 duplicates drop code, force
 replace code = lower(subinstr(code, ".", "_", .)) 
-
+drop label descriptionNEW linkNEW name_old originalname
+rename source_old source
 save "$data_processed\metadata_processed", replace
 
 *-------------------------Add everything to database-------------------*
 use "$data_processed\complete_series_nometadata_$date$extra", clear
 drop if code=="MH_12"
 drop if code=="EAP_2WAP_SEX_AGE_RT_A"
-* Drop own calculations from the main database
-drop if (code=="high_skill"|code=="youth_adult_un")
+
 
 ** Drop projections
 drop if year>2024
