@@ -74,6 +74,8 @@ foreach oldvar of varlist i_* {
 merge m:1 unicef_code using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
 drop wbcountryname unicef_countryname unicef_code
 
+* Drop the variables we replaced with WDI:
+drop MNCH_DEMAND_FP NT_BF_EXBF MNCH_ITN CME_MRM0 MNCH_ORS MNCH_ANC1 WS_PPL_S_ALB MNCH_SAB WS_PPL_W_ALB WS_PPL_H_B NT_ANT_HAZ_NE2 CME_MRY0T4 NT_ANT_WHZ_NE3 NT_ANT_WHZ_PO2 C040202
 save "$data_processed\all_unicef", replace
 
 *--------------------------------------------------------------------------*
@@ -82,25 +84,28 @@ save "$data_processed\all_unicef", replace
 *Add using  WDI API
 // wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; per_sa_ct.adq_pop_tot; per_sa_ct.bry_q1_tot; per_sa_allsa.ben_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_sa_allsa.adq_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.adq_pop_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ik.adq_pop_tot; per_sa_sf.bry_q1_tot) long clear
 
-* Drop ASPIRE indicators and add the new ones
-wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; SH.STA.BFED.ZS; SE.XPD.TOTL.GB.ZS; SE.XPD.TOTL.GD.ZS; SH.STA.BRTC.ZS; SH.MLR.NETS.ZS; SL.TLF.CACT.NE.ZS; SH.DYN.NMRT; SE.PRM.UNER; SH.STA.WAST.ZS; SH.STA.ORTH; SH.STA.ANVC.ZS; SP.POP.TOTL; SH.STA.BASS.ZS; SH.ANM.CHLD.ZS; SH.STA.BRTW.ZS; SH.STA.BRTC.ZS; SH.H2O.BASW.ZS; SH.STA.HYGN.ZS; SE.PRM.TCAQ.ZS; SE.SEC.TCAQ.ZS; SH.STA.STNT.ME.ZS; SH.DYN.MORT; SH.SVR.WAST.ZS; SH.STA.OWGH.ME.ZS; SE.ADT.1524.LT.ZS; SL.UEM.NEET.ME.ZS; SL.UEM.1524.NE.ZS; SH.FPL.SATM.ZS; SE.PRM.OENR.ZS) long clear
 
-rename countrycode wbcode
+* Drop ASPIRE adequacy indicators and per_sa_allsa_ben_q1_tot, and add the new ones
+wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.SEC.ENRR.MA;SE.SEC.ENRR.FE;SE.TER.ENRR;SE.TER.ENRR.MA;SE.TER.ENRR.FE;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.PRM.CMPT.MA.ZS;SE.PRM.CMPT.FE.ZS;SE.SEC.CMPT.LO.ZS;SE.SEC.CMPT.LO.MA.ZS;SE.SEC.CMPT.LO.FE.ZS;SE.PRE.ENRR;SE.PRE.ENRR.MA;SE.PRE.ENRR.FE;SE.PRM.UNER.ZS;SE.PRM.UNER.MA.ZS;SE.PRM.UNER.FE.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; SH.STA.BFED.ZS; SE.XPD.TOTL.GB.ZS; SE.XPD.TOTL.GD.ZS; SH.STA.BRTC.ZS; SH.MLR.NETS.ZS; SH.DYN.NMRT; SE.PRM.UNER; SE.PRM.UNER.MA; SE.PRM.UNER.FE; SH.STA.WAST.ZS; SH.STA.ORTH; SH.STA.ANVC.ZS; SP.POP.TOTL; SH.STA.BASS.ZS; SH.ANM.CHLD.ZS; SH.STA.BRTW.ZS; SH.H2O.BASW.ZS; SH.STA.HYGN.ZS; SE.PRM.TCAQ.ZS; SE.SEC.TCAQ.ZS; SH.STA.STNT.ME.ZS; SH.DYN.MORT; SH.SVR.WAST.ZS; SH.STA.OWGH.ME.ZS; SE.ADT.1524.LT.ZS; SE.ADT.1524.LT.MA.ZS; SE.ADT.1524.LT.FE.ZS; SL.UEM.NEET.ME.ZS; SH.FPL.SATM.ZS; per_sa_ct.bry_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_sf.bry_q1_tot; UIS.REPR.1; UIS.REPR.1.M; UIS.REPR.1.F; UIS.MATH.PRIMARY; UIS.MATH.PRIMARY.M; UIS.MATH.PRIMARY.F; UIS.READ.PRIMARY; UIS.READ.PRIMARY.M; UIS.READ.PRIMARY.F; UIS.MATH.LOWERSEC; UIS.MATH.LOWERSEC.M; UIS.MATH.LOWERSEC.F; UIS.READ.LOWERSEC; UIS.READ.LOWERSEC.M; UIS.READ.LOWERSEC.F; UIS.MATH.G2T3; UIS.MATH.G2T3.M; UIS.MATH.G2T3.F; UIS.READ.G2T3; UIS.READ.G2T3.M; UIS.READ.G2T3.F; UIS.NERT.1; UIS.NERT.1.M; UIS.NERT.1.F; UIS.NERT.2; UIS.NERT.2.M; UIS.NERT.2.F; UIS.NERT.3; UIS.NERT.3.M; UIS.NERT.3.F; UIS.CR.3; UIS.CR.3.M; UIS.CR.3.F; UIS.SCHBSP.1.WELEC; UIS.NARA.AGM1; UIS.NARA.AGM1.M; UIS.NARA.AGM1.F; SM.POP.REFG.OR; UIS.OAEPG.2.GPV; UIS.OAEPG.2.GPV.M; UIS.OAEPG.2.GPV.F; UIS.OAEPG.1; UIS.OAEPG.1.M; UIS.OAEPG.1.F) clear
+
+rename (indicatorname indicatorcode countrycode) (name code wbcode)
+drop countryname region regionname adminregion adminregionname incomelevel incomelevelname lendingtype lendingtypename  
+bysort name code wbcode: gen n = _n
+reshape long yr, i(name code wbcode n) j(year)
+* Replace gender
 gen gender=0
-keep wbcode year gender sp_ado_tfrt sp_reg_brth_zs sh_sta_mmrt_ne se_sec_enrr se_ter_enrr sh_dth_ncom_zs sp_dyn_le00_in se_prm_cmpt_zs se_sec_cmpt_lo_zs se_pre_enrr se_prm_uner_zs se_xpd_ctot_zs sh_xpd_chex_gd_zs per_*
-rename sp_ado_tfrt SP_ADO_TFRT
-rename sp_reg_brth_zs SP_REG_BRTH_ZS
-rename sh_sta_mmrt_ne SH_STA_MMRT_NE
-rename se_sec_enrr SE_SEC_ENRR
-rename se_ter_enrr SE_TER_ENRR
-rename sh_dth_ncom_zs SH_DTH_NCOM_ZS
-rename sp_dyn_le00_in SP_DYN_LE00_IN
-rename se_prm_cmpt_zs SE_PRM_CMPT_ZS
-rename se_sec_cmpt_lo_zs SE_SEC_CMPT_LO_ZS
-rename se_pre_enrr SE_PRE_ENRR
-rename se_prm_uner_zs SE_PRM_UNER_ZS
-rename se_xpd_ctot_zs SE_XPD_CTOT_ZS
-rename sh_xpd_chex_gd_zs SH_XPD_CHEX_GD_ZS
+replace gender = 1 if (substr(code, -3, 3) == ".MA"|substr(code, -2, 2) == ".M"|substr(code, -6, 6) == ".MA.ZS")
+replace gender = 2 if (substr(code, -3, 3) == ".FE"|substr(code, -2, 2) == ".F"|substr(code, -6, 6) == ".FE.ZS")
+* Remove gender from the indicator name. As the subinstr works from the left, we need to reverse the string to remove the last occurence of .MA or .FE (this avoids any potential bug generated from an indicator named .MA[something])
+replace code = reverse(subinstr(reverse(code), "AM.", "", 1))  if (substr(code, -3, 3) == ".MA"|substr(code, -6, 6) == ".MA.ZS")
+replace code = reverse(subinstr(reverse(code), "EF.", "", 1))  if (substr(code, -3, 3) == ".FE"|substr(code, -6, 6) == ".FE.ZS")
+replace code = reverse(subinstr(reverse(code), "M.", "", 1))  if substr(code, -2, 2) == ".M"
+replace code = reverse(subinstr(reverse(code), "F.", "", 1))  if substr(code, -2, 2) == ".F"
+replace code = lower(subinstr(code, ".", "_", .))
+rename yr value
+drop name
+reshape wide value, i(wbcode year gender) j(code) string
+rename value* *
 save "$data_processed/wdi", replace
 
 
@@ -144,8 +149,7 @@ replace gender = "2" if gender=="SEX_FMLE"
 replace gender = "0" if gender=="SEX_BTSX"
 replace gender = "." if gender=="NA"
 destring gender, replace
-// * Adolescent suicide rate: keep age-standarized suicide rate for 15-19 years
-// drop if indicatorcode=="SDGSUICIDE" & agegroup!="AGEGROUP_YEARS15-19"
+* Suicide rates need to be added from downloaded data, drop here
 drop if indicatorcode=="SDGSUICIDE"
 * Keep standard def in anaemia
 drop if indicatorcode=="NUTRITION_ANAEMIA_CHILDREN_PREV" & severity!="NA"
@@ -169,11 +173,11 @@ replace indicatorcode="NUTRITION_ANAEMIA_CHILDREN" if indicatorcode=="NUTRITION_
 *replace indicatorcode="u5_pneu_cs" if indicatorcode==""
 reshape wide value, i(wbcode wbcountryname gender year) j(indicatorcode) string
 rename value* *
+drop MH_12 NUTRITION_ANAEMIA_CHILDREN
 save "$data_processed/all_who", replace
 * Pneumonya care seeking not available, use lata from last year for now
 merge 1:1 wbcode year gender using "$data_processed\who_pneumonia_cs", nogen
 drop WHO_code wbcountryname
-rename NUTRITION_ANAEMIA_CHILDREN NUTRITION_ANAEMIA_CHILDREN_PREV
 save "$data_processed/all_who", replace
 
 
@@ -223,30 +227,35 @@ rename value* *
 drop if strpos(uncode, "40")
 merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3) 
 drop uncode code uncode wbcountryname
+* Drop those included in WDI
+drop out_school repetition NERT_1_CP NERT_2_CP NERT_3_CP
 save "$data_processed/uis_1", replace
 
-*UIS SDGs API
-import delimited "$data_raw/dataSDG", clear
-gen indic=""
-replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11A_0_G23"
-replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_1"
-replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_2"
-replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11A_0_G23"
-replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_1"
-replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_2"
-drop if indic==""
-gen gender=0
-replace gender=1 if sex=="M"
-replace gender=2 if sex=="F"
-rename (time_detail obs_value) (year value)
-keep ref_area year gender indic value
-reshape wide value, i(ref_area year gender) j(indic) string
-rename value* *
-rename ref_area code
-merge m:1 code using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
-* Chequeado: los que no mergean son continentes/income groups
-drop wbcountryname uncountryname code uncode
-save "$data_processed/uis_2", replace
+* Minimum proficiency no longer needed. Replaced with WDI.
+// *UIS SDGs API
+// import delimited "$data_raw/dataSDG", clear
+// gen indic=""
+// replace indic="minprof_r_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11A_0_G23"
+// replace indic="minprof_r_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_1"
+// replace indic="minprof_r_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_READ" & education_lev=="ISCED11_2"
+// replace indic="minprof_m_g23" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11A_0_G23"
+// replace indic="minprof_m_endprim" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_1"
+// replace indic="minprof_m_lowsec" if series=="SE_TOT_PRFL" & composite_breakdown=="SKILL_MATH" & education_lev=="ISCED11_2"
+// drop if indic==""
+// gen gender=0
+// replace gender=1 if sex=="M"
+// replace gender=2 if sex=="F"
+// rename (time_detail obs_value) (year value)
+// keep ref_area year gender indic value
+// reshape wide value, i(ref_area year gender) j(indic) string
+// rename value* *
+// rename ref_area code
+// merge m:1 code using "$data_processed\Country codes\wbcodes_equiv_UN", keep(3) nogen
+// * Chequeado: los que no mergean son continentes/income groups
+// drop wbcountryname uncountryname code uncode
+//
+// drop minprof_r_endprim minprof_m_endprim minprof_m_g23 minprof_r_g23 minprof_m_lowsec minprof_r_lowsec
+// save "$data_processed/uis_2", replace
 
 * SDG data bulkdownload (https://uis.unesco.org/bdds)
 import delimited "$data_raw/SDG_DATA_NATIONAL", clear
@@ -273,12 +282,15 @@ rename uis* *
 rename LR_AG15T24 youth_lit
 merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3)
 drop uncode wbcountryname code
+
+*Drop those included in WDI:
+drop XGOVEXP_IMF XGDP_FSGOV OAEPG_1 QUTP_1 QUTP_2T3 youth_lit CR_3 SCHBSP_1_WELEC
 save "$data_processed/uis_3", replace
 
 
 *All UIS
 use "$data_processed/uis_1", clear
-merge 1:1 wbcode year gender using "$data_processed/uis_2", nogen
+// merge 1:1 wbcode year gender using "$data_processed/uis_2", nogen
 merge 1:1 wbcode year gender using "$data_processed/uis_3", nogen
 drop uncountryname
 save "$data_processed/all_uis", replace
@@ -286,26 +298,27 @@ save "$data_processed/all_uis", replace
 *-----------------------------------------------------------------------*
 *--------------------------------FAO------------------------------------*
 *-----------------------------------------------------------------------*
-*Low birthweight
-import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
-rename Area FAO_countryname
-gen gender = .
-replace gender = 0
-keep if ItemCode=="21049"
-gen year = substr(Year,6,4)
-replace year=Year if missing(year)
-drop Year
-rename Value v21049
-// replace v21049="0" if v21049=="<2.5"
-lab var v21049 "Prevalence of low birthweight (%)"
-drop if FlagDescription=="Missing value"
-destring v21049, replace
-destring year, replace
-/* rename v21049 fao_stunting */
-drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
-drop FAO_countryname wbcountryname FAO_code
-save "$data_processed\FAO_lowbirthweight",replace
+* Drop low birthweight, agregado de WDI
+// *Low birthweight
+// import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
+// rename Area FAO_countryname
+// gen gender = .
+// replace gender = 0
+// keep if ItemCode=="21049"
+// gen year = substr(Year,6,4)
+// replace year=Year if missing(year)
+// drop Year
+// rename Value v21049
+// // replace v21049="0" if v21049=="<2.5"
+// lab var v21049 "Prevalence of low birthweight (%)"
+// drop if FlagDescription=="Missing value"
+// destring v21049, replace
+// destring year, replace
+// /* rename v21049 fao_stunting */
+// drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
+// merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
+// drop FAO_countryname wbcountryname FAO_code
+// save "$data_processed\FAO_lowbirthweight",replace
 
 *Undernourishment
 import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
@@ -328,30 +341,28 @@ merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO
 drop FAO_countryname wbcountryname FAO_code
 save "$data_processed\FAO_undernourishment",replace
 
-*Wasting
-import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
-rename Area FAO_countryname
-gen gender = .
-replace gender = 0
-keep if ItemCode=="21026"
-gen year = substr(Year,6,4)
-replace year=Year if missing(year)
-drop Year
-rename Value v21026
-lab var v21026 "Prevalence of children (<5y) affected by wasting, %"
-drop if FlagDescription=="Missing value"
-destring v21026, replace
-destring year, replace
-/* rename v21026 fao_wasting */
-drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
-drop FAO_countryname wbcountryname FAO_code
-save "$data_processed\FAO_wasting",replace
+// *Wasting
+// import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
+// rename Area FAO_countryname
+// gen gender = .
+// replace gender = 0
+// keep if ItemCode=="21026"
+// gen year = substr(Year,6,4)
+// replace year=Year if missing(year)
+// drop Year
+// rename Value v21026
+// lab var v21026 "Prevalence of children (<5y) affected by wasting, %"
+// drop if FlagDescription=="Missing value"
+// destring v21026, replace
+// destring year, replace
+// /* rename v21026 fao_wasting */
+// drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
+// merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
+// drop FAO_countryname wbcountryname FAO_code
+// save "$data_processed\FAO_wasting",replace
 	
 *--------------------------------all FAO---------------------------------*
-use "$data_processed\FAO_lowbirthweight", clear
-merge 1:1 wbcode year gender using "$data_processed\FAO_undernourishment", nogen
-merge 1:1 wbcode year gender using "$data_processed\FAO_wasting", nogen
+use "$data_processed\FAO_undernourishment", clear
 save "$data_processed\all_FAO", replace
 
 
@@ -378,56 +389,58 @@ keep year IDPs refugees A_seekers gender uncode
 save "$data_processed\UNHCR_forced_displacement", replace
 use "$data_processed\Country codes\wbcodes_equiv_UN", clear
 merge 1:m uncode using "$data_processed\UNHCR_forced_displacement", nogen keep(3)
-keep wbcode year gender IDPs refugees A_seekers
+* Drop refugees, added in WDI
+keep wbcode year gender IDPs A_seekers
 save "$data_processed\UNHCR_forced_displacement", replace
 
+* Drop population as it has been added from WDI
+// *Population per country:
+// import excel "$data_raw\UN_population_2024.xlsx", clear firstrow
+// rename Regionsubregioncountryorar uncountryname
+// rename Year year
+// *keep if Series=="Population mid-year estimates (millions)"
+// gen population = Total*1000/1000000
+// gen gender = .
+// replace gender = 0
+// lab var population "Population estimates (millions)"
+// keep year population gender uncountryname
+// save "$data_processed\UN_population", replace
+// use "$data_processed\Country codes\wbcodes_equiv_UN", clear
+// merge 1:m uncountryname using "$data_processed\UN_population", nogen keep(3)
+// keep wbcode year gender population
+// drop if wbcode==""
+// save "$data_processed\UN_population", replace
 
-*Population per country:
-import excel "$data_raw\UN_population_2024.xlsx", clear firstrow
-rename Regionsubregioncountryorar uncountryname
-rename Year year
-*keep if Series=="Population mid-year estimates (millions)"
-gen population = Total*1000/1000000
-gen gender = .
-replace gender = 0
-lab var population "Population estimates (millions)"
-keep year population gender uncountryname
-save "$data_processed\UN_population", replace
-use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m uncountryname using "$data_processed\UN_population", nogen keep(3)
-keep wbcode year gender population
-drop if wbcode==""
-save "$data_processed\UN_population", replace
+* We no longer show the ratios in the data portal, drop it 
+// *Generate ratios
+// use "$data_processed\UNHCR_Forced_Displacement", clear
+// merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
+// gen refug_pop = (refugees/1000000)/population
+// gen aseek_pop = (A_seekers/1000000)/population
+// gen idp_pop = (IDPs/1000)/population
+// save "$data_processed\UN_forced_disp_rates", replace
 
-*Generate ratios
-use "$data_processed\UNHCR_Forced_Displacement", clear
-merge 1:1 wbcode year gender using "$data_processed\UN_population", nogen keep(3)
-gen refug_pop = (refugees/1000000)/population
-gen aseek_pop = (A_seekers/1000000)/population
-gen idp_pop = (IDPs/1000)/population
-save "$data_processed\UN_forced_disp_rates", replace
-
-*Family planning: UPDATED
-import delimited "$data_raw\UN_family_planning.csv", clear
-keep if indicatorname=="Demand for family planning satisfied by any method (Percent)"
-keep if variant=="Median"
-keep if category=="All women"
-keep if estimatemethod=="Interpolation"
-gen gender=.
-replace gender=2 if sex=="Female"
-replace gender=1 if sex=="Male"
-replace gender=0 if sex=="Total"
-rename location uncountryname
-rename value met_fam_plan
-rename time year
-save "$data_processed\UN_family_planning", replace
-use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m uncountryname using "$data_processed\UN_family_planning", nogen keep(3)
-keep wbcode gender met_fam_plan year
-save "$data_processed\UN_family_planning", replace
+// *Family planning: UPDATED
+// import delimited "$data_raw\UN_family_planning.csv", clear
+// keep if indicatorname=="Demand for family planning satisfied by any method (Percent)"
+// keep if variant=="Median"
+// keep if category=="All women"
+// keep if estimatemethod=="Interpolation"
+// gen gender=.
+// replace gender=2 if sex=="Female"
+// replace gender=1 if sex=="Male"
+// replace gender=0 if sex=="Total"
+// rename location uncountryname
+// rename value met_fam_plan
+// rename time year
+// save "$data_processed\UN_family_planning", replace
+// use "$data_processed\Country codes\wbcodes_equiv_UN", clear
+// merge 1:m uncountryname using "$data_processed\UN_family_planning", nogen keep(3)
+// keep wbcode gender met_fam_plan year
+// save "$data_processed\UN_family_planning", replace
 *---------------------------------all UN-----------------------------------*
-use "$data_processed\UN_forced_disp_rates", clear
-merge m:1 wbcode year gender using "$data_processed\UN_family_planning", nogen
+use "$data_processed\UNHCR_forced_displacement", clear
+// merge m:1 wbcode year gender using "$data_processed\UN_family_planning", nogen
 save "$data_processed\all_UN", replace
 
 *-----------------------------------------------------------------------*
@@ -470,9 +483,9 @@ drop if id=="`var'"
 keep id ilocode gender year value
 reshape wide value, i(ilocode year gender) j(id) string
 rename value* *
-gen high_skill=HighSkill/Total
+// gen high_skill=HighSkill/Total
 drop HighSkill Total
-gen youth_adult_un = UNE_2EAP_SEX_AGE_RT_A_y/UNE_2EAP_SEX_AGE_RT_A_a
+// gen youth_adult_un = UNE_2EAP_SEX_AGE_RT_A_y/UNE_2EAP_SEX_AGE_RT_A_a
 
 * Label variables
 lab var EAP_2WAP_SEX_AGE_RT_A   "Labor force participation (%)"
@@ -512,9 +525,10 @@ merge 1:1 ilocode year gender using "$data_processed/eap_2wap_reshaped", nogen
 
 save "$data_processed/all_ilo", replace
 merge m:1 ilocode using "$data_processed\Country codes\wbcodes_equiv_ILO", nogen keep(3)
-* NOT AVAILABLE: POTENTIAL LABOR FORCE. Use the one from last year for now
-merge 1:1 wbcode year gender using "$data_processed/2023/potential_labor", nogen
 drop ilocode ilocountryname wbcountryname
+
+* Drop the ones included in WDI and those we eliminated from the portal:
+drop EIP_NEET_SEX_AGE_RT_A
 save "$data_processed/all_ilo", replace
 
 
@@ -583,7 +597,7 @@ save "$data_processed\complete_series", replace
 *---------------------------------dataset----------------------------------*
 
 use "$data_processed\complete_series", clear
-rename NUTRITION_ANAEMIA_CHILDREN_PREV NUTRITION_ANAEMIA_CHILDREN
+// rename NUTRITION_ANAEMIA_CHILDREN_PREV NUTRITION_ANAEMIA_CHILDREN
 rename * a_*
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
