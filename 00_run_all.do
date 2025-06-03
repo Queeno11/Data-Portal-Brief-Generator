@@ -68,7 +68,7 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 shell python "$root\10_add_header_and_footer.py"
 
 ** 11 - Generate the Excels --Datasheet for each country
-// python script "$root\11_create_excels.py"
+python script "$root\11_create_excels.py"
 
 ** 12 - Raise potential errors in indicators data
 // do "$root\12_raise_potential_indicator_errors.do"

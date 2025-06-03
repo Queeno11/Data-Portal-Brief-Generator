@@ -32,6 +32,64 @@ import fitz
 
 footer_path = os.path.join(sources, "Footer Images", "Footer - QR HC Data Portal.png")
 
+def fix_dataportal_country_names(name):
+    ''' IT guys changed some of the briefs original names. This function transforms the original names to the new ones. '''
+    
+    # Democratic rep of congo	Congo,-Dem.-Rep.
+    # Republic of Congo	Congo,-Rep.
+    # Cote d'ivoire	Cote-d'Ivoire
+    # The-Gambia	Gambia,-The
+    # Hong Kong	Hong-Kong-SAR,-China
+    # Iran	Iran,-Islamic-Rep.
+    # Korea rep	Korea,-Rep.
+    # Lao	Lao-PDR
+    # Macao	Macao-SAR,-China
+    # Fed states of micronesia	Micronesia,-Fed.-Sts.
+    # Kitts and nevis	St.-Kitts-and-Nevis
+    # St lucia	St.-Lucia
+    # St vincent and the grenadines	St.-Vincent-and-the-Grenadines
+    # Turkiye	Turkiye
+    # Vietnam	Viet-Nam
+    # Yemen 	Yemen,-Rep.
+    
+    # Remove .pdf from the name
+    name = name.strip()
+    
+    if name == "Democratic Republic of Congo":
+        return "Congo,-Dem.-Rep."
+    elif name == "Republic of Congo":
+        return "Congo,-Rep."
+    elif name == "Côte d’Ivoire":
+        return "Cote-d'Ivoire"
+    elif name == "The Gambia":
+        return "Gambia,-The"
+    elif name == "Hong Kong":
+        return "Hong Kong SAR, China"
+    elif name == "Islamic Republic of Iran":
+        return "Iran,-Islamic-Rep."
+    elif name == "Republic of Korea":
+        return "Korea,-Rep."
+    elif name == "Lao People's Democratic Republic":
+        return "Lao-PDR"
+    elif name == "Macao SAR, China":
+        return "Macao-SAR,-China"
+    elif name == "Federated States of Micronesia":
+        return "Micronesia,-Fed.-Sts."
+    elif name == "St. Kitts and Nevis":
+        return "St.-Kitts-and-Nevis"
+    elif name == "St. Lucia":
+        return "St.-Lucia"
+    elif name == "St. Vincent and the Grenadines":
+        return "St.-Vincent-and-the-Grenadines"
+    elif name == "Türkiye":
+        return "Turkiye"
+    elif name == "Vietnam":
+        return "Viet-Nam"
+    elif name == "Republic of Yemen":
+        return "Yemen,-Rep."
+    else:
+        return name
+
 def list_files_in_directory(folder_path):
     file_list = []
     for root, _, files in os.walk(folder_path):
@@ -43,7 +101,7 @@ def add_header_and_footer(doc_path, header_path, out_path):
 
     # Open the existing PDF
     doc = fitz.open(doc_path)
-
+    
     # Get the dimensions of the image
     header = fitz.open(header_path)
     header_width, header_height = header[0].rect.width, header[0].rect.height
@@ -102,7 +160,8 @@ for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(
         header_path = [header for header in headers if f"1-HCCB-{wbcode}" in header][0]
         out_folder = rf"{briefs}\For print\{wbregion}"
         os.makedirs(out_folder, exist_ok=True)
-        out_path = rf"{out_folder}\{wbcountryname}{extra}.pdf"
+        outname = fix_dataportal_country_names(wbcountryname)
+        out_path = rf"{out_folder}\{outname}{extra}.pdf"
 
         add_header_and_footer(brief_path, header_path, out_path)
 

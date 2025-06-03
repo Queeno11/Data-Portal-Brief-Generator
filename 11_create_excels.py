@@ -434,7 +434,7 @@ for wbcode, countryname in tqdm(country_array):
                 title = f"Human Capital Complementary Indicators: Trends {gender}"
             else:
                 title = f"Human Capital Complementary Indicators: Trends"
-            database_text = "Human Capital Project 2023 Data Portal"
+            database_text = "Human Capital Project 2024 Data Portal"
             country_text = countryname
             worksheet.write(1, 2, title, title_format)
             worksheet.write(2, 2, f"Database: {database_text}", text_format)
@@ -583,7 +583,7 @@ for wbcode, countryname in tqdm(country_array):
         source = (
             rf"{portal}\Data\HCI_Data\HCI_Data_September_2020_{wbcode}_original.xlsx"
         )
-        destination = rf"{excels}\HCI_Data_September_2020_{wbcode}.xlsx"
+        destination = rf"{excels}\HCI-Data-September-2020-{wbcode}.xlsx"
 
         wb_source = xw.Book(source)
         wb_dest = xw.Book(destination)

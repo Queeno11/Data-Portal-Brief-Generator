@@ -2,8 +2,8 @@ cls
 set more off
 
 *----------------------------------Set up---------------------------------*
-// global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+global root "D:\World Bank\Data-Portal-Brief-Generator"
+// global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 // global root "E:\Data-Portal-Brief-Generator"
 global date			  	"26_jul_2024" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
@@ -23,18 +23,39 @@ global excels			"$root\Datasheets"            // FIXME: check if i like this
 *------------------------------------------------------------------------------*
 
 
+
+import excel "$data_raw\Country codes & metadata\metadata_new.xlsx", firstrow clear
+duplicates drop code, force
+replace code = lower(subinstr(code, ".", "_", .)) 
+drop if code==""
+keep name_portal code source update download_link stage_life dimension rank units date_download original_scale portal_name_definitive portal_description_definitive codeNEW
+rename portal_description_definitive description
+rename portal_name_definitive name
+compress
+save "$data_processed\metadata_new_names_processed", replace
+
 import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
 duplicates drop code, force
 replace code = lower(subinstr(code, ".", "_", .)) 
-drop label descriptionNEW linkNEW name_old originalname
-rename source_old source
+compress
+save "$data_processed\metadata_old_processed", replace
+
+merge 1:1 code using "$data_processed\metadata_new_names_processed.dta"
+keep if _merge!=1
+drop _merge
+gen code_definitive = code
+replace code_definitive = codeNEW if codeNEW!=""
+replace code = code_definitive 
+drop code_definitive codeNEW
+replace code = lower(subinstr(code, ".", "_", .)) 
 save "$data_processed\metadata_processed", replace
+
 
 *-------------------------Add everything to database-------------------*
 use "$data_processed\complete_series_nometadata_$date$extra", clear
-drop if code=="MH_12"
 drop if code=="EAP_2WAP_SEX_AGE_RT_A"
-
+drop if value==.
+drop if code=="n"
 
 ** Drop projections
 drop if year>2024
@@ -42,12 +63,13 @@ drop if year>2024
 ** Add names
 replace code = lower(subinstr(code, ".", "_", .)) 
 // rename code code_merge
-merge m:m code using "$data_processed\metadata_processed"
-// merge m:m code_merge using "$data_processed\metadata_processed"
-count if _merge==1
-assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
-*	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.
-*	Los _merge==2 son variables viejas o con codificación no válida...
+compress
+merge m:1 code using "$data_processed\metadata_processed"
+//
+// count if _merge==1
+// assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
+// *	Me preocupan los _merge==1 porque son variables que tenemos que no se agregaró la metadata.
+// *	Los _merge==2 son variables viejas o con codificación no válida...
 drop if _merge != 3
 drop _merge
 
@@ -56,6 +78,7 @@ drop _merge
 // replace code = name_portal if name_portal != ""
 // drop name_portal
 replace code = name_portal
+save "$data_processed\data_metadata_merged", replace
 
 ** Add wb county data
 merge m:1 wbcode using "$data_processed\country_class"
@@ -179,8 +202,6 @@ replace download_link = "https://databank.worldbank.org/source/world-development
 // drop if wbregion==""
 save "$data_output\complete_series_wmd_${date}${extra}", replace
 
-* FIXME: i have to drop the missing in order to export the excel file as it supports only 1 million rows. Check with portal team...
-drop if value==.
 export excel "$data_output\complete_series_wmd_${date}${extra}.xlsx", replace firstrow(variables)
 
 
