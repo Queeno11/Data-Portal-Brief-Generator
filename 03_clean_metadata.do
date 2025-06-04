@@ -2,7 +2,8 @@ cls
 set more off
 
 *----------------------------------Set up---------------------------------*
-global root "D:\World Bank\Data-Portal-Brief-Generator"
+global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
+*global root "D:\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 // global root "E:\Data-Portal-Brief-Generator"
 global date			  	"26_jul_2024" // Date when the full process is run

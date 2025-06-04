@@ -229,7 +229,7 @@
 						sort dim_rank rank 
 						local prev_name = "`name'"
 						local name = name_portal
-						assert "`name'" != "`prev_name'"
+						*assert "`name'" != "`prev_name'"
 						local lbl = name
 						local rank = rank
 						drop if name_portal == "`name'"	

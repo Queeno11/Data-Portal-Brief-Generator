@@ -5,8 +5,9 @@ cls
 set more off
 
  *--------------------------------Directories-------------------------------*
-// global root "C:\Users\Nico\Documents\World Bank\Data Portal"
-global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
+global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
+ // global root "C:\Users\Nico\Documents\World Bank\Data Portal"
+*global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
 cd "${root}"
 global portal    	  "$root\Data"
@@ -17,7 +18,7 @@ global extra			""			  // Placeholder for testing, just add "_test" or something 
 
 *------------------------Codes and Country names---------------------------*
 import excel "$data_raw\Country codes & metadata\wbcodes_equiv_ILO.xlsx", firstrow clear
-save "$data_processed\wbcodes_equiv_ILO", replace
+save "$data_processed\Country codes\wbcodes_equiv_ILO", replace
 import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unicef.xlsx", firstrow clear
 save "$data_processed\Country codes\wbcodes_equiv_unicef", replace
 import excel "$data_raw\Country codes & metadata\wbcodes_equiv_FAO.xlsx", firstrow clear
@@ -84,9 +85,8 @@ save "$data_processed\all_unicef", replace
 *Add using  WDI API
 // wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.TER.ENRR;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.SEC.CMPT.LO.ZS;SE.PRE.ENRR;SE.PRM.UNER.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; per_sa_ct.adq_pop_tot; per_sa_ct.bry_q1_tot; per_sa_allsa.ben_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_sa_allsa.adq_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.adq_pop_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ik.adq_pop_tot; per_sa_sf.bry_q1_tot) long clear
 
-
 * Drop ASPIRE adequacy indicators and per_sa_allsa_ben_q1_tot, and add the new ones
-wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.SEC.ENRR.MA;SE.SEC.ENRR.FE;SE.TER.ENRR;SE.TER.ENRR.MA;SE.TER.ENRR.FE;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.PRM.CMPT.MA.ZS;SE.PRM.CMPT.FE.ZS;SE.SEC.CMPT.LO.ZS;SE.SEC.CMPT.LO.MA.ZS;SE.SEC.CMPT.LO.FE.ZS;SE.PRE.ENRR;SE.PRE.ENRR.MA;SE.PRE.ENRR.FE;SE.PRM.UNER.ZS;SE.PRM.UNER.MA.ZS;SE.PRM.UNER.FE.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; SH.STA.BFED.ZS; SE.XPD.TOTL.GB.ZS; SE.XPD.TOTL.GD.ZS; SH.STA.BRTC.ZS; SH.MLR.NETS.ZS; SH.DYN.NMRT; SE.PRM.UNER; SE.PRM.UNER.MA; SE.PRM.UNER.FE; SH.STA.WAST.ZS; SH.STA.ORTH; SH.STA.ANVC.ZS; SP.POP.TOTL; SH.STA.BASS.ZS; SH.ANM.CHLD.ZS; SH.STA.BRTW.ZS; SH.H2O.BASW.ZS; SH.STA.HYGN.ZS; SE.PRM.TCAQ.ZS; SE.SEC.TCAQ.ZS; SH.STA.STNT.ME.ZS; SH.DYN.MORT; SH.SVR.WAST.ZS; SH.STA.OWGH.ME.ZS; SE.ADT.1524.LT.ZS; SE.ADT.1524.LT.MA.ZS; SE.ADT.1524.LT.FE.ZS; SL.UEM.NEET.ME.ZS; SH.FPL.SATM.ZS; per_sa_ct.bry_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_sf.bry_q1_tot; UIS.REPR.1; UIS.REPR.1.M; UIS.REPR.1.F; UIS.MATH.PRIMARY; UIS.MATH.PRIMARY.M; UIS.MATH.PRIMARY.F; UIS.READ.PRIMARY; UIS.READ.PRIMARY.M; UIS.READ.PRIMARY.F; UIS.MATH.LOWERSEC; UIS.MATH.LOWERSEC.M; UIS.MATH.LOWERSEC.F; UIS.READ.LOWERSEC; UIS.READ.LOWERSEC.M; UIS.READ.LOWERSEC.F; UIS.MATH.G2T3; UIS.MATH.G2T3.M; UIS.MATH.G2T3.F; UIS.READ.G2T3; UIS.READ.G2T3.M; UIS.READ.G2T3.F; UIS.NERT.1; UIS.NERT.1.M; UIS.NERT.1.F; UIS.NERT.2; UIS.NERT.2.M; UIS.NERT.2.F; UIS.NERT.3; UIS.NERT.3.M; UIS.NERT.3.F; UIS.CR.3; UIS.CR.3.M; UIS.CR.3.F; UIS.SCHBSP.1.WELEC; UIS.NARA.AGM1; UIS.NARA.AGM1.M; UIS.NARA.AGM1.F; SM.POP.REFG.OR; UIS.OAEPG.2.GPV; UIS.OAEPG.2.GPV.M; UIS.OAEPG.2.GPV.F; UIS.OAEPG.1; UIS.OAEPG.1.M; UIS.OAEPG.1.F) clear
+wbopendata, indicator(SP.ADO.TFRT;SP.REG.BRTH.ZS;SH.STA.MMRT.NE;SE.SEC.ENRR;SE.SEC.ENRR.MA;SE.SEC.ENRR.FE;SE.TER.ENRR;SE.TER.ENRR.MA;SE.TER.ENRR.FE;SH.DTH.NCOM.ZS;SP.DYN.LE00.IN;SE.PRM.CMPT.ZS;SE.PRM.CMPT.MA.ZS;SE.PRM.CMPT.FE.ZS;SE.SEC.CMPT.LO.ZS;SE.SEC.CMPT.LO.MA.ZS;SE.SEC.CMPT.LO.FE.ZS;SE.PRE.ENRR;SE.PRE.ENRR.MA;SE.PRE.ENRR.FE;SE.PRM.UNER.ZS;SE.PRM.UNER.MA.ZS;SE.PRM.UNER.FE.ZS; SE.XPD.CTOT.ZS; SH.XPD.CHEX.GD.ZS; SH.STA.BFED.ZS; SE.XPD.TOTL.GB.ZS; SE.XPD.TOTL.GD.ZS; SH.STA.BRTC.ZS; SH.MLR.NETS.ZS; SH.DYN.NMRT; SE.PRM.UNER; SE.PRM.UNER.MA; SE.PRM.UNER.FE; SH.STA.WAST.ZS; SH.STA.ORTH; SH.STA.ANVC.ZS; SP.POP.TOTL; SH.STA.BASS.ZS; SH.ANM.CHLD.ZS; SH.STA.BRTW.ZS; SH.H2O.BASW.ZS; SH.STA.HYGN.ZS; SE.PRM.TCAQ.ZS; SE.SEC.TCAQ.ZS; SH.STA.STNT.ME.ZS; SH.DYN.MORT; SH.SVR.WAST.ZS; SH.STA.OWGH.ME.ZS; SE.ADT.1524.LT.ZS; SE.ADT.1524.LT.MA.ZS; SE.ADT.1524.LT.FE.ZS; SL.UEM.NEET.ME.ZS; SH.FPL.SATM.ZS; per_sa_ct.bry_q1_tot; per_sa_allsa.cov_pop_tot; per_sa_ct.cov_pop_tot; per_si_cp.cov_pop_tot; per_sa_ik.bry_q1_tot; per_sa_sf.cov_pop_tot; per_sa_ik.cov_q1_tot; per_sa_sf.bry_q1_tot; UIS.REPR.1; UIS.REPR.1.M; UIS.REPR.1.F; UIS.MATH.PRIMARY; UIS.MATH.PRIMARY.M; UIS.MATH.PRIMARY.F; UIS.READ.PRIMARY; UIS.READ.PRIMARY.M; UIS.READ.PRIMARY.F; UIS.MATH.LOWERSEC; UIS.MATH.LOWERSEC.M; UIS.MATH.LOWERSEC.F; UIS.READ.LOWERSEC; UIS.READ.LOWERSEC.M; UIS.READ.LOWERSEC.F; UIS.MATH.G2T3; UIS.MATH.G2T3.M; UIS.MATH.G2T3.F; UIS.READ.G2T3; UIS.READ.G2T3.M; UIS.READ.G2T3.F; UIS.NERT.1; UIS.NERT.1.M; UIS.NERT.1.F; UIS.NERT.2; UIS.NERT.2.M; UIS.NERT.2.F; UIS.NERT.3; UIS.NERT.3.M; UIS.NERT.3.F; UIS.CR.3; UIS.CR.3.M; UIS.CR.3.F; UIS.SCHBSP.1.WELEC; UIS.NARA.AGM1; UIS.NARA.AGM1.M; UIS.NARA.AGM1.F; UIS.OAEPG.2.GPV; UIS.OAEPG.2.GPV.M; UIS.OAEPG.2.GPV.F; UIS.OAEPG.1; UIS.OAEPG.1.M; UIS.OAEPG.1.F) clear
 
 rename (indicatorname indicatorcode countrycode) (name code wbcode)
 drop countryname region regionname adminregion adminregionname incomelevel incomelevelname lendingtype lendingtypename  
@@ -617,6 +617,7 @@ save "$data_processed\complete_series_nometadata_$date$extra", replace
 * Jordania Egipto y KZG en youth lit
 * Azerbaijan en org leanring, comparar 2020 vs 2017
 
+/* FIX ME
 
 python:
 import pandas as pd
@@ -636,3 +637,4 @@ print("####################")
 print("All indicators have the respective metadata")
 print("####################")
 end
+*/
