@@ -6,6 +6,9 @@ set more off
 
 * ssc install blindschemes
 * ssc install wbopendata
+* Instalar pandoc windows: winget install --source winget --exact --id JohnMacFarlane.Pandoc
+* Instalar pandoc mac: brew install pandoc
+* Instalar miktex: https://miktex.org/download
 
 *----------------------------------Set up---------------------------------*
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
@@ -59,13 +62,13 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 // "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-do "$root\07_graphs${extra}.do"
+// do "$root\07_graphs${extra}.do"
 
 ** 08 - Generates text for the briefs
-// do "$root\08_text_for_graphs.do"
+//do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
-// shell Rscript "$root\09_create_Briefs.R"
+ shell Rscript "$root\09_create_Briefs.R"
 
 ** 10 - Generate the Excels --Datasheet for each country
 shell python "$root\10_add_header_and_footer.py"

@@ -63,7 +63,7 @@ params:
 
 \vspace{0.5em}
 
-**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by Mongolia in building and using human capital. The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
+**Human capital – knowledge, skills, and good health – empowers people to achieve their potential and drives economic growth.** This brief tracks progress by Honduras in building and using human capital. The Human Capital Complementary Indicators offer a snapshot of human capital investments at four stages of the lifecycle. The figures show the latest available data, benchmarked against regional averages. The figures also report progress over the previous 5 years.
 
 \vspace{-6mm}
 
@@ -81,9 +81,9 @@ params:
 
 \vspace{-0.75mm}
 
-* **Neonatal mortality rate.** The neonatal mortality rate is **8** per 1,000 live births (2022), compared to 9 in 2017. The indicator is lower than the regional average.
-* **Children who are developmentally on track.** In 2018, **76%** of children (ages 36-59 months) were developmentally on track in health, learning and psychosocial well-being. The indicator is below the regional average.
-* **Minimum meal frequency.** The share of children ages 6-23 months who regularly consume an age-appropriate meal is **66%** (2018), compared to 92% in 2016. The indicator is higher than the regional average.
+* **Neonatal mortality rate.** The neonatal mortality rate is **9** per 1,000 live births (2023), compared to 11 in 2018. The indicator is lower than the regional average.
+* **Children who are developmentally on track.** In 2019, **75%** of children (ages 36-59 months) were developmentally on track in health, learning and psychosocial well-being. The indicator is below the regional average.
+* **DTP vaccination rate, third dose.** In 2023, **73%** of infants received the third dose of the diphtheria, tetanus and pertussis vaccine, compared to 91% in 2018. The indicator is lower than the regional average.
 
 \vspace{-6.5mm}
 
@@ -91,9 +91,9 @@ params:
 
 \vspace{-0.75mm}
 
-* **Child mortality rate.**  The mortality rate for children ages 5-14 is **3** per 1,000 children aged 5 (2022), compared to 4 in 2017. The indicator is lower than the regional average.
-* **Children engaged in child labor.** The share of children (ages 5-17) who are engaged in economic activities is **8%** (2018). The indicator is below the regional average.
-* **Primary school completion rate.** The primary school completion rate is  **96%** (by the official entrance age of the last grade) (2022), compared to 93% in 2017. The indicator is lower than the regional average.
+* **Child mortality rate.**  The mortality rate for children ages 5-14 is **5** per 1,000 children aged 5 (2022). This remains unchanged since 2017. The indicator is higher than the regional average.
+* **Learning poverty.** In 2019, **79%** of children could not read and understand a simple text, by age 10. The indicator is above the regional average.
+* **Children engaged in child labor.** The share of children (ages 5-17) who are engaged in economic activities is **12%** (2019). The indicator is higher than the regional average.
 
 \vspace{-6.5mm}
 
@@ -101,9 +101,9 @@ params:
 
 \vspace{-0.75mm}
 
-* **Youth literacy rate.** The share of youth (ages 15-24) who are literate is **99%** (2020), compared to 97% in 2018. The indicator is higher than the regional average.
-* **Youth not in employment, education or training.** In 2023, **15%** of youth (ages 15-24) were not in employment, education or training, compared to 19% in 2018. The indicator is below the regional average.
-* **Adolescent fertility rate.** The number of births for every 1,000 women ages 15-19 is **25** (2022), compared to 33 in 2017. The indicator is lower than the regional average.
+* **Adolescent fertility rate.** The number of births for every 1,000 women ages 15-19 is **82** (2023), compared to 86 in 2018. The indicator is higher than the regional average.
+* **Youth literacy rate.** The share of youth (ages 15-24) who are literate is **96%** (2019). This remains unchanged since 2015. The indicator is below the regional average.
+* **Youth not in employment, education or training.** In 2023, **30%** of youth (ages 15-24) were not in employment, education or training, compared to 27% in 2018. The indicator is higher than the regional average.
 
 \vspace{-6.5mm}
 
@@ -111,15 +111,15 @@ params:
 
 \vspace{-0.75mm}
 
-* **Life expectancy at birth.** Life expectancy at birth is **73** years (2022), compared to 70 in 2017. The indicator is lower than the regional average.
-* **Female labor force participation rate.** Female labor force participation as a percentage of the female working-age population (ages 25+) is **59%** (2023), compared to 60% in 2018. The indicator is below the regional average.
-* **Adult unemployment rate.** Unemployed adults as a share of the adult labor force (ages 25+) is **6%** (2023), compared to 4% in 2018. The indicator is higher than the regional average.
+* **Life expectancy at birth.** Life expectancy at birth is **73** years (2023), compared to 72 in 2018. The indicator is lower than the regional average.
+* **Probability of dying from NCDs.** The probability of dying from non-communicable diseases between the ages of 30 to 70 is **71%** (2019), compared to 69% in 2015. The indicator is below the regional average.
+* **Adult unemployment rate.** Unemployed adults as a share of the adult labor force (ages 25+) is **4%** (2023). This remains unchanged since 2018. The indicator is lower than the regional average.
 
 
 \columnbreak 
 \vspace{-10em}
 
-\begin{flushright}\includegraphics[height=0.72\textheight]{p2_MNG_stages} \end{flushright}
+\begin{flushright}\includegraphics[width=44.44in,height=0.72\textheight]{p2_HND_stages} \end{flushright}
 
 \vspace{-5mm}
 \small Note: Missing symbols indicate internationally comparable data are not available to generate the corresponding statistic.

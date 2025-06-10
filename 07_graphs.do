@@ -362,7 +362,7 @@ foreach i of local obs {
 	graph drop _all
 	}
 	if (_rc == 601 ) display in red "ERROR CON `ct'"
-	
+break	
 }
 
 

@@ -424,35 +424,9 @@ gen hci_t2 = strofreal(hci_t,"%04.2f")
 drop hci_t 
 rename hci_t2 hci_t
 
-stop
 *---------------------------------Save-------------------------------------*	
 	
 /* keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t */
 	
 
 save "$data_output\ordered_text", replace
-exit
-*--------------------------Merge to original base--------------------------*
-* FIXME: que onda esto??
-/**** Esto se hace porque nos habían pedido agregar algunos valores de indicadores, a parte de los name, lab y text para cada stage y orden ****/
-/* Habría que chequear cuál de estos es el correcto (parecen pisarse) y borrar los que no sirvan */ 
-
-use "$data_processed\text", clear
-drop unicef_neomort_text unicef_mealfreq_text vacBCG_text uisger02_text uisger02_f_text uisger02_m_text uisger01_text lastnm_mmrt_text_1 unicef_care_text lastnm_birth_reg_text_1 unicef_breastf_text unicef_diarrhoea_text uiscr1_text uiscr1_f_text uiscr1_m_text lastnm_sec_ger_text_1 se_lpv_prim_text se_lpv_prim_f_text se_lpv_prim_m_text vacHEPBB_text uiscr2_text eip_neet_mf_y_text eip_neet_mf_y_f_text eip_neet_mf_y_m_text lastnm_afr_text_1 lastnm_ter_ger_text une_2eap_mf_y_text une_2eap_mf_y_f_text une_2eap_mf_y_m_text eap_dwap_mf_a_f_text eap_dwap_mf_a_m_text sp_dyn_le00_in_text sp_dyn_le00_in_f_text sp_dyn_le00_in_m_text lastnm_probdeath_ncd_text_1
-merge 1:1 wbcode using "$charts\ordered_text", nogen 	
-export excel "$charts\ordered_2", replace firstrow(variable) 
-save "$charts\ordered_text", replace
-	
-preserve
-use "$charts\ordered_text", clear
-keep wbcode text_early* text_school* text_youth* text_adults*
-order wbcode text_early* text_school* text_youth* text_adults*
-export excel "$charts\ordered_text.csv", replace firstrow(variable) 
-restore 
-
-preserve
-use "$charts\ordered_text", clear
-keep wbcode text_early* text_school* text_youth* text_adults*
-order wbcode text_early* text_school* text_youth* text_adults*
-export excel "$charts\ordered_text.csv", replace firstrow(variable) 
-restore 
