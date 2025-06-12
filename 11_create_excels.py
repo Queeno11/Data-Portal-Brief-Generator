@@ -17,7 +17,7 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"D:\World Bank\Data-Portal-Brief-Generator"
+    portal = r"C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
@@ -569,43 +569,43 @@ for wbcode, countryname in tqdm(country_array):
         ### Add Graphs as images
         worksheet.insert_image(
             "B5",
-            rf"{portal}\Graphs\p2_{wbcode}_stages.jpg",
+            rf"{portal}\Graphs\p2_{wbcode}_stages.png",
             {"x_scale": 0.25, "y_scale": 0.25},
         )
         # worksheet.insert_image(
         #     "Q5",
-        #     rf"{portal}\Graphs\p1_{wbcode}_all.jpg",
+        #     rf"{portal}\Graphs\p1_{wbcode}_all.png",
         #     {"x_scale": 0.25, "y_scale": 0.25},
         # )
 
     # Add HCI sheets and protect excel
-    try:
-        source = (
-            rf"{portal}\Data\HCI_Data\HCI_Data_September_2020_{wbcode}_original.xlsx"
-        )
-        destination = rf"{excels}\HCI-Data-September-2020-{wbcode}.xlsx"
+    # try:
+    #     source = (
+    #         rf"{portal}\Data\HCI_Data\HCI_Data_September_2020_{wbcode}_original.xlsx"
+    #     )
+    #     destination = rf"{excels}\HCI-Data-September-2020-{wbcode}.xlsx"
 
-        wb_source = xw.Book(source)
-        wb_dest = xw.Book(destination)
+    #     wb_source = xw.Book(source)
+    #     wb_dest = xw.Book(destination)
 
-        for sheet in range(2, 15):
-            ws_source = wb_source.sheets(sheet)
-            ws_source.api.Copy(Before=wb_dest.sheets(sheet - 1).api)
+    #     for sheet in range(2, 15):
+    #         ws_source = wb_source.sheets(sheet)
+    #         ws_source.api.Copy(Before=wb_dest.sheets(sheet - 1).api)
 
-        # Put the first page at last so the excel starts with the index
-        ws_source = wb_source.sheets(1)
-        ws_source.api.Copy(Before=wb_dest.sheets(1).api)
+    #     # Put the first page at last so the excel starts with the index
+    #     ws_source = wb_source.sheets(1)
+    #     ws_source.api.Copy(Before=wb_dest.sheets(1).api)
 
-        # Protect sheets
-        for sheet in wb_dest.sheets:
-            sheet.api.Protect()
+    #     # Protect sheets
+    #     for sheet in wb_dest.sheets:
+    #         sheet.api.Protect()
 
-        wb_dest.save()
-        wb_dest.app.quit()
+    #     wb_dest.save()
+    #     wb_dest.app.quit()
 
-    except:
-        print(f"Error while adding HCI sheets to {wbcode}")
-        try:
-            wb_source.app.quit()
-        except:
-            pass
+    # except Exception as E:
+    #     print(f"Error while adding HCI sheets to {wbcode}. {E}")
+    #     try:
+    #         wb_source.app.quit()
+    #     except:
+    #         pass

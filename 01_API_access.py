@@ -10,7 +10,7 @@ try:
     extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"D:\Laboral\World Bank\Data-Portal-Brief-Generator"
+    portal = r"C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
     data_raw = rf"{portal}\Data\Data_Raw"
     data_processed = rf"{portal}\Data\Data_Processed"
     date = "27_jun_2023"
@@ -311,8 +311,20 @@ if __name__ == '__main__':
     df = pd.concat(list(datasets.values()))
     df['INDICATOR'] = 'i_' + df['INDICATOR'] # Agrego _i para simplificar el stata
 
+    # Save original string values
+    time_period_raw = df['TIME_PERIOD'].copy()
+
+    # First, try to convert values with year-month format
+    time_period_parsed = pd.to_datetime(time_period_raw, format='%Y-%m', errors='coerce')
+
+    # Then, convert remaining NaT values using year-only format, applied on the original strings
+    mask = time_period_parsed.isna()
+    time_period_parsed[mask] = pd.to_datetime(time_period_raw[mask], format='%Y', errors='coerce')
+
+    # Assign the final parsed datetimes back to the dataframe
+    df['TIME_PERIOD'] = time_period_parsed
+
     # Keep only the last observation per year
-    df['TIME_PERIOD'] = pd.to_datetime(df.TIME_PERIOD)
     df = df.sort_values(by=['REF_AREA', 'INDICATOR','SEX', 'TIME_PERIOD'])
     df['TIME_PERIOD'] = df['TIME_PERIOD'].dt.year
     df = df.drop_duplicates(['REF_AREA', 'INDICATOR','SEX', 'TIME_PERIOD'], keep='last')

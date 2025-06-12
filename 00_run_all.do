@@ -4,15 +4,16 @@
 cls
 set more off
 
+* -------------------------------Required--------------------------------------*
 * ssc install blindschemes
 * ssc install wbopendata
-* Instalar pandoc windows: winget install --source winget --exact --id JohnMacFarlane.Pandoc
-* Instalar pandoc mac: brew install pandoc
-* Instalar miktex: https://miktex.org/download
+* Install pandoc windows: winget install --source winget --exact --id JohnMacFarlane.Pandoc
+* Install pandoc mac: brew install pandoc
+* Install miktex: https://miktex.org/download
 
 *----------------------------------Set up---------------------------------*
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
-//global root "D:\World Bank\Data-Portal-Brief-Generator"
+// global root "D:\World Bank\Data-Portal-Brief-Generator"
 global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
 global date			  	"26_jul_2024" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
@@ -38,37 +39,37 @@ foreach path in "$data_raw" "$data_processed" "$data_output" "$data_processed\Co
 ***** Data Portal
 
 ** 01 - Collects indicators via APIs
-// python script "$root\01_API_access.py"
-// shell Rscript "$root\01.a_ILO_data.R" "$root" "$extra"
-// shell Rscript "$root\01.b_WHO_data.R" "$root" "$extra"
-// shell Rscript "$root\01.c_UNESCO_data.R" "$root" "$extra"
-// shell Rscript "$root\01.d_SDG_data.R" "$root" "$extra"
+python script "$root\01_API_access.py"
+shell Rscript "$root\01.a_ILO_data.R" "$root" "$extra"
+shell Rscript "$root\01.b_WHO_data.R" "$root" "$extra"
+shell Rscript "$root\01.c_UNESCO_data.R" "$root" "$extra"
+shell Rscript "$root\01.d_SDG_data.R" "$root" "$extra"
 
 ** 02 - Processes all raw indicators and generates "$data_processed\complete_series_wmetadata"
-// do "$root\02_clean_data"
+do "$root\02_clean_data"
 
 ** 03 - Adds Metadata for all indicators (creates the final dataset)
-//do "$root\03_clean_metadata"
+do "$root\03_clean_metadata"
 
 ** 04 - Missing data reports
-// "$root\04_missing_data"
+do "$root\04_missing_data"
 
 ***** Briefs
 
 ** 05 - Create Briefs Dataset
-//do "$root\05_brief_dataset.do"
+do "$root\05_brief_dataset.do"
 
 ** 06 - Create pool of indicator for each country
-// "$root\06_indicators by country.do"
+do "$root\06_indicators by country.do"
 
 ** 07 - Generates graphs
-// do "$root\07_graphs${extra}.do"
+do "$root\07_graphs${extra}.do"
 
 ** 08 - Generates text for the briefs
-//do "$root\08_text_for_graphs.do"
+do "$root\08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
- shell Rscript "$root\09_create_Briefs.R"
+shell Rscript "$root\09_create_Briefs.R"
 
 ** 10 - Generate the Excels --Datasheet for each country
 shell python "$root\10_add_header_and_footer.py"
@@ -77,4 +78,4 @@ shell python "$root\10_add_header_and_footer.py"
 python script "$root\11_create_excels.py"
 
 ** 12 - Raise potential errors in indicators data
-// do "$root\12_raise_potential_indicator_errors.do"
+do "$root\12_raise_potential_indicator_errors.do"

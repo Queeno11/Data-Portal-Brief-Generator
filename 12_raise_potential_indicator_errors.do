@@ -9,8 +9,8 @@ clear all
 set more off	
 set graph off
 
-gl data_output "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Output"
-gl data_processed "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator\Data\Data_Processed"
+gl data_output "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Output"
+gl data_processed "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Processed"
 gl date "26_jul_2024"
 *--------------------------Get selected indicators--------------------------*
 * This locals are the selected indicators for each country based on the availability of data

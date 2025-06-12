@@ -1,5 +1,3 @@
-# FIXME: This code requires like 20GB of RAM to run, so it's not really usable by anyone else. I'll have to find a way to make it more efficient.
-
 try:
     from sfi import Macro
 
@@ -14,7 +12,7 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    root = r"D:\World Bank\Data-Portal-Brief-Generator"
+    root = r"C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{root}\Data\Data_Raw"
     data_processed = rf"{root}\Data\Data_Processed"

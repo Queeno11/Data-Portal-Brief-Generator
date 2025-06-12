@@ -218,10 +218,10 @@ gen gender=0
 replace gender=1 if strpos(indicator, "male")
 replace gender=2 if strpos(indicator, "female")
 keep if indic!=""
-replace value="." if value=="NA"
-destring value, replace
+*replace value="." if value=="NA"
+*destring value, replace
 rename (time country) (year uncode)
-drop v1 indicator
+drop v1 indicator indicatorid
 reshape wide value, i(uncode year gender) j(indic) string
 rename value* *
 drop if strpos(uncode, "40")
