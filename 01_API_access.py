@@ -39,7 +39,7 @@ indicators_for_briefs = [
     'HVA_EPI_INF_RT_0-14',   # Estimated incidence rate(new HIV infection per 1, 000 uninfected population, children aged 0-14 years)
     'HVA_EPI_INF_RT_10-19',  # Estimated incidence rate(new HIV infection per 1, 000 uninfected population, adolescents aged 10-19 years)
     'HVA_PMTCT_MTCT',        # Mother-to-child HIV transmission rate
-    'HVA_PED_ART_CVG',	# Per cent of children(aged 0-14 years) living with HIV and receiving antiretroviral therapy(ART)
+    'HVA_PED_ART_CVG',	# Per cent of children (aged 0-14 years) living with HIV and receiving antiretroviral therapy(ART)
     'HVA_PREV_KNOW',	# Per cent of young people(aged 15-24 years) with comprehensive, correct knowledge of HIV
     'HVA_PREV_KNOW_TEST',    # Per cent of young people (aged 15-24 years) who know a place to get tested for HIV
     # 'HVA_PREV_CNDM_MULT',    # Per cent of young people(aged 15-24 years) who had more than one sexual partner in the past 12 months reporting the use of a condom during their last sexual intercourse
@@ -49,9 +49,9 @@ indicators_for_briefs = [
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
     'MNCH_BIRTH18', # Early childbearing - percentage of women (aged 20-24 years) who gave birth before age 18
-    'MNCH_PNCNB', # (Postnatal care for newborns)
-    'MNCH_PNCMOM', # (Postnatal care for mothers)
-    'MNCH_DIARCARE', # (Careseeking for diarrhoea (%))
+    'MNCH_PNCNB', # Postnatal care for newborns
+    'MNCH_PNCMOM', # Postnatal care for mothers
+    'MNCH_DIARCARE', # Careseeking for diarrhoea (%)
 
     ## Vaccines
     'IM_BCG',
@@ -172,6 +172,7 @@ def drops_irrelevant_index_levels(df):
         "NT_ANT_WHZ_PO2",
         "NT_BF_EXBF",
     ]
+    indicator_0_to_14_years = ["HVA_PED_ART_CVG"]
     indicator_6_to_23_months = ["NT_CF_MMF"]
     indicator_36_to_59_months = ["ECD_CHLD_36-59M_LMPSL"]
     indicator_15_to_49_years = [
@@ -181,6 +182,7 @@ def drops_irrelevant_index_levels(df):
         "MNCH_PNCMOM",
         "MNCH_SAB",
         "MNCH_ITNPREG",
+        "MNCH_PNCNB",
     ]
     indicator_18_to_29_years = [
         "PT_M_18-29_SX-V_AGE-18",
@@ -211,6 +213,8 @@ def drops_irrelevant_index_levels(df):
         elif idx == "AGE":
             if indicador in indicator_0_to_5_years:
                 df = df[df.index.get_level_values("AGE").isin(["Y0T4", "M0T5"])]
+            elif indicador in indicator_0_to_14_years:
+                df = df[df.index.get_level_values("AGE") == "Y0T14"]                
             elif indicador in indicator_6_to_23_months:
                 df = df[df.index.get_level_values("AGE") == "M6T23"]
             elif indicador in indicator_36_to_59_months:
@@ -227,7 +231,13 @@ def drops_irrelevant_index_levels(df):
             df = df.droplevel(idx)
 
     if df.index.duplicated().sum() != 0:
-        raise ValueError(f'Hay observaciones duplicadas en {indicador}. Hay un problema con la desagregación por edades o género. Revisar manualmente.')
+        raise ValueError(
+            (f'Hay observaciones duplicadas en {indicador}.'
+             'Hay un problema con la desagregación por edades.' 
+             'Revisar manualmente el indicador usando debug_UNICEF-API.ipynb y '
+             'agregar el indicador problemático a la lista de edades de la función drops_irrelevant_index_levels().'
+             f'Las posibles edades son las siguientes: {df.index.get_level_values("AGE").value_counts()}')
+        )
     return df
 
 def format_dataframe(df, cl_ref_areas):
