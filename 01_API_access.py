@@ -226,7 +226,8 @@ def drops_irrelevant_index_levels(df):
         else:
             df = df.droplevel(idx)
 
-    assert df.index.duplicated().sum() == 0, "There are duplicated rows."
+    if df.index.duplicated().sum() != 0:
+        raise ValueError(f'Hay observaciones duplicadas en {indicador}. Hay un problema con la desagregación por edades o género. Revisar manualmente.')
     return df
 
 def format_dataframe(df, cl_ref_areas):
