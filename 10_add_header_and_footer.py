@@ -12,7 +12,7 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    root = r"C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
+    root = r"D:\World Bank\Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
     data_raw = rf"{root}\Data\Data_Raw"
     data_processed = rf"{root}\Data\Data_Processed"
@@ -140,7 +140,7 @@ def add_header_and_footer(doc_path, header_path, out_path):
 
 df = pd.read_stata(rf"{data_output}\ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
-# df = df[df.wbcode.isin(["AUS", "ARG", "AFG", "ETH", "CAN", "JPN"])]
+df = df[df.wbcode.isin(["KEN"])]
 
 os.makedirs(rf"{briefs}\For Print", exist_ok=True)
 headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
