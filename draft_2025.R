@@ -1,17 +1,25 @@
 #######################    Brief model generator V 2025  ####################### 
 #install.packages("tidyverse")
 install.packages("ggrepel")
+install.packages("sysfonts")
 library(ggplot2)
 library(tidyverse)
 library(showtext)
+library(sysfonts)
 library(ggrepel)
 library(patchwork)
+library(cowplot)
 
 setwd("/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator")
 
+out <-"/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Output"
+
 #font_add_google("Roboto", "roboto")  # Descarga desde Google Fonts
 #showtext_opts(dpi = 300) 
-#showtext_auto()  # Habilita uso de fuentes en gráficos
+
+font_add_google(name = "Open Sans", family = "Open Sans")
+showtext_auto()
+showtext_opts(dpi = 300)
 
 # ---------- LCHI por etapa de la vida  ---------- #
 {
@@ -485,17 +493,21 @@ crear_lhci_plot <- function(country_value, income_value, region_value,
                  names_to = "Type", values_to = "Value") %>%
     mutate(
       Size = case_when(
-        Type == "Country" ~ 6.5,
+        Type == "Country" ~ 7,
         Type == "IncomeGroup" ~ 5,
-        Type == "Region" ~ 3
+        Type == "Region" ~ 5
+      ),
+      Alpha = case_when(
+        Type == "Country" ~ 1,      # opaco
+        TRUE              ~ 0.6     # traslúcido para los otros dos
       ),
       Type = factor(Type, levels = c("Country", "IncomeGroup", "Region"))
     )
   
   # Colores y etiquetas dinámicas
   colores <- c(
-    "Country" = "#E95D4E",
-    "IncomeGroup" = "#0CB2AF",
+    "Country" = "#0094B5",
+    "IncomeGroup" = "#b2443a", 
     "Region" = "#264653"
   )
   etiquetas <- c(
@@ -506,70 +518,79 @@ crear_lhci_plot <- function(country_value, income_value, region_value,
   
   # Construcción del gráfico
   plot <- ggplot() +
-    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0),
-                 color = "gray95", linewidth = 4.5) +
-    annotate("text", x = 0, y = 0, label = "0", fontface = "bold",
-             color = "black", hjust = 1.1) +
-    annotate("text", x = 1, y = 0, label = "1", fontface = "bold",
-             color = "black", hjust = 0) +
+    # Segmento de base
+    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0), color = "gray97", linewidth = 7) +
+    # Ticks verticales en los extremos
+    geom_segment(aes(x = 0, xend = 0, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7) +
+    geom_segment(aes(x = 1, xend = 1, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7)+
+    # Valores de los extremos
+    annotate("text", x = 0, y = 0, label = "0", size = 4, color = "black", hjust = 0.5, vjust = 2.5, family = "Open Sans") +
+    annotate("text", x = 1, y = 0, label = "1", size = 4, color = "black", hjust = 0.7, vjust = 2.5, family = "Open Sans") +
+    # Puntos
     geom_point(data = data, shape = 16,
-               aes(x = Value, y = 0, color = Type, size = Size)) +
-    geom_text(data = data,
-              aes(x = Value, y = 0, label = Value),
-              vjust = -2, fontface = "bold", size = 3) +
+               aes(x = Value, y = 0, color = Type, size = Size, alpha = Alpha))+
+    # Texto de los puntos
+    geom_text(data = data %>% filter(Type == "Country"),
+            aes(x = Value, y = 0, label = Value),
+            vjust = -2, fontface = "bold", size = 3, family = "Open Sans") +
+    # Titulo
+    annotate("text", x = 0, y = 0.08, label = title_text,
+             hjust = 0, vjust = 0, fontface = "bold", size = 4,
+             family = "Open Sans") +
+    
     scale_color_manual(name = NULL, values = colores, labels = etiquetas) +
     scale_size_identity() +
+    scale_alpha_identity() +
     scale_x_continuous(limits = c(0, 1), breaks = c(0, 1)) +
     scale_y_continuous(limits = c(-0.1, 0.1)) +
-    labs(title = title_text) +
-    theme_void(base_family = "sans") +
+    #labs(title = title_text) +
+    theme_void(base_family = "Open Sans") +
     theme(
-      plot.title = element_text(hjust = 0.06, vjust = -1, face = "bold", size = 11),
+      plot.title = element_text(hjust = 0.06, vjust = -1, face = "bold", size = 11, family = "Open Sans"),
       axis.text.x = element_blank(),
       axis.ticks.x = element_line(),
       axis.line.x = element_blank(),
-      legend.position = ifelse(show_legend, c(0.52, 0.2), "none"),
+      legend.position = if (show_legend) c(0.52, 0.2) else "none",
       legend.justification = "center",
       legend.direction = "horizontal",
-      legend.text = element_text(color="black", size =11),
+      legend.text = element_text(color="black", size =11, family = "Open Sans"),
       legend.key.width = unit(1, "cm"),
       plot.margin = margin(0, 0, 0, 0, "pt"),
       panel.spacing = unit(0, "pt")
     ) +
     guides(color = guide_legend(nrow = 1, byrow = TRUE,
-                                override.aes = list(size = 4)))
+                                override.aes = list(size = 4, 
+                                                    alpha = c(1, 0.6, 0.6))
+                                )
+           )
   
   return(plot)
 }
 
-p_lhci <- crear_lhci_plot(0.25, 0.48, 0.35, "Lifetime Human Capital Index (LHCI)")
+(p_lhci <- crear_lhci_plot(0.25, 0.48, 0.35, "Lifetime Human Capital Index (LHCI)", show_legend = TRUE))
 p_ec   <- crear_lhci_plot(0.40, 0.51, 0.45, "Early Childhood HCI (0-5)")
 p_sa   <- crear_lhci_plot(0.58, 0.68, 0.60, "School Age HCI (6-17)")
 p_ya   <- crear_lhci_plot(0.20, 0.28, 0.66, "Youth Adult HCI (18-24)")
-p_wa   <- crear_lhci_plot(0.12, 0.55, 0.30, "Working Age HCI (25-65)", show_legend = TRUE)
+(p_wa   <- crear_lhci_plot(0.12, 0.55, 0.30, "Working Age HCI (25-65)"))
 
 # Armar layout
-combined_ghana <- (p_lhci / p_ec / p_sa / p_ya / p_wa) +
-  plot_layout(ncol = 1, guides = "collect") +
-  plot_annotation(
-    title = "Human Capital Index Snapshot – Ghana",
-    theme = theme(
-      plot.title = element_text(
-        family = "sans", face = "bold",
-        size = 14, hjust = 0.5
-      )
-    )
-  )
+combined <- (p_lhci / p_ec / p_sa / p_ya / p_wa) +
+  plot_layout(ncol = 1, guides = "collect")
 
-final_kenya <- combined_ghana & 
+final_kenya <- combined & 
   theme(
-    legend.position      = "bottom",
+    plot.title = element_text(family = "Open Sans", face = "bold", size = 11, hjust = 0.06),
+    legend.position      = "top",
+    #legend.key.width = unit(0.1, "cm"),
     legend.direction     = "horizontal",
     legend.box           = "horizontal",
-    legend.justification = "center"
+    legend.justification = "center",
   )
 
 final_kenya
+ggsave(filename = paste(out, "/lchi_stage.png", sep =""),
+       plot= final_kenya, width = 6, height = 5.5,dpi = 300,  bg = "white")
+
 }
 # ---------- Opción 1: plot de una sola descomposición ---------- #
 {
