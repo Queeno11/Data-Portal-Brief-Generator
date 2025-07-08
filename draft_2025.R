@@ -493,9 +493,9 @@ crear_lhci_plot <- function(country_value, income_value, region_value,
                  names_to = "Type", values_to = "Value") %>%
     mutate(
       Size = case_when(
-        Type == "Country" ~ 7,
-        Type == "IncomeGroup" ~ 5,
-        Type == "Region" ~ 5
+        Type == "Country" ~ 8,
+        Type == "IncomeGroup" ~ 6,
+        Type == "Region" ~ 6
       ),
       Alpha = case_when(
         Type == "Country" ~ 1,      # opaco
@@ -519,23 +519,23 @@ crear_lhci_plot <- function(country_value, income_value, region_value,
   # Construcción del gráfico
   plot <- ggplot() +
     # Segmento de base
-    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0), color = "gray97", linewidth = 7) +
+    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0), color = "gray97", linewidth = 9) +
     # Ticks verticales en los extremos (-0.03 y 0.03)
-    geom_segment(aes(x = 0, xend = 0, y = -0.023, yend = 0.023), color = "black", linewidth = 0.7) +
-    geom_segment(aes(x = 1, xend = 1, y = -0.023, yend = 0.023), color = "black", linewidth = 0.7)+
+    geom_segment(aes(x = 0, xend = 0, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7) +
+    geom_segment(aes(x = 1, xend = 1, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7)+
     # Valores de los extremos
-    annotate("text", x = 0, y = 0, label = "0", size = 4, color = "black", hjust = 0.5, vjust = 2.5, family = "Open Sans") +
-    annotate("text", x = 1, y = 0, label = "1", size = 4, color = "black", hjust = 0.7, vjust = 2.5, family = "Open Sans") +
+    annotate("text", x = 0, y = -0.005, label = "0", size = 4, color = "black", hjust = 0.5, vjust = 2.5, family = "Open Sans") +
+    annotate("text", x = 1, y = -0.005, label = "1", size = 4, color = "black", hjust = 0.7, vjust = 2.5, family = "Open Sans") +
     # Puntos
     geom_point(data = data, shape = 16,
                aes(x = Value, y = 0, color = Type, size = Size, alpha = Alpha))+
     # Texto de los puntos
     geom_text(data = data %>% filter(Type == "Country"),
             aes(x = Value, y = 0, label = Value),
-            vjust = -2, fontface = "bold", size = 3, family = "Open Sans") +
+            vjust = -1.5, fontface = "bold", size = 4, family = "Open Sans") +
     # Titulo
     annotate("text", x = 0, y = 0.08, label = title_text,
-             hjust = 0, vjust = 0, fontface = "bold", size = 4,
+             hjust = 0, vjust = 0, fontface = "bold", size = 4.4,
              family = "Open Sans") +
     
     scale_color_manual(name = NULL, values = colores, labels = etiquetas) +
@@ -553,7 +553,7 @@ crear_lhci_plot <- function(country_value, income_value, region_value,
       legend.position = if (show_legend) c(0.52, 0.2) else "none",
       legend.justification = "center",
       legend.direction = "horizontal",
-      legend.text = element_text(color="black", size =11, family = "Open Sans"),
+      legend.text = element_text(color="black", size =12, family = "Open Sans"),
       legend.key.width = unit(1, "cm"),
       plot.margin = margin(0, 0, 0, 0, "pt"),
       panel.spacing = unit(0, "pt")
@@ -589,11 +589,23 @@ final_kenya <- combined &
 
 final_kenya
 ggsave(filename = paste(out, "/lchi_stage.png", sep =""),
-       plot= final_kenya, width = 6, height = 5.5,dpi = 300,  bg = "white")
+       plot= final_kenya, width = 5.5, height = 5.5,dpi = 300,  bg = "white")
 
 # Solo el LHCI (cambiar ticks vericales a  y = -0.018, yend = 0.018)
+p_lhci2 <- crear_lhci_plot(0.25, 0.48, 0.35, "Lifetime Human Capital Index (LHCI)", show_legend = TRUE)
+p_lhci2
+p_lhci2 <- p_lhci2 & 
+  theme(
+    legend.position      = "top",
+    #legend.key.width = unit(0.1, "cm"),
+    legend.direction     = "horizontal",
+    legend.box           = "horizontal",
+    legend.justification = "center",
+    plot.margin = margin(2, 0, 0, 0, "pt"),
+  )
+p_lhci2
 ggsave(filename = paste(out, "/solo_lchi.png", sep =""),
-       plot= p_lhci, width = 6, height = 1.5,dpi = 300,  bg = "white")
+       plot= p_lhci2, width = 6, height = 1.5,dpi = 300,  bg = "white")
 
 # Versión sin el LCHI junto (cambiar ticks vericales a  y = -0.018, yend = 0.018)
 combined2 <- (p_ec / p_sa / p_ya / p_wa) +
@@ -1723,7 +1735,7 @@ final_s <- combined_s &
 print(final_s)
 ggsave(filename = "Output/lhci_sex.png",width = 6, height = 5,dpi = 300,   bg = "white")
 
-### Automatizacion 
+#### Automatizacion #### 
 
 # Función para generar gráfico LHCI por grupo etario
 crear_gender_plot <- function(female_value, male_value,
@@ -1753,32 +1765,32 @@ crear_gender_plot <- function(female_value, male_value,
   # Construcción del gráfico
   plot <- ggplot() +
     # Segmento de base
-    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0), color = "gray97", linewidth = 7) +
-    # Ticks verticales en los extremos
-    geom_segment(aes(x = 0, xend = 0, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7) +
-    geom_segment(aes(x = 1, xend = 1, y = -0.03, yend = 0.03), color = "black", linewidth = 0.7)+
+    geom_segment(aes(x = 0, xend = 1, y = 0, yend = 0), color = "gray97", linewidth = 9) +
+    # Ticks verticales en los extremos ( y = -0.02, yend = 0.02 si inclue lhci)
+    geom_segment(aes(x = 0, xend = 0, y = -0.025, yend = 0.025), color = "black", linewidth = 0.7) +
+    geom_segment(aes(x = 1, xend = 1, y = -0.025, yend = 0.025), color = "black", linewidth = 0.7)+
     # Valores de los extremos
-    annotate("text", x = 0, y = 0, label = "0", size = 4, color = "black", hjust = 0.5, vjust = 2.5, family = "Open Sans") +
-    annotate("text", x = 1, y = 0, label = "1", size = 4, color = "black", hjust = 0.7, vjust = 2.5, family = "Open Sans") +
+    annotate("text", x = 0, y = -0.005, label = "0", size = 4, color = "black", hjust = 0.5, vjust = 2.5, family = "Open Sans") +
+    annotate("text", x = 1, y = -0.005, label = "1", size = 4, color = "black", hjust = 0.7, vjust = 2.5, family = "Open Sans") +
     # Puntos
-    geom_point(data = data, shape = 16, alpha = 0.6, size=7,
+    geom_point(data = data, shape = 16, alpha = 0.6, size=8,
                aes(x = Value, y = 0, color = Type))+
     # Texto de los puntos: Women arriba, Men abajo
     geom_text(
       data = data %>% filter(Type == "Female"),
       aes(x = Value, y = 0, label = Value),
-      vjust = -2,              # por encima
-      fontface = "bold", size = 3, family = "Open Sans"
+      vjust = -1.5,              # por encima
+      fontface = "bold", size = 4, family = "Open Sans"
     ) +
     geom_text(
       data = data %>% filter(Type == "Male"),
       aes(x = Value, y = 0, label = Value),
-      vjust =  3,                # por debajo
-      fontface = "bold", size = 3, family = "Open Sans"
+      vjust =  2.5,                # por debajo
+      fontface = "bold", size = 4, family = "Open Sans"
     ) +
     # Titulo
     annotate("text", x = 0, y = 0.08, label = title_text,
-             hjust = 0, vjust = 0, fontface = "bold", size = 4,
+             hjust = 0, vjust = 0, fontface = "bold", size = 4.4,
              family = "Open Sans") +
     
     scale_color_manual(name = NULL, values = colores, labels = etiquetas) +
@@ -1796,7 +1808,7 @@ crear_gender_plot <- function(female_value, male_value,
       legend.position = if (show_legend) c(0.52, 0.2) else "none",
       legend.justification = "center",
       legend.direction = "horizontal",
-      legend.text = element_text(color="black", size =11, family = "Open Sans"),
+      legend.text = element_text(color="black", size =12, family = "Open Sans"),
       legend.key.width = unit(1, "cm"),
       plot.margin = margin(0, 0, 0, 0, "pt"),
       panel.spacing = unit(0, "pt")
@@ -1816,7 +1828,7 @@ p_ya_g   <- crear_gender_plot(0.12, 0.3, "Youth Adult HCI (18-24)")
 (p_wa_g   <- crear_gender_plot(0.05, 0.15, "Working Age HCI (25-65)"))
 
 # Armar layout
-combined_g <- (p_lhci_g / p_ec_g / p_sa_g / p_ya_g / p_wa_g) +
+combined_g <- (p_ec_g / p_sa_g / p_ya_g / p_wa_g) +
   plot_layout(ncol = 1, guides = "collect")
 
 final_kenya_g <- combined_g & 
@@ -1830,7 +1842,7 @@ final_kenya_g <- combined_g &
   )
 
 final_kenya_g
-ggsave(filename = paste(out, "/lchi_gender.png", sep =""),
-       plot= final_kenya_g, width = 6, height = 5.5,dpi = 300,  bg = "white")
+ggsave(filename = paste(out, "/lchi_gender2.png", sep =""),
+       plot= final_kenya_g, width = 5.5, height = 4.5,dpi = 300,  bg = "white")
 
 }
