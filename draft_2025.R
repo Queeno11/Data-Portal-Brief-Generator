@@ -630,6 +630,7 @@ ggsave(filename = paste(out, "/stage.png", sep =""),
 
 
 }
+
 # ---------- 2. plot de una sola descomposición ---------- #
 {
 # Valores base
@@ -684,6 +685,7 @@ decomp<- ggplot() +
 
 ggsave(filename = "Output/decomp.png",width = 6.5, height = 3,dpi = 300,   bg = "white")
 }
+
 # ---------- 3. plot del LCHI acumulado por sexo ---------- #
 {
 # Genero la data
@@ -734,6 +736,7 @@ ggplot(df_long, aes(x = AgeGroup, y = Value, group = Gender, color = Gender)) +
 
 ggsave(filename = "Output/lchi_cum_sex.png",width = 8, height = 6,dpi = 300,   bg = "white")
 }
+
 # ---------- 4. plot del LCHI acumulado por grupo ---------- #
 {
 # Genero la data
@@ -785,6 +788,7 @@ ggplot(df_long, aes(x = AgeGroup, y = Value, color = Group, group = Group)) +
 
 ggsave(filename = "Output/lchi_cum_groups.png",width = 8, height = 6,dpi = 300,   bg = "white")
 }
+
 # ---------- 5. plot del LCHI por género + grupo ---------- #
 {
   
@@ -1375,7 +1379,9 @@ final <- combined &
 print(final)
 ggsave(filename = "Output/lhci_stage_sex.png",width = 5.5, height = 10,dpi = 300,   bg = "white")
 }
+
 # ---------- 6. plot del LCHI solo por género  ---------- #
+
 {
 #### LHCI ####
 
@@ -1850,6 +1856,7 @@ ggsave(filename = paste(out, "/lchi_gender2.png", sep =""),
        plot= final_kenya_g, width = 5.5, height = 4.5,dpi = 300,  bg = "white")
 
 }
+
 # ---------- 7. plot del LCHI multiplicación ---------- #
 {
 # 1. cargo la imagen completa
@@ -1915,5 +1922,4 @@ ggplot(hci_df, aes(x = x, y = y, label = hci)) +
   scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
   theme_void()
 }
-
 
