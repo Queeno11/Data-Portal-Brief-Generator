@@ -2,6 +2,7 @@
 #install.packages("tidyverse")
 install.packages("ggrepel")
 install.packages("sysfonts")
+install.packages("ggimage")
 library(ggplot2)
 library(tidyverse)
 library(showtext)
@@ -9,6 +10,9 @@ library(sysfonts)
 library(ggrepel)
 library(patchwork)
 library(cowplot)
+library(ggimage)
+library(png)
+library(grid)
 
 setwd("/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator")
 
@@ -21,7 +25,7 @@ font_add_google(name = "Open Sans", family = "Open Sans")
 showtext_auto()
 showtext_opts(dpi = 300)
 
-# ---------- LCHI por etapa de la vida  ---------- #
+# ---------- 1. LCHI por etapa de la vida  ---------- #
 {
 #### LHCI ####
 
@@ -626,7 +630,8 @@ ggsave(filename = paste(out, "/stage.png", sep =""),
 
 
 }
-# ---------- Opción 1: plot de una sola descomposición ---------- #
+
+# ---------- 2. plot de una sola descomposición ---------- #
 {
 # Valores base
 x_start <- 0.15
@@ -680,7 +685,8 @@ decomp<- ggplot() +
 
 ggsave(filename = "Output/decomp.png",width = 6.5, height = 3,dpi = 300,   bg = "white")
 }
-# ---------- Opción 2: plot del LCHI acumulado por sexo ---------- #
+
+# ---------- 3. plot del LCHI acumulado por sexo ---------- #
 {
 # Genero la data
 df <- data.frame(
@@ -730,7 +736,8 @@ ggplot(df_long, aes(x = AgeGroup, y = Value, group = Gender, color = Gender)) +
 
 ggsave(filename = "Output/lchi_cum_sex.png",width = 8, height = 6,dpi = 300,   bg = "white")
 }
-# ---------- Opción 3: plot del LCHI acumulado por grupo ---------- #
+
+# ---------- 4. plot del LCHI acumulado por grupo ---------- #
 {
 # Genero la data
 df <- data.frame(
@@ -781,7 +788,8 @@ ggplot(df_long, aes(x = AgeGroup, y = Value, color = Group, group = Group)) +
 
 ggsave(filename = "Output/lchi_cum_groups.png",width = 8, height = 6,dpi = 300,   bg = "white")
 }
-# ---------- Opción 4: plot del LCHI por género + grupo ---------- #
+
+# ---------- 5. plot del LCHI por género + grupo ---------- #
 {
   
 #### LHCI ####
@@ -1371,7 +1379,9 @@ final <- combined &
 print(final)
 ggsave(filename = "Output/lhci_stage_sex.png",width = 5.5, height = 10,dpi = 300,   bg = "white")
 }
-# ---------- Opción 5: plot del LCHI solo por género  ---------- #
+
+# ---------- 6. plot del LCHI solo por género  ---------- #
+
 {
 #### LHCI ####
 
@@ -1846,3 +1856,70 @@ ggsave(filename = paste(out, "/lchi_gender2.png", sep =""),
        plot= final_kenya_g, width = 5.5, height = 4.5,dpi = 300,  bg = "white")
 
 }
+
+# ---------- 7. plot del LCHI multiplicación ---------- #
+{
+# 1. cargo la imagen completa
+img <- readPNG("stages2.png")
+g   <- rasterGrob(img, 
+                  width = unit(1,"npc"), 
+                  height = unit(1,"npc"))
+
+# 2. Creo el data.frame 
+hci_all <- data.frame(
+  stage = factor(
+    c("Lifetime", "0–5", "6–17", "18–24", "25–65"),
+    levels = c("Lifetime", "0–5", "6–17", "18–24", "25–65")
+  ),
+  hci = c(0.45, 0.96, 0.64, 0.93, 0.79)
+)
+
+# 3. Extraigo el valor de Lifetime
+lifetime_val <- hci_all$hci[hci_all$stage == "Lifetime"]
+
+# 4. Preparo el data.frame para los otros 4 valores
+hci_df <- subset(hci_all, stage != "Lifetime")
+hci_df <- transform(
+  hci_df,
+  x = c(1.05, 2.2, 3.35, 4.5),   # tus posiciones en X
+  y = 0.06                       # misma Y para todos
+)
+
+# 5. Grafico todo y agrego el annotate tomando lifetime_val
+ggplot(hci_df, aes(x = x, y = y, label = hci)) +
+  annotation_custom(g, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf) +
+  geom_text(size = 6, hjust = 0.5, vjust = 0.5) +
+  annotate(
+    "text",
+    x     = 1.3,
+    y     = 0.255,
+    label = bquote("Lifetime Human Capital =" ~ bold(.(lifetime_val))),
+    size  = 6,
+    hjust = 0,         # 0 = alinea a la izquierda en x=1; usa 0.5 si quieres centrar
+    color="white",
+    parse = TRUE
+  ) +
+  scale_x_continuous(limits = c(0.5, 5), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  theme_void()
+
+ggplot(hci_df, aes(x = x, y = y, label = hci)) +
+  # fondo
+  annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +
+  # números de los cuatro panels, todos en negrita
+  geom_text(size=6, hjust=0.5, vjust=0.5, fontface="bold") +
+  # anotación de Lifetime, con sólo el número en negrita
+  annotate(
+    "text",
+    x     = 1.3,
+    y     = 0.25,
+    label = paste0("Lifetime Human Capital = ", lifetime_val),
+    size  = 6,
+    hjust = 0,
+    color="white",
+  ) +
+  scale_x_continuous(limits = c(0.5, 5), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+  theme_void()
+}
+
