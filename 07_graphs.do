@@ -10,7 +10,7 @@ set graph off
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
-use "$data_output\new_locals", clear
+use "$data_output/new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
@@ -32,7 +32,7 @@ display "Done!"
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
 *------------------------------------------------------------------------------*
-use "$data_output\data_briefs_allcountries", replace
+use "$data_output/data_briefs_allcountries", replace
 
 ** Version 2024: Keep all countries 
 
@@ -112,7 +112,7 @@ foreach i of local obs {
 	qui capture {
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
-	local graph_file "$charts\p1_`ct'_all.pdf"
+	local graph_file "$charts/p1_`ct'_all.pdf"
 // 	capture confirm file "`graph_file'"
 // 	if (_rc == 601 ) continue
 	
@@ -330,9 +330,9 @@ foreach i of local obs {
 		(scatteri `reg_pos'     `second_col_marker_pos', msize(12pt) `reg_marker_fmt') ///
 		, graphregion(color(white)) plotregion(margin(small)) xscale(off) yscale(off) ylabel(0(0)1, nogrid) xlabel(0(0)4) legend(off) fysize(14) ysize(1.5) ///
 		title("{fontface Utopia Std Semibold: HUMAN CAPITAL}" "{fontface Utopia Std Semibold: COMPLEMENTARY INDICATORS}", span color("15 119 157") size(34pt) margin(b=-1 t=0) pos(12) yoffset(2)) ///
-		text(`country_pos' `first_col_text_pos'  "{fontface Utopia: Latest available data for `country' (`ctry')}", size(21pt) `legend_text_ops') ///
-		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia: `ctry' approx. 5 years before}", size(21pt)  `legend_text_ops') ///
-	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia: `region_text'}", size(21pt)  `legend_text_ops') ///
+		text(`country_pos' `first_col_text_pos'  "{fontface Utopia Std: Latest available data for `country' (`ctry')}", size(21pt) `legend_text_ops') ///
+		text(`time_pos'    `first_col_text_pos'  "{fontface Utopia Std: `ctry' approx. 5 years before}", size(21pt)  `legend_text_ops') ///
+	  	text(`reg_pos'     `second_col_text_pos' "{fontface Utopia Std: `region_text'}", size(21pt)  `legend_text_ops') ///
 		name(notes_`ctry', replace)
 
 	}
@@ -358,7 +358,7 @@ foreach i of local obs {
 	graph combine notes_`ctry' stage_1 stage_2 stage_3 stage_4, rows(5) cols(1) xsize(7) ysize(14) graphregion(fcolor(white) lcolor(black) lwidth(medium))
 	/* graph export "$charts\p2_`ctry'_stages.pdf", replace */
 	/* graph export "p2_`ctry'_stages.eps", replace */
-	graph export "$charts\p2_`ctry'_stages${extra}.png", replace width(3200)
+	graph export "$charts/p2_`ctry'_stages${extra}.png", replace width(3200)
 	graph drop _all
 	}
 	if (_rc == 601 ) display in red "ERROR CON `ct'"

@@ -5,9 +5,9 @@
 	
 
 // * Check that all indicators selected have a text:
-import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
+import excel "$data_raw/Country codes & metadata/briefs_texts", firstrow clear
 drop d_*
-save "$data_processed\briefs_texts", replace
+save "$data_processed/briefs_texts", replace
 
 // use "$data_output\complete_series_wmd_${date}", clear
 // merge m:1 name_portal using "$data_processed\briefs_texts", nogen keep(match)
@@ -17,7 +17,7 @@ save "$data_processed\briefs_texts", replace
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
-use "$data_output\new_locals", clear
+use "$data_output/new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
@@ -37,16 +37,16 @@ assert mi(is_local)==0
 display "Done!"
 *-------------------------- text briefs to dta -----------------------------*
 
-import excel "$data_raw\Country codes & metadata/briefs_texts", firstrow clear
+import excel "$data_raw/Country codes & metadata/briefs_texts", firstrow clear
 drop d_*
-save "$data_processed\briefs_texts", replace
+save "$data_processed/briefs_texts", replace
 
 *--------------------------------Load data---------------------------------*
 frame change default
 clear all
 set more off	
 set maxvar 32000
-use "$data_output\data_briefs", replace
+use "$data_output/data_briefs", replace
 
 * Remove observations with no HCCI
 ds wbcode wbcountryname wbcountrynameb wbcountrynameB wbregion wbincomegroup incomegroup hci* psurv* eyrs* test* qeyrs* asr* nostu* uhci* *_reg *_inc, not
@@ -233,7 +233,7 @@ frame change default
 
 *** Names of stages
 // e -> school
-// l -> early	
+// l -> early	se_lpv_prim
 // h -> youth 
 // b -> adults
 *** Number of indicators per stage
@@ -242,6 +242,7 @@ local nl = 3
 local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
+pause on
 display "Generating texts, please wait..."
 foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
@@ -251,7 +252,11 @@ foreach ctry in `wb_country_codes' {
 			gen selected = 1 if wbcode=="`ctry'"
 			sort selected // Put current country first so locals are from the current country
 			local indicator ``x'`m'_`ctry''
-
+			display "`indicator'"
+			pause
+ }
+ }
+ }
 			** Generate locals for text
 			* Text locals
 			local countryname = wbcountrynameb
@@ -429,4 +434,4 @@ rename hci_t2 hci_t
 /* keep wb* *text  *text_1 *text_2 hci_lower hci_upper hci_m hci_f hci hci_m hci_f hci hci_m hci_f hci psurv_m psurv_f psurv psurv_m psurv_f psurv psurv_m psurv_f psurv qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs qeyrs_m qeyrs_f qeyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs eyrs_m eyrs_f eyrs test_m test_f test test_m test_f test test_m test_f test asr_m asr_f asr asr_m asr_f asr asr_m asr_f asr nostu_m nostu_f nostu nostu_m nostu_f nostu nostu_m nostu_f nostu hci_m_t hci_f_t hci_t psurv_m_t psurv_f_t psurv_t asr_m_t asr_f_t asr_t nostu_m_t nostu_f_t nostu_t eyrs_m_t eyrs_f_t eyrs_t qeyrs_m_t qeyrs_f_t qeyrs_t test_m_t test_f_t test_t */
 	
 
-save "$data_output\ordered_text", replace
+save "$data_output/ordered_text", replace

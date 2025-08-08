@@ -1,4 +1,4 @@
-cls
+/*cls
 set more off
 
 *----------------------------------Set up---------------------------------*
@@ -21,11 +21,11 @@ global excels			"$root\Datasheets"            // FIXME: check if i like this
 
 *------------------------------------------------------------------------------*
 *							METADATA for database						   
-*------------------------------------------------------------------------------*
+*------------------------------------------------------------------------------*/
 
 
 
-import excel "$data_raw\Country codes & metadata\metadata_new.xlsx", firstrow clear
+import excel "$data_raw/Country codes & metadata/metadata_new.xlsx", firstrow clear
 duplicates drop code, force
 replace code = lower(subinstr(code, ".", "_", .)) 
 drop if code==""
@@ -33,15 +33,15 @@ keep name_portal code source update download_link stage_life dimension rank unit
 rename portal_description_definitive description
 rename portal_name_definitive name
 compress
-save "$data_processed\metadata_new_names_processed", replace
+save "$data_processed/metadata_new_names_processed", replace
 
-import excel "$data_raw\Country codes & metadata\metadata.xlsx", firstrow clear
+import excel "$data_raw/Country codes & metadata/metadata.xlsx", firstrow clear
 duplicates drop code, force
 replace code = lower(subinstr(code, ".", "_", .)) 
 compress
-save "$data_processed\metadata_old_processed", replace
+save "$data_processed/metadata_old_processed", replace
 
-merge 1:1 code using "$data_processed\metadata_new_names_processed.dta"
+merge 1:1 code using "$data_processed/metadata_new_names_processed.dta"
 keep if _merge!=1
 drop _merge
 gen code_definitive = code
@@ -49,11 +49,11 @@ replace code_definitive = codeNEW if codeNEW!=""
 replace code = code_definitive 
 drop code_definitive codeNEW
 replace code = lower(subinstr(code, ".", "_", .)) 
-save "$data_processed\metadata_processed", replace
+save "$data_processed/metadata_processed", replace
 
 
 *-------------------------Add everything to database-------------------*
-use "$data_processed\complete_series_nometadata_$date$extra", clear
+use "$data_processed/complete_series_nometadata_$date$extra", clear
 drop if code=="EAP_2WAP_SEX_AGE_RT_A"
 drop if value==.
 drop if code=="n"
@@ -65,7 +65,7 @@ drop if year>2024
 replace code = lower(subinstr(code, ".", "_", .)) 
 // rename code code_merge
 compress
-merge m:1 code using "$data_processed\metadata_processed"
+merge m:1 code using "$data_processed/metadata_processed" // FIX ME: error entre code y name portal (ver ejemplo de youth lit)
 //
 // count if _merge==1
 // assert r(N) == 0 // Verifico que no haya ninguna variable sin metadata en la base del excel "metadata"
@@ -79,10 +79,10 @@ drop _merge
 // replace code = name_portal if name_portal != ""
 // drop name_portal
 replace code = name_portal
-save "$data_processed\data_metadata_merged", replace
+save "$data_processed/data_metadata_merged", replace
 
 ** Add wb county data
-merge m:1 wbcode using "$data_processed\country_class"
+merge m:1 wbcode using "$data_processed/country_class"
 // drop if _merge!=3 
 drop _merge
 
@@ -201,9 +201,9 @@ replace download_link = "https://databank.worldbank.org/source/world-development
 
 // drop if wbcode=="WLD"
 // drop if wbregion==""
-save "$data_output\complete_series_wmd_${date}${extra}", replace
+save "$data_output/complete_series_wmd_${date}${extra}", replace
 
-export excel "$data_output\complete_series_wmd_${date}${extra}.xlsx", replace firstrow(variables)
+export excel "$data_output/complete_series_wmd_${date}${extra}.xlsx", replace firstrow(variables)
 
 
 *DATA PORTAL:
@@ -226,9 +226,9 @@ replace date_download="$date_text" if source=="Unicef"
 keep wbcode wbcountryname wbregion wbincome year code gender name description units scale value update timespan minyear maxyear data stage_life topic source download_link note name_portal date_download
 
 
-save "$data_processed\dataportal_${date}${extra}", replace
+save "$data_processed/dataportal_${date}${extra}", replace
 
-use "$data_processed\dataportal_${date}${extra}", replace
+use "$data_processed/dataportal_${date}${extra}", replace
 
 
 *-------------------Generate Global and regional medians------------------------------* 
@@ -290,13 +290,13 @@ replace gender=2 if code=="emp_2wap_f_a"
 replace gender=1 if code=="emp_2wap_m_a"
 replace code="emp_2wap_mf_a" if (code=="emp_2wap_f_a"|code=="emp_2wap_m_a")
  
-save "$data_output\complete_dataportal_${date}${extra}", replace
+save "$data_output/complete_dataportal_${date}${extra}", replace
 
-export excel using "$data_output\complete_dataportal_${date}${extra}.xlsx", firstrow(variables) replace
+export excel using "$data_output/complete_dataportal_${date}${extra}.xlsx", firstrow(variables) replace
 
 *-------------------Generate medians for benchmarking------------------------------* // alison - 27 marzo 2023
 
-import excel "$data_output\complete_dataportal_${date}${extra}", firstrow clear
+import excel "$data_output/complete_dataportal_${date}${extra}", firstrow clear
 /* br wbcode wbregion wbincome year code gender value */
 
 drop if wbregion=="Aggregates"
@@ -340,8 +340,8 @@ drop units scale update timespan minyear maxyear source download_link note
 // 		   graph export "timeseries_`c'.png", as(png) replace
 // }
 
-save "$data_output\benchmarking_${date}_all", replace // alison - 29 marzo 2023
-use "$data_output\benchmarking_${date}_all", clear // alison - 29 marzo 2023
+save "$data_output/benchmarking_${date}_all", replace // alison - 29 marzo 2023
+use "$data_output/benchmarking_${date}_all", clear // alison - 29 marzo 2023
 
 // **************************************alison - 29 marzo 2023*************************************************
 // *keep the last available year for the 49 variables contained in the Country Briefs (including gender split)*
@@ -357,8 +357,8 @@ drop if nr_countries == 0 //maybe delete in the future all those with value==0 t
 
 *see if they have enough countries for comparison
 *tab nr_countries code 
-save "$data_output\benchmarking_${date}_2021", replace
-export excel "$data_output\benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
+save "$data_output/benchmarking_${date}_2021", replace
+export excel "$data_output/benchmarking_${date}_2021.xlsx", replace firstrow(variables) 
 
 *-----------------Calculate indicators by category-------------------------* // melanie - 29 marzo 2023
 /*

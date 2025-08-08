@@ -1,4 +1,5 @@
 import pandasdmx as sdmx
+# import sdmx  # la API de sdmx1 es prácticamente la misma
 import pandas as pd
 
 try:
@@ -10,9 +11,9 @@ try:
     extra = Macro.getGlobal("extra") # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    portal = r"C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
-    data_raw = rf"{portal}\Data\Data_Raw"
-    data_processed = rf"{portal}\Data\Data_Processed"
+    portal = r"/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator"
+    data_raw = rf"{portal}/Data/Data_Raw"
+    data_processed = rf"{portal}/Data/Data_Processed"
     date = "27_jun_2023"
 
 indicators_for_briefs = [
@@ -39,7 +40,7 @@ indicators_for_briefs = [
     'HVA_EPI_INF_RT_0-14',   # Estimated incidence rate(new HIV infection per 1, 000 uninfected population, children aged 0-14 years)
     'HVA_EPI_INF_RT_10-19',  # Estimated incidence rate(new HIV infection per 1, 000 uninfected population, adolescents aged 10-19 years)
     'HVA_PMTCT_MTCT',        # Mother-to-child HIV transmission rate
-    'HVA_PED_ART_CVG',	# Per cent of children (aged 0-14 years) living with HIV and receiving antiretroviral therapy(ART)
+    'HVA_PED_ART_CVG',	# Per cent of children(aged 0-14 years) living with HIV and receiving antiretroviral therapy(ART)
     'HVA_PREV_KNOW',	# Per cent of young people(aged 15-24 years) with comprehensive, correct knowledge of HIV
     'HVA_PREV_KNOW_TEST',    # Per cent of young people (aged 15-24 years) who know a place to get tested for HIV
     # 'HVA_PREV_CNDM_MULT',    # Per cent of young people(aged 15-24 years) who had more than one sexual partner in the past 12 months reporting the use of a condom during their last sexual intercourse
@@ -49,9 +50,9 @@ indicators_for_briefs = [
     'MNCH_SAB',	    # Skilled birth attendant - percentage of deliveries attended by skilled health personnel
     'MNCH_ITNPREG',	# Pregnant women sleeping under ITN - percentage of pregnant women(aged 15-49 years) who slept under an insecticide-treated net the previous night
     'MNCH_BIRTH18', # Early childbearing - percentage of women (aged 20-24 years) who gave birth before age 18
-    'MNCH_PNCNB', # Postnatal care for newborns
-    'MNCH_PNCMOM', # Postnatal care for mothers
-    'MNCH_DIARCARE', # Careseeking for diarrhoea (%)
+    'MNCH_PNCNB', # (Postnatal care for newborns)
+    'MNCH_PNCMOM', # (Postnatal care for mothers)
+    'MNCH_DIARCARE', # (Careseeking for diarrhoea (%))
 
     ## Vaccines
     'IM_BCG',
@@ -145,6 +146,7 @@ def get_list_of_unicef_indicators(parent_database='IMMUNISATION'):
     # Prints the dimensions INDICATOR of the dataflow -> Indicators.
     codelist = dsd.dimensions.get('INDICATOR').local_representation.enumerated
     cl_indicators = sdmx.to_pandas(codelist)
+    print(cl_indicators.columns)
     return cl_indicators
 
 def query_indicator(indicator, database):
@@ -167,12 +169,11 @@ def drops_irrelevant_index_levels(df):
 
     indicator_0_to_5_years = [
         "NT_ANT_HAZ_NE2",
-        "NT_ANT_WHZ_NE2",
+        "NT_ANT_HAZ_NE2",
         "NT_ANT_WHZ_NE3",
         "NT_ANT_WHZ_PO2",
         "NT_BF_EXBF",
     ]
-    indicator_0_to_14_years = ["HVA_PED_ART_CVG"]
     indicator_6_to_23_months = ["NT_CF_MMF"]
     indicator_36_to_59_months = ["ECD_CHLD_36-59M_LMPSL"]
     indicator_15_to_49_years = [
@@ -182,7 +183,6 @@ def drops_irrelevant_index_levels(df):
         "MNCH_PNCMOM",
         "MNCH_SAB",
         "MNCH_ITNPREG",
-        "MNCH_PNCNB",
     ]
     indicator_18_to_29_years = [
         "PT_M_18-29_SX-V_AGE-18",
@@ -213,8 +213,6 @@ def drops_irrelevant_index_levels(df):
         elif idx == "AGE":
             if indicador in indicator_0_to_5_years:
                 df = df[df.index.get_level_values("AGE").isin(["Y0T4", "M0T5"])]
-            elif indicador in indicator_0_to_14_years:
-                df = df[df.index.get_level_values("AGE") == "Y0T14"]                
             elif indicador in indicator_6_to_23_months:
                 df = df[df.index.get_level_values("AGE") == "M6T23"]
             elif indicador in indicator_36_to_59_months:
@@ -230,14 +228,7 @@ def drops_irrelevant_index_levels(df):
         else:
             df = df.droplevel(idx)
 
-    if df.index.duplicated().sum() != 0:
-        raise ValueError(
-            (f'Hay observaciones duplicadas en {indicador}.'
-             'Hay un problema con la desagregación por edades.' 
-             'Revisar manualmente el indicador usando debug_UNICEF-API.ipynb y '
-             'agregar el indicador problemático a la lista de edades de la función drops_irrelevant_index_levels().'
-             f'Las posibles edades son las siguientes: {df.index.get_level_values("AGE").value_counts()}')
-        )
+    assert df.index.duplicated().sum() == 0, "There are duplicated rows."
     return df
 
 def format_dataframe(df, cl_ref_areas):
@@ -269,8 +260,13 @@ if __name__ == '__main__':
     wash_indicators_health = ['WS_HCF_W-B','WS_HCF_S-B','WS_HCF_H-B']
     
     indicators = get_list_of_unicef_indicators()
+    print(indicators.columns)
+    print(indicators.iloc[167])
     indicators_sdg = get_list_of_unicef_indicators(parent_database='SDG_PROG_ASSESSMENT')
     cl_ref_areas = get_county_codes()
+    print(cl_ref_areas.columns)
+    print(cl_ref_areas.head())
+    print(cl_ref_areas.tail())
 
     # Get dataframes for each indicator in the dataset
     datasets = {}
@@ -304,6 +300,7 @@ if __name__ == '__main__':
                 selected_ind_parent == 'SDG_PROG_ASSESSMENT'
                 
             df = query_indicator(selected_ind_code, selected_ind_parent)
+            print(df.columns)
             datasets[selected_ind_code] = format_dataframe(df, cl_ref_areas)
             
         except Exception as e: 
@@ -317,25 +314,14 @@ if __name__ == '__main__':
     cl_indicators = get_indicators_description()
     labels_dict = cl_indicators['name'].to_dict()
     labels_dict = {f'i_{k.replace("-","_")}':v[:80] for k,v in labels_dict.items() if k in datasets.keys()}
+    print(labels_dict)
     
     # Concatenate all datasets and save to stata
     df = pd.concat(list(datasets.values()))
     df['INDICATOR'] = 'i_' + df['INDICATOR'] # Agrego _i para simplificar el stata
 
-    # Save original string values
-    time_period_raw = df['TIME_PERIOD'].copy()
-
-    # First, try to convert values with year-month format
-    time_period_parsed = pd.to_datetime(time_period_raw, format='%Y-%m', errors='coerce')
-
-    # Then, convert remaining NaT values using year-only format, applied on the original strings
-    mask = time_period_parsed.isna()
-    time_period_parsed[mask] = pd.to_datetime(time_period_raw[mask], format='%Y', errors='coerce')
-
-    # Assign the final parsed datetimes back to the dataframe
-    df['TIME_PERIOD'] = time_period_parsed
-
     # Keep only the last observation per year
+    df['TIME_PERIOD'] = pd.to_datetime(df['TIME_PERIOD'], errors='coerce')
     df = df.sort_values(by=['REF_AREA', 'INDICATOR','SEX', 'TIME_PERIOD'])
     df['TIME_PERIOD'] = df['TIME_PERIOD'].dt.year
     df = df.drop_duplicates(['REF_AREA', 'INDICATOR','SEX', 'TIME_PERIOD'], keep='last')
@@ -346,6 +332,6 @@ if __name__ == '__main__':
     # Export
     df.columns = df.columns.str.replace('-','_')
     
-    new_file = rf'{data_raw}\UNICEF_api_{date}.dta'
+    new_file = rf'{data_raw}/UNICEF_api_{date}.dta'
     df.to_stata(new_file, write_index=False, variable_labels=labels_dict)
     print(f"UNICEF API access finished. {new_file} was created.")

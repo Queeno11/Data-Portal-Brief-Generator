@@ -7,7 +7,7 @@
 	****************************************************************************
 	
 	*----------------------------------last 5----------------------------------*
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017)
 	
@@ -39,11 +39,11 @@
 	bysort wbregion: egen data_scarcity_5_reg = mean(data_scarcity_5)
 	drop n f5 share
 	
-	save "$data_processed\data_scarcity_5years", replace
+	save "$data_processed/data_scarcity_5years", replace
 	
 	*----------------------------------last 10---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012)
 	
@@ -75,11 +75,11 @@
 	bysort wbregion: egen data_scarcity_10_reg = mean(data_scarcity_10)
 	drop n f10 share
 	
-	save "$data_processed\data_scarcity_10years", replace
+	save "$data_processed/data_scarcity_10years", replace
 	
 	*--------------------------------all years---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	
 	preserve
@@ -110,13 +110,13 @@
 	bysort wbregion: egen data_scarcity_all_reg = mean(data_scarcity_all)
 	drop n fall share
 	
-	save "$data_processed\data_scarcity_allyears", replace
+	save "$data_processed/data_scarcity_allyears", replace
 	
 	*--------------------------------merge all---------------------------------*
 	
-	use "$data_processed\data_scarcity_allyears", clear
-	merge m:1 wbcode using "$data_processed\data_scarcity_10years", nogen
-	merge m:1 wbcode using "$data_processed\data_scarcity_5years", nogen
+	use "$data_processed/data_scarcity_allyears", clear
+	merge m:1 wbcode using "$data_processed/data_scarcity_10years", nogen
+	merge m:1 wbcode using "$data_processed/data_scarcity_5years", nogen
 	
 	foreach var in 5 10 {
 	lab var data_scarcity_`var' "Data scarcity in last `var' years"
@@ -135,7 +135,7 @@
 	
 	sort wbcode
 	
-	save "$data_output\data_scarcity", replace
+	save "$data_output/data_scarcity", replace
 	
 	****************************************************************************
 	*Unique indicators by gender
@@ -146,7 +146,7 @@
 	import excel "$data_output\complete_series_wmd_${date}.xlsx", firstrow clear
 	save "$data_output\complete_series_wmd_${date}${extra}", replace
 	*/
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017)
 	
@@ -178,11 +178,11 @@
 	bysort wbregion gender: egen data_scarcity_5_reg = mean(data_scarcity_5)
 	drop n f5 share
 	
-	save "$data_processed\data_scarcity_5years", replace
+	save "$data_processed/data_scarcity_5years", replace
 	
 	*----------------------------------last 10---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	keep if inlist(year,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012)
 	
@@ -214,11 +214,11 @@
 	bysort wbregion gender: egen data_scarcity_10_reg = mean(data_scarcity_10)
 	drop n f10 share
 	
-	save "$data_processed\data_scarcity_10years", replace
+	save "$data_processed/data_scarcity_10years", replace
 	
 	*--------------------------------all years---------------------------------*
 	
-	use "$data_output\complete_series_wmd_${date}${extra}", clear
+	use "$data_output/complete_series_wmd_${date}${extra}", clear
 	drop description units scale update timespan data stage_life topic source download_link
 	
 	preserve
@@ -249,13 +249,13 @@
 	bysort wbregion gender: egen data_scarcity_all_reg = mean(data_scarcity_all)
 	drop n fall share
 	
-	save "$data_processed\data_scarcity_allyears", replace
+	save "$data_processed/data_scarcity_allyears", replace
 	
 	*--------------------------------merge all---------------------------------*
 	
-	use "$data_processed\data_scarcity_allyears", clear
-	merge m:1 wbcode gender using "$data_processed\data_scarcity_10years", nogen
-	merge m:1 wbcode gender using "$data_processed\data_scarcity_5years", nogen
+	use "$data_processed/data_scarcity_allyears", clear
+	merge m:1 wbcode gender using "$data_processed/data_scarcity_10years", nogen
+	merge m:1 wbcode gender using "$data_processed/data_scarcity_5years", nogen
 	
 	foreach var in 5 10 {
 	lab var data_scarcity_`var' "Data scarcity in last `var' years"
@@ -274,24 +274,24 @@
 	
 	sort wbcode
 	
-	save "$data_output\data_scarcity_gender", replace
+	save "$data_output/data_scarcity_gender", replace
 	
 	****************************************************************************
 	*Income and region
 	****************************************************************************
 	
-	use "$data_output\data_scarcity", clear 
+	use "$data_output/data_scarcity", clear 
 	collapse (mean) data_scarcity_all data_scarcity_10 data_scarcity_5, by(wbincome)
-	export excel "$data_output\data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(general_income)
+	export excel "$data_output/data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(general_income)
 	
-	use "$data_output\data_scarcity", clear 
+	use "$data_output/data_scarcity", clear 
 	collapse (mean) data_scarcity_all data_scarcity_10 data_scarcity_5, by(wbregion)
-	export excel "$data_output\data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(general_region)
+	export excel "$data_output/data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(general_region)
 	
-	use "$data_output\data_scarcity_gender", clear 
+	use "$data_output/data_scarcity_gender", clear 
 	collapse (mean) data_scarcity_all data_scarcity_10 data_scarcity_5, by(wbincome gender)
-	export excel "$data_output\data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(gender_income)
+	export excel "$data_output/data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(gender_income)
 	
-	use "$data_output\data_scarcity_gender", clear 
+	use "$data_output/data_scarcity_gender", clear 
 	collapse (mean) data_scarcity_all data_scarcity_10 data_scarcity_5, by(wbregion gender)
-	export excel "$data_output\data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(gender_region)
+	export excel "$data_output/data_scarcity_reg_inc.xlsx", sheetreplace firstrow(variables) sheet(gender_region)

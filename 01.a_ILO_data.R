@@ -3,14 +3,19 @@
 ################################################################################
 rm(list=ls())
 #install.packages('Rilostat')
+#install.packages("remotes")
+#install_github("cran/rgho")
+
+library(remotes)
 library(rgho)
 library(dplyr)
 library(Rilostat)
 
 # File path
 #path <- "C:/Users/llohi/OneDrive - Universidad Torcuato Di Tella/WB/Data-Portal-Brief-Generator/Data/Data_Raw"
-path <- "C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator\\Data\\Data_Raw"
-
+#path <- "C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator\\Data\\Data_Raw"
+path <-  "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator/Data/Data_Raw"
+  
 # Generate list of selected indicators
 ilo_data_list <- list()
 indicators_ilo <- c("EIP_NEET_SEX_AGE_RT_A", "EIP_2WAP_SEX_AGE_RT_A", "EAP_2WAP_SEX_AGE_RT_A", "UNE_2EAP_SEX_AGE_RT_A", "EMP_NIFL_SEX_AGE_RT_A", "EMP_TEMP_SEX_AGE_OCU_NB_A", "LUU_2LU4_SEX_AGE_RT_A")

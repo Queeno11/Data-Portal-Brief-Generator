@@ -8,7 +8,7 @@
 	clear all
 	set more off
 	set maxvar 32000
-	use "$data_output\complete_series_wmd_${date}${extra}", replace
+	use "$data_output/complete_series_wmd_${date}${extra}", replace
 	drop name description units scale update timespan minyear maxyear data source download_link note
 	replace code="netenr_ls" if code=="netenrolment_lowersec"
 
@@ -248,10 +248,10 @@ gen wbcountrynameB = cond(regexm(wbcountrynameb, "^the "), "T"+ substr(wbcountry
 	replace hci_m_year = . if hci_m_year != hci_year
 
 *---------------------------------keep if----------------------------------*
-	save "$data_output\data_briefs_allcountries", replace
+	save "$data_output/data_briefs_allcountries", replace
 	
 *--------------------------------save data---------------------------------*
 	* Include all countries in the version 2024, also those without hci
 	*keep if hci!=.
 	
-	save "$data_output\data_briefs", replace
+	save "$data_output/data_briefs", replace

@@ -1,4 +1,4 @@
-*------------------------------------------------------------------------------*
+/*------------------------------------------------------------------------------*
 *			   Series UNICEF, WID, WHO, UNESCO, FAO, UN, ILO
 *------------------------------------------------------------------------------*
 cls
@@ -16,23 +16,23 @@ global data_processed "$portal\Data_Processed"
 global date			  	"26_jul_2024" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
-*------------------------Codes and Country names---------------------------*
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_ILO.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_ILO", replace
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unicef.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_unicef", replace
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_FAO.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_FAO", replace
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_who.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_who", replace
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_UN.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_UN", replace
-import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unesco.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
-import excel "$data_raw\Country codes & metadata\wbcodes.xlsx", firstrow clear
-save "$data_processed\Country codes\wbcodes", replace
-import excel "$data_raw\Country codes & metadata\country_classification.xlsx", firstrow clear
-save "$data_processed\country_class", replace
+*------------------------Codes and Country names---------------------------*/
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_ILO.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_ILO", replace
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_unicef.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_unicef", replace
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_FAO.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_FAO", replace
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_who.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_who", replace
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_UN.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_UN", replace
+import excel "$data_raw/Country codes & metadata/wbcodes_equiv_unesco.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes_equiv_unesco", replace
+import excel "$data_raw/Country codes & metadata/wbcodes.xlsx", firstrow clear
+save "$data_processed/Country codes/wbcodes", replace
+import excel "$data_raw/Country codes & metadata/country_classification.xlsx", firstrow clear
+save "$data_processed/country_class", replace
 
 
 *--------------------------------------------------------------------------*
@@ -41,7 +41,7 @@ save "$data_processed\country_class", replace
 
 ***** via API:
 
-use "$data_raw\UNICEF_api_${date}", clear
+use "$data_raw/UNICEF_api_flor_${date}", clear
 gen gender=.
 replace gender=0 if SEX=="_T"
 replace gender=1 if SEX=="M"
@@ -72,12 +72,12 @@ foreach oldvar of varlist i_* {
 } 
 
 * Adds wbcode
-merge m:1 unicef_code using "$data_processed\Country codes\wbcodes_equiv_unicef", nogen keep(3)
+merge m:1 unicef_code using "$data_processed/Country codes/wbcodes_equiv_unicef", nogen keep(3)
 drop wbcountryname unicef_countryname unicef_code
 
 * Drop the variables we replaced with WDI:
 drop MNCH_DEMAND_FP NT_BF_EXBF MNCH_ITN CME_MRM0 MNCH_ORS MNCH_ANC1 WS_PPL_S_ALB MNCH_SAB WS_PPL_W_ALB WS_PPL_H_B NT_ANT_HAZ_NE2 CME_MRY0T4 NT_ANT_WHZ_NE3 NT_ANT_WHZ_PO2 C040202
-save "$data_processed\all_unicef", replace
+save "$data_processed/all_unicef", replace
 
 *--------------------------------------------------------------------------*
 *--------------------------------WDI online--------------------------------*
@@ -132,12 +132,12 @@ rename yr value
 reshape wide value, i(wbcode year gender) j(code) string
 rename value* *
 drop region regionname adminregion adminregionname incomelevel incomelevelname lendingtype lendingtypename 
-save "$data_processed\hci_web", replace
+save "$data_processed/hci_web", replace
 
 *--------------------------------all WDI------------------------------*
-use "$data_processed\hci_web", clear
-merge 1:1 wbcode year gender using "$data_processed\wdi", nogen
-save "$data_processed\all_wdi", replace
+use "$data_processed/hci_web", clear
+merge 1:1 wbcode year gender using "$data_processed/wdi", nogen
+save "$data_processed/all_wdi", replace
 
 *---------------------------------------------------------------------*
 *---------------------------------WHO---------------------------------*	
@@ -156,7 +156,7 @@ drop if indicatorcode=="NUTRITION_ANAEMIA_CHILDREN_PREV" & severity!="NA"
 * Drop missing countries
 drop if WHO_code=="NA"
 replace gender = 0 if indicatorcode=="SRHINSTITUTIONALBIRTH"
-merge m:1 WHO_code using "$data_processed\Country codes\wbcodes_equiv_who", keep(3) nogen
+merge m:1 WHO_code using "$data_processed/Country codes/wbcodes_equiv_who", keep(3) nogen
 *  5,497 observation have missing countryname
 save "$data_processed/all_who", replace
 drop WHO_countryname title severity agegroup timedimensionvalue v1
@@ -176,7 +176,7 @@ rename value* *
 drop MH_12 NUTRITION_ANAEMIA_CHILDREN
 save "$data_processed/all_who", replace
 * Pneumonya care seeking not available, use lata from last year for now
-merge 1:1 wbcode year gender using "$data_processed\who_pneumonia_cs", nogen
+merge 1:1 wbcode year gender using "$data_processed/who_pneumonia_cs", nogen
 drop WHO_code wbcountryname
 save "$data_processed/all_who", replace
 
@@ -225,7 +225,7 @@ drop v1 indicator indicatorid
 reshape wide value, i(uncode year gender) j(indic) string
 rename value* *
 drop if strpos(uncode, "40")
-merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3) 
+merge m:1 uncode using "$data_processed/Country codes/wbcodes_equiv_UN", nogen keep(3) 
 drop uncode code uncode wbcountryname
 * Drop those included in WDI
 drop out_school repetition NERT_1_CP NERT_2_CP NERT_3_CP
@@ -280,7 +280,7 @@ drop indic
 reshape wide uis, i(uncode year gender) j(code) string
 rename uis* *
 rename LR_AG15T24 youth_lit
-merge m:1 uncode using "$data_processed\Country codes\wbcodes_equiv_UN", nogen keep(3)
+merge m:1 uncode using "$data_processed/Country codes/wbcodes_equiv_UN", nogen keep(3)
 drop uncode wbcountryname code
 
 *Drop those included in WDI:
@@ -321,7 +321,7 @@ save "$data_processed/all_uis", replace
 // save "$data_processed\FAO_lowbirthweight",replace
 
 *Undernourishment
-import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
+import excel "$data_raw/FAOSTAT_data.xlsx", clear firstrow
 rename Area FAO_countryname
 gen gender = .
 replace gender = 0
@@ -337,9 +337,9 @@ destring v210041, replace
 destring year, replace
 // rename v210041 fao_undern
 drop DomainCode Domain AreaCodeM49 ElementCode Element ItemCode Item YearCode Unit Flag FlagDescription Note
-merge m:m FAO_countryname using "$data_processed\Country codes\wbcodes_equiv_FAO", nogen keep(3)
+merge m:m FAO_countryname using "$data_processed/Country codes/wbcodes_equiv_FAO", nogen keep(3)
 drop FAO_countryname wbcountryname FAO_code
-save "$data_processed\FAO_undernourishment",replace
+save "$data_processed/FAO_undernourishment",replace
 
 // *Wasting
 // import excel "$data_raw\FAOSTAT_data.xlsx", clear firstrow
@@ -362,8 +362,8 @@ save "$data_processed\FAO_undernourishment",replace
 // save "$data_processed\FAO_wasting",replace
 	
 *--------------------------------all FAO---------------------------------*
-use "$data_processed\FAO_undernourishment", clear
-save "$data_processed\all_FAO", replace
+use "$data_processed/FAO_undernourishment", clear
+save "$data_processed/all_FAO", replace
 
 
 *-----------------------------------------------------------------------*
@@ -371,7 +371,7 @@ save "$data_processed\all_FAO", replace
 *-----------------------------------------------------------------------*	
 *Forcibly displaced population: * UPDATED
 **Includes: Internal displaced population (IDPs), Refugees, Asylum-seekers and others.
-import excel "$data_raw\UNHCR_Forced_Displacement", first clear
+import excel "$data_raw/UNHCR_Forced_Displacement", first clear
 rename CountryoforiginISO uncode
 rename Year year
 rename IDPsofconcerntoUNHCR IDPs
@@ -386,12 +386,12 @@ lab var A_seekers "Change in the number of asylum-seekers"
 lab var refugees "Change in the number of refugees under UNHCR´s mandate"
 lab var FD_others "Change in the number of other people of concern"
 keep year IDPs refugees A_seekers gender uncode
-save "$data_processed\UNHCR_forced_displacement", replace
-use "$data_processed\Country codes\wbcodes_equiv_UN", clear
-merge 1:m uncode using "$data_processed\UNHCR_forced_displacement", nogen keep(3)
+save "$data_processed/UNHCR_forced_displacement", replace
+use "$data_processed/Country codes/wbcodes_equiv_UN", clear
+merge 1:m uncode using "$data_processed/UNHCR_forced_displacement", nogen keep(3)
 * Drop refugees, added in WDI
 keep wbcode year gender IDPs A_seekers
-save "$data_processed\UNHCR_forced_displacement", replace
+save "$data_processed/UNHCR_forced_displacement", replace
 
 * Drop population as it has been added from WDI
 // *Population per country:
@@ -439,9 +439,9 @@ save "$data_processed\UNHCR_forced_displacement", replace
 // keep wbcode gender met_fam_plan year
 // save "$data_processed\UN_family_planning", replace
 *---------------------------------all UN-----------------------------------*
-use "$data_processed\UNHCR_forced_displacement", clear
+use "$data_processed/UNHCR_forced_displacement", clear
 // merge m:1 wbcode year gender using "$data_processed\UN_family_planning", nogen
-save "$data_processed\all_UN", replace
+save "$data_processed/all_UN", replace
 
 *-----------------------------------------------------------------------*
 *----------------------------------ILO----------------------------------*
@@ -524,7 +524,7 @@ merge 1:1 ilocode year gender using "$data_processed/eap_2wap_reshaped", nogen
 // rename UNE_2EAP_SEX_AGE_RT_A_y une_2eap_mf_y
 
 save "$data_processed/all_ilo", replace
-merge m:1 ilocode using "$data_processed\Country codes\wbcodes_equiv_ILO", nogen keep(3)
+merge m:1 ilocode using "$data_processed/Country codes/wbcodes_equiv_ILO", nogen keep(3)
 drop ilocode ilocountryname wbcountryname
 
 * Drop the ones included in WDI and those we eliminated from the portal:
@@ -560,7 +560,7 @@ save"$data_processed/learning_poverty", replace
 
 
 *------------------------ Utilization of HC (UHCI) ------------------------------*
-import excel "$data_raw\UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
+import excel "$data_raw/UHCI_DataAppendix_Sep2020.xlsx", firstrow clear sheet("DataAppendix_UHCI")
 gen gender = .
 replace gender = 0 if Gender=="Total"
 replace gender = 1 if Gender=="Male"
@@ -572,19 +572,19 @@ drop if uhci ==.
 sort year
 replace year = round(year)
 duplicates drop wbcode year gender, force
-save "$data_processed\UHCI", replace
+save "$data_processed/UHCI", replace
 
 *--------------------------------Merge all---------------------------------*
 
-use "$data_processed\all_unicef", clear
-merge 1:1 wbcode year gender using "$data_processed\all_who", nogen
-merge 1:1 wbcode year gender using "$data_processed\all_uis", nogen
-merge 1:1 wbcode year gender using "$data_processed\all_FAO", nogen
-merge 1:1 wbcode year gender using "$data_processed\all_UN", nogen
-merge 1:1 wbcode year gender using "$data_processed\learning_poverty", nogen
-merge 1:1 wbcode year gender using "$data_processed\UHCI", nogen
-merge 1:m wbcode year gender using "$data_processed\all_wdi", nogen
-merge m:m wbcode year gender using "$data_processed\all_ILO", nogen
+use "$data_processed/all_unicef", clear
+merge 1:1 wbcode year gender using "$data_processed/all_who", nogen
+merge 1:1 wbcode year gender using "$data_processed/all_uis", nogen
+merge 1:1 wbcode year gender using "$data_processed/all_FAO", nogen
+merge 1:1 wbcode year gender using "$data_processed/all_UN", nogen
+merge 1:1 wbcode year gender using "$data_processed/learning_poverty", nogen
+merge 1:1 wbcode year gender using "$data_processed/UHCI", nogen
+merge 1:m wbcode year gender using "$data_processed/all_wdi", nogen
+merge m:m wbcode year gender using "$data_processed/all_ILO", nogen
 lab def gender 0"Male/Female" 1"Male" 2"Female", replace
 lab val gender gender
 lab var wbcode "WB country code"
@@ -592,18 +592,18 @@ lab var year "Year"
 lab var gender "Gender"
 drop if missing(year)
 
-save "$data_processed\complete_series", replace
+save "$data_processed/complete_series", replace
 
 *---------------------------------dataset----------------------------------*
 
-use "$data_processed\complete_series", clear
+use "$data_processed/complete_series", clear
 // rename NUTRITION_ANAEMIA_CHILDREN_PREV NUTRITION_ANAEMIA_CHILDREN
 rename * a_*
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value
 replace code="NUTRITION_ANAEMIA_CHILDREN_PREV" if code=="NUTRITION_ANAEMIA_CHILDREN"
-save "$data_processed\complete_series_nometadata_$date$extra", replace
+save "$data_processed/complete_series_nometadata_$date$extra", replace
 
 
 // * Add world value

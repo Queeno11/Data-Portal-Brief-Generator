@@ -11,7 +11,7 @@
 	clear all
 	set more off	
 	set maxvar 32000
-	use "$data_output\complete_series_wmd_${date}${extra}", replace
+	use "$data_output/complete_series_wmd_${date}${extra}", replace
 	
 	gen year2 = year if value!=.
 	bysort wbcode wbcountryname code gender: egen myear = max(year2)
@@ -31,14 +31,14 @@
 	rename description def
 	
 	collapse (mean) year, by(wbcode name lbl age def source rank gender topic stage_life)
-	save "$data_processed\metadata_briefs", replace
+	save "$data_processed/metadata_briefs", replace
 
 	
 *---------------------------Best ranked indicators------------------------------*	
 
 	frame create top_ranked_indicators
 	frame change top_ranked_indicators
-	use "$data_processed\metadata_processed", replace
+	use "$data_processed/metadata_processed", replace
 
 	keep if rank==1 | (stage_life=="Adulthood and Elderly" & dimension=="Labor" & rank==2)  | (stage_life=="Prenatal and Early Childhood" & dimension=="Health" & rank==2)
 	duplicates drop name_portal, force
@@ -65,7 +65,7 @@
 	replace dim_rank = 2 if category==4 & rank!=. & dimension=="Health"
 	replace dim_rank = 3 if category==4 & rank!=. & dimension=="Education"
 
-	save "$data_processed\top_ranked_indicators", replace
+	save "$data_processed/top_ranked_indicators", replace
 	frame change default
 
 
@@ -77,7 +77,7 @@
 	
 	/**** Agregar vars nuevas acá ****/
 	
-	use "$data_output\data_briefs_allcountries", clear
+	use "$data_output/data_briefs_allcountries", clear
 		
 	* Genero lista con las variables "indicadores" y "indicadores_year" 
 	global indicyear ""
@@ -109,7 +109,7 @@
 
 	*------------------------Labels, info & rank---------------------------*
 	
-	merge m:m wbcode name using "$data_processed\metadata_briefs", keep(1 3) nogen
+	merge m:m wbcode name using "$data_processed/metadata_briefs", keep(1 3) nogen
 	gen category = 1 if stage_life=="Prenatal and Early Childhood"
 	replace category = 2 if stage_life=="School-aged Children"
 	replace category = 3 if stage_life=="Youth"
@@ -217,7 +217,7 @@
 					levelsof name if category==`category' & wbcode=="`country'" & selected_indicators==1, local(already_selected) separate(,)
 					
 					frame change top_ranked_indicators
-					use "$data_processed\top_ranked_indicators", replace
+					use "$data_processed/top_ranked_indicators", replace
 										
 					keep if category==`category'
 					if `remaining_indicators'<3 {
@@ -306,12 +306,12 @@
 	egen complete = rowtotal(comp*)
 	aorder
 	order wbcode complete comp_* 
-	save "$data_output\listing", replace
-	export excel using "$data_output\listing.xlsx", replace firstrow(variable)
+	save "$data_output/listing", replace
+	export excel using "$data_output/listing.xlsx", replace firstrow(variable)
 	
 	*-----------------------------Gen do file------------------------------*	
 	
-	use "$data_output\listing", clear
+	use "$data_output/listing", clear
 	drop year*
 	drop com*
 	reshape long lbl_1_ lbl_2_ lbl_3_ lbl_4_ name_1_ name_2_ name_3_ name_4_ age_1_ age_2_ age_3_ age_4_ sou_1_ sou_2_ sou_3_ sou_4_ def_1_ def_2_ def_3_ def_4_, i(wbcode)
@@ -323,7 +323,7 @@
 	rename *_ *
 		
 	preserve
-	use "$data_processed\metadata_briefs", clear
+	use "$data_processed/metadata_briefs", clear
 	duplicates drop name lbl, force
 	drop year wbcode
 	rename * *_met
@@ -345,7 +345,7 @@
 	drop if wbcode==""
 
 	preserve
-	use "$data_processed\metadata_briefs", clear
+	use "$data_processed/metadata_briefs", clear
 	duplicates drop name lbl, force
 	drop year wbcode
 	rename * *_met
@@ -378,7 +378,7 @@
 	sort wbcode category pos _j
 	keep l
 	rename l locals
-	save "$data_output\new_locals", replace
+	save "$data_output/new_locals", replace
 	
 	/* Copiar todos los locals y pegar en el siguiente do file */ 
 		
