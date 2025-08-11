@@ -233,7 +233,7 @@ frame change default
 
 *** Names of stages
 // e -> school
-// l -> early	se_lpv_prim
+// l -> early	
 // h -> youth 
 // b -> adults
 *** Number of indicators per stage
@@ -242,7 +242,6 @@ local nl = 3
 local nh = 3
 local nb = 3
 levelsof wbcode, local(wb_country_codes) 
-pause on
 display "Generating texts, please wait..."
 foreach ctry in `wb_country_codes' {
 	foreach x in e b h l {
@@ -252,11 +251,7 @@ foreach ctry in `wb_country_codes' {
 			gen selected = 1 if wbcode=="`ctry'"
 			sort selected // Put current country first so locals are from the current country
 			local indicator ``x'`m'_`ctry''
-			display "`indicator'"
-			pause
- }
- }
- }
+
 			** Generate locals for text
 			* Text locals
 			local countryname = wbcountrynameb

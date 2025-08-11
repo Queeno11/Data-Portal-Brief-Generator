@@ -448,7 +448,7 @@ walk2(
         stop("No se descargaron datos para ningún país.")
       }
       # 4e) Formateo
-      df_fmt <- dbv_format_dataframe(df_raw, cl_ref_areas)
+      df_fmt <- dbv_format_dataframe(df_raw, cl_ref_areas, selected_ind)
       # 4f) Guardar resultado
       datasets[[selected_ind_code]] <<- df_fmt
       
@@ -471,10 +471,12 @@ labels_dict   <- indicators %>%
   deframe()
 
 # Agregar/actualizar dos labels puntuales del indicador HVA_EPI_INF_RT
-labels_dict["i_HVA_EPI_INF_RT_0_14"] <- "Estimated incidence rate (new HIV infection per 1, 000 uninfected population, children aged 0-14 years)"
-labels_dict["i_HVA_EPI_INF_RT_15_19"] <- "Estimated incidence rate (new HIV infection per 1, 000 uninfected population, adolescents aged 15-19 years)"
-keys <- c("i_HVA_EPI_INF_RT_0_14", "i_HVA_EPI_INF_RT_15_19")
-labels_dict[keys] <- substr(labels_dict[keys], 1, 80)
+hva_labels <- c(
+  i_HVA_EPI_INF_RT_0_14 = "Estimated incidence rate (new HIV infection per 1,000 uninfected population, children aged 0-14 years)",
+  i_HVA_EPI_INF_RT_15_19 = "Estimated incidence rate (new HIV infection per 1,000 uninfected population, adolescents aged 15-19 years)"
+)
+hva_labels <- substr(hva_labels, 1, 80)
+labels_dict[names(hva_labels)] <- hva_labels
 
 # 6) Concatenar y pivotar a formato wide
 df_all <- bind_rows(datasets) %>%
