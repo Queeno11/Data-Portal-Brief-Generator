@@ -16,7 +16,7 @@ set more off
 // global root "D:\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
 global root "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator"
-global date			  	"27_jun_2023" // Date when the full process is run
+global date			  	"11_ago_2025" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 *----------------------------------Globals---------------------------------*
@@ -80,7 +80,7 @@ do "$root/07_graphs${extra}.do"
 do "$root/08_text_for_graphs.do"
 
 ** 09 - Generate the PDFs with RMarkdown
-shell Rscript "$root\09_create_Briefs.R"
+shell $Rscript "$root/09_create_Briefs.R"
 
 ** 10 - Generate the Excels --Datasheet for each country
 shell python "$root\10_add_header_and_footer.py"
