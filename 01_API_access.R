@@ -1,7 +1,7 @@
 # Carga de librerías
 #install.packages("rsdmx")    # si necesitás el equivalente SDMX
 #install.packages("dplyr")     # para manipulación de dataframes
-install.packages("labelled")
+#install.packages("labelled")
 library(rsdmx)
 library(dplyr)
 library(purrr)
@@ -11,11 +11,14 @@ library(haven)
 library(labelled)
 library(stringr)
 
+# Limpio el directorio
+rm(list = ls())
+
 # Defino las rutas y la fecha globales
   portal         <- "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator"
   data_raw       <- file.path(portal, "Data", "Data_Raw")
   data_processed <- file.path(portal, "Data", "Data_Processed")
-  date           <- "27_jun_2023"
+  date           <- "11_ago_2025"
   extra          <- ""
 
 # Definición del vector de indicadores
@@ -40,11 +43,12 @@ indicators_for_briefs <- c(
   "ED_MAT_G23",    # Math proficiency
   "HVA_EPI_DTH_RT",        # AIDS deaths rate (usamos 0–14)
   "HVA_EPI_DTH_ANN",       # AIDS deaths rate (usamos 15–24)
-  "HVA_EPI_INF_RT",        # HIV incidence rate (usamos 0–14 y 10–19)
+  "HVA_EPI_INF_RT",        # HIV incidence rate (usamos 0–14 y 15–19)
   "HVA_PMTCT_MTCT",        # MTCT rate
   "HVA_PED_ART_CVG",       # ART coverage children
   "HVA_PREV_KNOW",         # HIV knowledge 15–24
   "HVA_PREV_KNOW_TEST",    # Knowledge of test site
+  # 'HVA_PREV_CNDM_MULT',  # Per cent of young people(aged 15-24 years) who had more than one sexual partner in the past 12 months reporting the use of a condom during their last sexual intercourse
   "PT_M_18-29_SX-V_AGE-18",# Male sexual violence
   "PT_F_18-29_SX-V_AGE-18",# Female sexual violence
   "MNCH_DEMAND_FP",        # Family planning demand met
@@ -228,13 +232,12 @@ drops_irrelevant_index_levels <- function(df) {
   indicator_0_to_5_years   <- c("NT_ANT_HAZ_NE2", "NT_ANT_WHZ_NE2", "NT_ANT_WHZ_NE3", "NT_ANT_WHZ_PO2", "NT_BF_EXBF")
   indicator_6_to_23_months  <- "NT_CF_MMF"
   indicator_36_to_59_months <- "ECD_CHLD_LMPSL"
-  indicator_15_to_49_years  <- c("MNCH_ANC1", "MNCH_ANC4", "MNCH_DEMAND_FP", "MNCH_PNCMOM", "MNCH_SAB", "MNCH_ITNPREG")
+  indicator_15_to_49_years  <- c("MNCH_ANC1", "MNCH_ANC4", "MNCH_DEMAND_FP", "MNCH_PNCMOM", "MNCH_SAB", "MNCH_ITNPREG", "MNCH_PNCNB")
   indicator_18_to_29_years  <- c("PT_M_18-29_SX-V_AGE-18", "PT_F_18-29_SX-V_AGE-18")
   indicator_15_to_24_years  <- c("HVA_PREV_KNOW", "HVA_PREV_KNOW_TEST", "HVA_PREV_CNDM_MULT","HVA_EPI_DTH_ANN")
   indicator_0_to_14_years   <- c("HVA_EPI_DTH_RT", "HVA_EPI_INF_RT")
   indicator_15_to_19_years  <-  "HVA_EPI_INF_RT"
 
-  
   # 1) Renombrar "COUNTRY" a "REF_AREA" si existe
   if ("COUNTRY" %in% names(df)) {
     df <- df %>% rename(REF_AREA = COUNTRY)
@@ -327,9 +330,9 @@ drops_irrelevant_index_levels_HVA <- function(df) {
     }
     }
   # 5) Verificar no duplicados
-  if (nrow(df) != nrow(distinct(df))) {
-    stop("There are duplicated rows.")
-    }
+  #if (nrow(df) != nrow(distinct(df))) {
+   # stop("There are duplicated rows.")
+    #}
   return(df)
 }
 
@@ -460,6 +463,79 @@ walk2(
   }
 )
 
+# Reintento los indicadores que no se traen
+walk(setdiff(indicators_for_briefs, names(datasets)),
+     .f = ~{
+       selected_ind <- .x;
+       tryCatch({
+         # 4a) Determinar el parent SDMX
+         if (selected_ind == "C040202") {
+           selected_ind_code   <- selected_ind
+           selected_ind_parent <- "SDG_PROG_ASSESSMENT"
+         } else {
+           print(selected_ind)
+           row                 <- indicators[indicators$id==selected_ind, ]
+           print(row)
+           selected_ind_code   <- row$id        # Nombre del índice
+           selected_ind_parent <- row$parent      # Data set padre
+           print(selected_ind_parent)
+         }
+         # 4b) Corrección manual para WASH, ECD y MNCH_PNCNB
+         if (selected_ind %in% wash_indicators_house) {
+           selected_ind_parent <- "WASH_HOUSEHOLDS"
+         } else if (selected_ind %in% wash_indicators_school) {
+           selected_ind_parent <- "WASH_SCHOOLS"
+         } else if (selected_ind %in% wash_indicators_health) {
+           selected_ind_parent <- "WASH_HEALTHCARE_FACILITY"
+         } else if (selected_ind == "ECD_CHLD_LMPSL") {
+           selected_ind_parent <- "ECD"
+         } else if (selected_ind == "MNCH_PNCNB") {
+           selected_ind_parent <- "UNICEF,MNCH,1.0"
+         }  
+         print(selected_ind_parent)
+         
+         # 4c) Descarga y formateo
+         df_raw <- map_dfr(cl_ref_areas$REF_AREA, function(pais) {
+           message("Descargando país: ", pais)
+           
+           tryCatch({
+             query_indicator(
+               indicator   = selected_ind_code,
+               dataflow    = selected_ind_parent,
+               startPeriod = "2010",
+               countrycode = pais
+             )
+           }, error = function(e) {
+             message("❌ No hay data para el país: ", pais, "e  indicador", selected_ind)
+             message("  ➤ ", e$message)
+             errores_paises <<- bind_rows(
+               errores_paises,
+               tibble(
+                 indicator = selected_ind_code,
+                 country   = pais
+               )
+             )  # Agrega país con error a lista global
+             NULL  # Retorna NULL para que map_dfr lo ignore
+           })
+         })
+         
+         # 4d) Verificar descarga
+         if (nrow(df_raw) == 0) {
+           stop("No se descargaron datos para ningún país.")
+         }
+         # 4e) Formateo
+         df_fmt <- dbv_format_dataframe(df_raw, cl_ref_areas, selected_ind)
+         # 4f) Guardar resultado
+         datasets[[selected_ind_code]] <<- df_fmt
+         
+       }, error = function(e) {
+         message("Error en: ", selected_ind)
+         message(e$message)
+         errores <<- c(errores, selected_ind)
+       })
+     }
+)
+
 # 5) Preparar etiquetas para Stata
 labels_dict   <- indicators %>%
   filter(id %in% names(datasets)) %>%
@@ -470,10 +546,14 @@ labels_dict   <- indicators %>%
   ) %>%
   deframe()
 
+# Eliminar i_HVA_EPI_INF_RT
+labels_dict <- labels_dict[!(names(labels_dict) %in% "i_HVA_EPI_INF_RT")]
+
 # Agregar/actualizar dos labels puntuales del indicador HVA_EPI_INF_RT
 hva_labels <- c(
   i_HVA_EPI_INF_RT_0_14 = "Estimated incidence rate (new HIV infection per 1,000 uninfected population, children aged 0-14 years)",
-  i_HVA_EPI_INF_RT_15_19 = "Estimated incidence rate (new HIV infection per 1,000 uninfected population, adolescents aged 15-19 years)"
+  i_HVA_EPI_INF_RT_15_19 = "Estimated incidence rate (new HIV infection per 1,000 uninfected population, adolescents aged 15-19 years)",
+  i_C040202 = "Participation rate in organized learning"
 )
 hva_labels <- substr(hva_labels, 1, 80)
 labels_dict[names(hva_labels)] <- hva_labels
@@ -528,15 +608,15 @@ df_ors <-  query_indicator(
 )
 
 df_ors <-  query_indicator(
-  indicator   = "HVA_EPI_INF_RT",
-  dataflow    = "HIV_AIDS",
+  indicator   = "NT_CF_MMF",
+  dataflow    = "NUTRITION",
   startPeriod = "2010",
   countrycode = "ARG"
 )
 
 df_ors <-  query_indicator(
-  indicator   = "HVA_EPI_INF_RT",
-  dataflow    = "HIV_AIDS",
+  indicator   = "MNCH_PNCNB",
+  dataflow    = "UNICEF,MNCH,1.0",
   startPeriod = "2010",
   countrycode = "AFG"
 )
@@ -577,9 +657,158 @@ df_bol <- df_raw %>%
 
 datasets[["NT_ANT_HAZ_NE2"]] <- dbv_format_dataframe(df_raw, cl_ref_areas)
 df_raw2 <-drops_irrelevant_index_levels(df_raw)
-df_raw2 %>%
+df_raw %>%
   filter(duplicated(.) | duplicated(., fromLast = TRUE)) %>% 
   View()
 
 View(datasets[["WS_HCF_H-B"]])
 
+
+
+
+
+
+selected_ind <- "HVA_PREV_KNOW_TEST"
+tryCatch({
+  # 4a) Determinar el parent SDMX
+  if (selected_ind == "C040202") {
+    selected_ind_code   <- selected_ind
+    selected_ind_parent <- "SDG_PROG_ASSESSMENT"
+  } else {
+    print(selected_ind)
+    row                 <- indicators[indicators$id==selected_ind, ]
+    print(row)
+    selected_ind_code   <- row$id        # Nombre del índice
+    selected_ind_parent <- row$parent      # Data set padre
+    print(selected_ind_parent)
+  }
+  # 4b) Corrección manual para WASH, ECD y MNCH_PNCNB
+  if (selected_ind %in% wash_indicators_house) {
+    selected_ind_parent <- "WASH_HOUSEHOLDS"
+  } else if (selected_ind %in% wash_indicators_school) {
+    selected_ind_parent <- "WASH_SCHOOLS"
+  } else if (selected_ind %in% wash_indicators_health) {
+    selected_ind_parent <- "WASH_HEALTHCARE_FACILITY"
+  } else if (selected_ind == "ECD_CHLD_LMPSL") {
+    selected_ind_parent <- "ECD"
+  } else if (selected_ind == "MNCH_PNCNB") {
+    selected_ind_parent <- "UNICEF,MNCH,1.0"
+  }  
+  print(selected_ind_parent)
+  
+  # 4c) Descarga y formateo
+  df_raw <- map_dfr(cl_ref_areas$REF_AREA, function(pais) {
+    message("Descargando país: ", pais)
+    
+    tryCatch({
+      query_indicator(
+        indicator   = selected_ind_code,
+        dataflow    = selected_ind_parent,
+        startPeriod = "2010",
+        countrycode = pais
+      )
+    }, error = function(e) {
+      message("❌ No hay data para el país: ", pais, "e  indicador", selected_ind)
+      message("  ➤ ", e$message)
+      errores_paises <<- bind_rows(
+        errores_paises,
+        tibble(
+          indicator = selected_ind_code,
+          country   = pais
+        )
+      )  # Agrega país con error a lista global
+      NULL  # Retorna NULL para que map_dfr lo ignore
+    })
+  })
+  
+  # 4d) Verificar descarga
+  if (nrow(df_raw) == 0) {
+    stop("No se descargaron datos para ningún país.")
+  }
+  # 4e) Formateo
+  df_fmt <- dbv_format_dataframe(df_raw, cl_ref_areas, selected_ind)
+  # 4f) Guardar resultado
+  datasets[[selected_ind_code]] <- df_fmt
+  
+}, error = function(e) {
+  message("Error en: ", selected_ind)
+  message(e$message)
+  errores <<- c(errores, selected_ind)
+})
+
+if ("COUNTRY" %in% names(df_raw)) {
+  df_raw <- df_raw %>% rename(REF_AREA = COUNTRY)
+}
+
+# 2) Obtener indicador único
+indicador <- df_raw %>% pull(INDICATOR) %>% unique() %>% .[1]
+
+# 3) Columnas esenciales y columnas a procesar
+essentials <- c("REF_AREA", "INDICATOR", "TIME_PERIOD", "SEX", "DATA_SOURCE", "OBS_VALUE")
+extras     <- setdiff(names(df_raw), essentials)
+
+# 4) Recorrer columnas extras
+for (col in extras) {
+  # a) Si hay totales (_T), quedarse solo con ellos
+  if (any(df_raw[[col]] == "_T", na.rm = TRUE)) {
+    df_raw <- df_raw %>% filter(.data[[col]] == "_T") %>% select(-all_of(col))
+    
+    # b) Si la columna es AGE, aplicar filtros por indicador
+  } else if (col == "AGE") {
+    if (indicador %in% indicator_0_to_5_years) {
+      df_raw <- df_raw %>% filter(AGE %in% c("Y0T4", "M0T5")) # FIX ME: DEJAR SOLO y0t4
+    } else if (indicador %in% indicator_6_to_23_months) {
+      df_raw <- df_raw %>% filter(AGE == "M6T23")
+    } else if (indicador %in% indicator_36_to_59_months) {
+      df_raw <- df_raw %>% filter(AGE == "M36T59")
+    } else if (indicador %in% indicator_15_to_49_years) {
+      df_raw <- df_raw %>% filter(AGE == "Y15T49")
+    } else if (indicador %in% indicator_18_to_29_years) {
+      df_raw <- df_raw %>% filter(AGE == "Y18T29")
+    } else if (indicador %in% indicator_15_to_24_years) {
+      df_raw <- df_raw %>% filter(AGE == "Y15T24")
+    } else if (indicador %in% indicator_0_to_14_years) {
+      df_raw <- df_raw %>% filter(AGE == "Y0T14")
+    } else if (indicador %in% indicator_15_to_19_years) {
+      df_raw <- df_raw %>% filter(AGE == "Y15T19")
+    } else {
+      # si no entra en ningún grupo, entonces se elimina AGE sin filtrar
+      df_raw <- df_raw %>% select(-AGE)
+    }
+    # c) Si no es ni totales ni AGE, eliminar la columna
+  } else {
+    df_raw <- df_raw %>% select(-all_of(col))
+  }
+}
+
+# 5) Verificar no duplicados
+if (nrow(df) != nrow(distinct(df))) {
+  stop("There are duplicated rows.")
+}
+
+
+
+df_raw <- drops_irrelevant_index_levels(df_raw)
+
+
+# 2) Unir la etiqueta de país (cl_ref_areas) al data.frame
+#   REF_AREA (código de país) y name (etiqueta en texto)
+df_raw <- df_raw %>%
+  left_join(
+    cl_ref_areas %>%
+      rename(COUNTRY = name),
+    by = "REF_AREA"
+  )
+
+# 3) Asegurar columna SEX (total ambos sexos)
+df_raw <- df_raw %>%
+  mutate(SEX = "_T") # FIX ME: Se estan cambiando todos
+
+# 4) Reordenar columnas en el orden deseado
+df_raw <- df_raw %>%
+  select(REF_AREA, COUNTRY, INDICATOR, TIME_PERIOD, SEX, OBS_VALUE)
+
+codes <- purrr::map_chr(indicators_for_briefs, \(id) {
+  if (id == "C040202") id else indicators$id[match(id, indicators$id)]
+})
+sum(duplicated(codes)); unique(codes[duplicated(codes)])
