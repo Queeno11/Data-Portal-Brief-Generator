@@ -5,7 +5,8 @@ cls
 set more off
 
  *--------------------------------Directories-------------------------------*
-global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
+*global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
+global root "C:\Users\camii\Desktop\WB\Data-Portal-Brief-Generator"
  // global root "C:\Users\Nico\Documents\World Bank\Data Portal"
 *global root "C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
 *global root "C:\Users\Jessie\Documents\Meli\Banco Mundial\HC and Climate Change\Data Portal\"
@@ -16,26 +17,26 @@ global data_processed "$portal\Data_Processed"
 global date			  	"26_jul_2024" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
-*------------------------Codes and Country names---------------------------*/
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_ILO.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_ILO", replace
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_unicef.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_unicef", replace
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_FAO.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_FAO", replace
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_who.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_who", replace
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_UN.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_UN", replace
-import excel "$data_raw/Country codes & metadata/wbcodes_equiv_unesco.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes_equiv_unesco", replace
-import excel "$data_raw/Country codes & metadata/wbcodes.xlsx", firstrow clear
-save "$data_processed/Country codes/wbcodes", replace
-import excel "$data_raw/Country codes & metadata/country_classification.xlsx", firstrow clear
-save "$data_processed/country_class", replace
+*------------------------Codes and Country names---------------------------*
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_ILO.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_ILO", replace
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unicef.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_unicef", replace
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_FAO.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_FAO", replace
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_who.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_who", replace
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_UN.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_UN", replace
+import excel "$data_raw\Country codes & metadata\wbcodes_equiv_unesco.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes_equiv_unesco", replace
+import excel "$data_raw\Country codes & metadata\wbcodes.xlsx", firstrow clear
+save "$data_processed\Country codes\wbcodes", replace
+import excel "$data_raw\Country codes & metadata\country_classification.xlsx", firstrow clear
+save "$data_processed\country_class", replace
 
 
-*--------------------------------------------------------------------------*
+*--------------------------------------------------------------------------*/
 *----------------------------------UNICEF----------------------------------*
 *--------------------------------------------------------------------------*
 
@@ -182,7 +183,28 @@ save "$data_processed/all_who", replace
 
 
 * Add downloaded data for suicide rates, ages 15-19 (full series not available in API or interactive. You need to download the complete database from: https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/self-inflicted-injuries)
+import delimited "$data_raw/WHOMortalityDatabase", delim(",") varnames(1) clear  
+
+***CAMI FIX:
+* Variable's names did nor aligned properly
 import delimited "$data_raw/WHOMortalityDatabase", delim(",") clear
+
+rename v1 regioncode
+rename v2 regionname
+rename v3 countrycode
+rename v4 countryname
+rename v5 year
+rename v6 sex
+rename v7 agegroupcode
+rename v8 agegroup
+rename v9 number
+rename v10 percentageofcausespecificdeaths
+rename v11 agestandardizeddeathrateper100k
+rename v12 deathrateper100000population
+
+drop in 1
+***
+
 keep if agegroupcode=="Age15_19" 
 rename deathrateper100000population SDGSUICIDE
 drop if missing(SDGSUICIDE)
@@ -321,7 +343,7 @@ save "$data_processed/all_uis", replace
 // save "$data_processed\FAO_lowbirthweight",replace
 
 *Undernourishment
-import excel "$data_raw/FAOSTAT_data.xlsx", clear firstrow
+import excel "$data_raw/FAOSTAT_data.xls", clear firstrow // CAMI FIX
 rename Area FAO_countryname
 gen gender = .
 replace gender = 0
@@ -372,13 +394,13 @@ save "$data_processed/all_FAO", replace
 *Forcibly displaced population: * UPDATED
 **Includes: Internal displaced population (IDPs), Refugees, Asylum-seekers and others.
 import excel "$data_raw/UNHCR_Forced_Displacement", first clear
-rename CountryoforiginISO uncode
+rename CountryofOriginISO uncode // CAMI FIX
 rename Year year
-rename IDPsofconcerntoUNHCR IDPs
-rename Asylumseekers A_seekers
-rename RefugeesunderUNHCRsmandate refugees
-rename Othersofconcern FD_others
-drop if (Countryoforigin=="Stateless" | Countryoforigin=="Tibetan" | Countryoforigin=="Unknown")
+*rename IDPsofconcerntoUNHCR IDPs
+rename AsylumSeekers A_seekers
+rename Refugees refugees
+rename OOC FD_others
+drop if (CountryofOrigin=="Stateless" | CountryofOrigin=="Tibetan" | CountryofOrigin=="Unknown")
 gen gender = .
 replace gender = 0
 lab var IDPs "Change in the number of internal displaced population of concern to UNHCR"
@@ -599,6 +621,9 @@ save "$data_processed/complete_series", replace
 use "$data_processed/complete_series", clear
 // rename NUTRITION_ANAEMIA_CHILDREN_PREV NUTRITION_ANAEMIA_CHILDREN
 rename * a_*
+* Convert ALL string variables containing numbers to numeric CAMI FIX
+destring a_v210041, replace force
+
 rename (a_wbcode a_year a_gender)(wbcode year gender)
 reshape long a_, i(wbcode year gender) j(code) string
 rename a_ value

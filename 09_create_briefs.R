@@ -5,7 +5,7 @@ library(here)
 library(tinytex)
 
 # print(path)
-setwd("C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator")
+setwd("/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator")
 extra_text <- ""
 dir.create('Briefs')
 
@@ -53,19 +53,19 @@ for (i in 1:length(countrynamet)) {
     
     tryCatch({
       
-      output_folder <- file.path("C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator\\Briefs", country) 
+      output_folder <- file.path("/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator/Briefs", country) 
       output_file   <- file.path(output_folder, paste0(country, extra_text)) 
       
       dir.create(output_folder)
       
       # Copy necessary files to output directory
       file.copy(from = file.path("Graphs", paste0("p2_", wbcode, "_stages", extra_text, ".png")),
-                to = "C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator",
+                to = "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator",
                 overwrite = TRUE)
   
       ## Render Rmd to PDF
       render(
-        input = "C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator\\HC_1page_design.Rmd",
+        input = "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator/HC_1page_design.Rmd",
         output_format="pdf_document", #keep_tex= TRUE, #keep_md=TRUE,
         output_file = output_file, 
         params = list(countrynamet = country),
@@ -75,7 +75,7 @@ for (i in 1:length(countrynamet)) {
   
       
       # Remove files
-      file.remove(file.path("C:\\Users\\pilih\\Documents\\World Bank\\Briefs\\Briefs generator\\Data-Portal-Brief-Generator", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")))
+      file.remove(file.path("/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator", paste0("p2_", wbcode, "_stages", extra_text, ".jpg")))
   
       ## Move the log to briefs/Logs folder
       log_filename <- paste0(country, extra_text, ".log")
