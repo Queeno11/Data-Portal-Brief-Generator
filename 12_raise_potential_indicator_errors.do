@@ -9,13 +9,14 @@ clear all
 set more off	
 set graph off
 
-gl data_output "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Output"
-gl data_processed "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Processed"
-gl date "26_jul_2024"
+*gl data_output "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Output"
+*gl data_processed "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator\Data\Data_Processed"
+
+gl date "28_ago_2025"
 *--------------------------Get selected indicators--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
-use "$data_output\new_locals", clear
+use "$data_output/new_locals", clear
 local n_locals = _N
 split locals, limit(1) // Create a column with only the local names
 gen is_local = .
@@ -35,7 +36,7 @@ assert mi(is_local)==0
 display "Done!"
 
 *--------------------------Start analysis--------------------------*
-use "$data_output\data_briefs_allcountries", replace
+use "$data_output/data_briefs_allcountries", replace
 
 * Remove observations with no HCI
 drop if hci==.
@@ -101,13 +102,13 @@ qui foreach ctry in `wb_country_codes' {
 
 * Potential errors by country
 frame change myexcel
-export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by country") firstrow(variables) replace
+export excel "$data_output/potential_indicator_errors_50.xlsx", sheet("by country") firstrow(variables) replace
 
 * Potential errors by indicator
 gen difference = latest_value - previous_value
 collapse (count) n=difference (p25) p25=difference (median) p50=difference (p75) p75=difference (mean) mean=difference, by(indicator_name)
 gsort -n
-export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by indicator") firstrow(variables)
+export excel "$data_output/potential_indicator_errors_50.xlsx", sheet("by indicator") firstrow(variables)
 
 
 *------------------------------------------------------------------------------*
@@ -115,18 +116,7 @@ export excel "$data_output\potential_indicator_errors_50.xlsx", sheet("by indica
 *------------------------------------------------------------------------------*
 
 
-use "$data_output/new_locals_23.dta", clear
-split local, gen(code)
-split code1, p(_) gen(country)
-drop code1
-rename (code2 country1 country2) (code position wbcode)
-keep wbcode position code
-drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
-order wbcode position code
-sort wbcode position code
-save "$data_output/new_locals_23_clean_${date}.dta", replace
-
-use "$data_output/new_locals.dta", clear
+use "$data_output/new_locals_24.dta", clear
 split local, gen(code)
 split code1, p(_) gen(country)
 drop code1
@@ -137,8 +127,19 @@ order wbcode position code
 sort wbcode position code
 save "$data_output/new_locals_24_clean_${date}.dta", replace
 
-use "$data_output/new_locals_23_clean_${date}.dta", clear
-merge 1:1 wbcode code using "$data_output/new_locals_24_clean_${date}.dta", keep(1 2)
+use "$data_output/new_locals.dta", clear
+split local, gen(code)
+split code1, p(_) gen(country)
+drop code1
+rename (code2 country1 country2) (code position wbcode)
+keep wbcode position code
+drop if (position=="lb1"|position=="lb2"|position=="lb3"|position=="le1"|position=="le2"|position=="le3"|position=="lh1"|position=="lh2"|position=="lh3"|position=="ll1"|position=="ll2"|position=="ll3")
+order wbcode position code
+sort wbcode position code
+save "$data_output/new_locals_25_clean_${date}.dta", replace
+
+use "$data_output/new_locals_24_clean_${date}.dta", clear
+merge 1:1 wbcode code using "$data_output/new_locals_25_clean_${date}.dta", keep(1 2)
 merge m:1 wbcode using "$data_output/data_briefs", keep(3) nogen
 rename _merge m
 keep wbcode wbcountryname position code m

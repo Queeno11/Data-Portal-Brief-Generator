@@ -14,16 +14,16 @@ try:
     )  # Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
 except:
-    root = r"D:\World Bank\Data-Portal-Brief-Generator"
+    root = r"/Users/florenciaruiz/Downloads/Data-Portal-Brief-Generator"
     # portal = r"C:\Users\llohi\OneDrive - Universidad Torcuato Di Tella\WB\Data-Portal-Brief-Generator"
-    data_raw = rf"{root}\Data\Data_Raw"
-    data_processed = rf"{root}\Data\Data_Processed"
-    data_output = rf"{root}\Data\Data_Output"
+    data_raw = rf"{root}/Data/Data_Raw"
+    data_processed = rf"{root}/Data/Data_Processed"
+    data_output = rf"{root}/Data/Data_Output"
     extra = ""
 
-sources = rf"{root}\Sources"
-briefs = rf"{root}\Briefs"
-excels = rf"{root}\Datasheets"
+sources = rf"{root}/Sources"
+briefs = rf"{root}/Briefs"
+excels = rf"{root}/Datasheets"
 
 import os
 import pandas as pd
@@ -159,12 +159,12 @@ def add_header_and_footer(doc_path, header_path, out_path, two_pages=False):
     doc.ez_save(out_path)
 
 
-df = pd.read_stata(rf"{data_output}\ordered_text.dta")
+df = pd.read_stata(rf"{data_output}/ordered_text.dta")
 df = df.sort_values(by=["wbregion", "wbcode"])
 df = df[df.wbcode.isin(["KEN"])]
 
-os.makedirs(rf"{briefs}\For Print", exist_ok=True)
-headers = list_files_in_directory(rf"{sources}\\Header Images\\Headers pngs")
+os.makedirs(rf"{briefs}/For Print", exist_ok=True)
+headers = list_files_in_directory(rf"{sources}/Header Images/Headers pngs")
 for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(), total=df.shape[0]):
     try:
         wbcode = country_data[1]
@@ -175,15 +175,15 @@ for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(
             wbcode = "BIS"
 
         # try:
-        brief_path = rf"{briefs}\{wbcountryname}\{wbcountryname}{extra}.pdf"
+        brief_path = rf"{briefs}/{wbcountryname}/{wbcountryname}{extra}.pdf"
         header_path = [header for header in headers if f"HCCB-{wbcode}" in header]
         if two_pages is False:
             header_path = [header_path[0]]
             
-        out_folder = rf"{briefs}\For print\{wbregion}"
+        out_folder = rf"{briefs}/For print/{wbregion}"
         os.makedirs(out_folder, exist_ok=True)
         outname = fix_dataportal_country_names(wbcountryname)
-        out_path = rf"{out_folder}\{outname}{extra}.pdf"
+        out_path = rf"{out_folder}/{outname}{extra}.pdf"
 
         add_header_and_footer(brief_path, header_path, out_path, two_pages=two_pages)
 

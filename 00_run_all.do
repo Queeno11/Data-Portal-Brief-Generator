@@ -15,7 +15,7 @@ set more off
 // global root "D:\Laboral\World Bank\Data-Portal-Brief-Generator"
 // global root "D:\World Bank\Data-Portal-Brief-Generator"
 // global root "C:\Users\pilih\Documents\World Bank\Briefs\Briefs generator\Data-Portal-Brief-Generator"
-global root "/Users/florenciaruiz/Library/Mobile Documents/com~apple~CloudDocs/World Bank/Briefs/Data-Portal-Brief-Generator"
+global root "/Users/florenciaruiz/Downloads/Data-Portal-Brief-Generator"
 global date			  	"11_ago_2025" // Date when the full process is run
 global extra			""			  // Placeholder for testing, just add "_test" or something like that to avoid overwrite db
 
