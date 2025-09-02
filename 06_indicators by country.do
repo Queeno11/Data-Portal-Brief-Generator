@@ -154,7 +154,7 @@
 	*		- First try to select the highest ranked indicators for the remaining dimensions (sorted by dim_rank)
 	*		- Then, if there is no data for the country-category, then populate with the top ranked indicators for the category
 
-
+	pause on
 	levelsof(wbcode), local(countries)
 	levelsof(category), local(categories)
 	levelsof(topic), local(topics)
@@ -188,7 +188,6 @@
 				}
 				else restore
 			}
-
 			if `remaining_indicators'!=0 {
 				
 				*** 1) Si hay data: busco completar con otros indicadores de la misma stage, hasta que se me acaben los indicadores o complete los 3 de la stage
@@ -221,8 +220,10 @@
 										
 					keep if category==`category'
 					if `remaining_indicators'<3 {
+						* list name_portal if inlist(name_portal, `already_selected') // si quiero ver cuales se descartan
 						drop if inlist(name_portal, `already_selected')
 					}
+					
 					local name = ""
 					while `remaining_indicators'>0 {
 						frame change top_ranked_indicators
@@ -233,6 +234,7 @@
 						local lbl = name
 						local rank = rank
 						drop if name_portal == "`name'"	
+						
 						
 						* Create new observation with the data of the top_ranked indicator
 						frame change default

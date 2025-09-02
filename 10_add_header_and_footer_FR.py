@@ -169,6 +169,12 @@ df = df[~df["wbcode"].isin(AGG_CODES)]
 os.makedirs(rf"{briefs}/For Print", exist_ok=True)
 headers = list_files_in_directory(rf"{sources}/Header Images/Headers pngs")
 
+done = 0
+skipped_pdf = 0
+skipped_header = 0
+skipped_footer = 0
+errors = 0
+
 for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(), total=df.shape[0]):
     try:
         wbcode = country_data[1]
@@ -183,13 +189,36 @@ for country_data in tqdm(df[["wbcode", "wbcountryname", "wbregion"]].itertuples(
         header_path = [header for header in headers if f"HCCB-{wbcode}" in header]
         if two_pages is False:
             header_path = [header_path[0]]
-            
+
+        #---- Header Check ----
+        if not header_path:
+            print(f"[SKIP head] {wbcode} -> no header matching 'HCCB-{wbcode}'")
+            skipped_header += 1
+            continue
+        missing_h = [hp for hp in header_path if not os.path.isfile(hp)]
+        if missing_h:
+            print(f"[SKIP head] {wbcode} -> missing header files: {missing_h}")
+            skipped_header += 1
+            continue
+
+        missing_f = [fp for fp in footer_path if not os.path.isfile(fp)]
+        if missing_f:
+            print(f"[SKIP foot] {wbcode} -> missing footer files: {missing_f}")
+            skipped_footer += 1
+            continue
+        #----
+        
         out_folder = rf"{briefs}/For print/{wbregion}"
         os.makedirs(out_folder, exist_ok=True)
         outname = fix_dataportal_country_names(wbcountryname)
         out_path = rf"{out_folder}/{outname}{extra}.pdf"
 
+        print(f"[DO   ] {wbcode} -> {out_path}")
         add_header_and_footer(brief_path, header_path, out_path, two_pages=two_pages)
-
+        done += 1
+        
     except Exception as exception:
         print(f"Error with {wbcode}: {exception}")
+        errors += 1
+
+print(f"\nSummary -> done:{done}  skip_pdf:{skipped_pdf}  skip_header:{skipped_header}  skip_footer:{skipped_footer}  errors:{errors}")

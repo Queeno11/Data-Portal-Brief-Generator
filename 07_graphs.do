@@ -6,7 +6,7 @@
 clear all
 set more off	
 set graph off
-
+pause on
 *--------------------------Local for page 2--------------------------*
 * This locals are the selected indicators for each country based on the availability of data
 * and the indicators ranking. They come from the previous do file.
@@ -28,6 +28,14 @@ qui forvalues i  = 1(1)`n_locals' {
 }
 assert mi(is_local)==0
 display "Done!"
+
+* CHEQUEOS
+di "`e1_ABW'"
+di "`b1_ABW'"
+di "`b2_ABW'"
+di "`b3_ABW'"
+di "`h1_ABW'"
+di "`b2_AFG'"
 
 *------------------------------------------------------------------------------*
 *-----------------------------------GRAPHS-------------------------------------*
@@ -108,7 +116,7 @@ local cc8 black // "15 119 157"
 /* Loop with all countries */
 foreach i of local obs {
 	*Unmute to run only one or some countries /
-//    	if !inlist(wbcode[`i'], "AUS", "ARG", "AFG", "ETH", "CAN", "JPN") continue
+//   	if !inlist(wbcode[`i'], "ABW") continue
 	qui capture {
 	*Unmute if the code suddenly stop to avoid generating all again*
 	local ct=wbcode[`i']
@@ -117,6 +125,7 @@ foreach i of local obs {
 // 	if (_rc == 601 ) continue
 	
 	local ctry=wbcode in `i'
+	noi di "`ctry'"
 	local region=wbregion in `i'
 	local income=wbincomegroup in `i'
 	local income2=incomegroup in `i'
@@ -273,10 +282,10 @@ foreach i of local obs {
     local second_col_marker_pos = `first_col_marker_pos' + 1.85
     local second_col_text_pos = `second_col_marker_pos' + 0.05
 
-	qui foreach x in e b h l {
+	foreach x in e b h l {
 		forvalues m = 1(1)`n`x'' {
-// 			display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
-			qui tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
+ 			noi display "local `x'`m'_`ctry' ``x'`m'_`ctry''"
+			noi tab ``x'`m'_`ctry'' if wbcode=="`ctry'"		
 			gen obs_``x'`m''_`i' = 1 if `=scalar(r(N))'>0
 			replace obs_``x'`m''_`i' = 0 if `=scalar(r(N))'==0
 			replace obs_``x'`m''_`i' = 0 if ``x'`m'_`ctry''[`i']==0

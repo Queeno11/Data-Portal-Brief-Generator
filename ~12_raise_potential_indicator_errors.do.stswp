@@ -3,7 +3,7 @@
 *------------------------------------------------------------------------------*
 
 * Creates excel file where, for the same indicator and the same country, the latest data differs from 5 years ago more
-* than 20%.  
+* than 50%.  
 
 clear all
 set more off	

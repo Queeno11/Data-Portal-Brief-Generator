@@ -28,8 +28,8 @@
 	replace gender=0 if code=="uhci_m" & gender==1
 	
 	*CHECK
-	drop if code=="emp_2wap_f_a" & gender!=2
-	drop if code=="emp_2wap_m_a" & gender!=1
+	*drop if code=="emp_2wap_f_a" & gender!=2
+	*drop if code=="emp_2wap_m_a" & gender!=1
 	replace gender=0 if code=="emp_2wap_f_a"
 	replace gender=0 if code=="emp_2wap_m_a"
 	
