@@ -88,4 +88,4 @@ shell python "$root\10_add_header_and_footer.py"
 python script "$root\11_create_excels.py"
 
 ** 12 - Raise potential errors in indicators data
-do "$root\12_raise_potential_indicator_errors.do"
+do "$root/12_raise_potential_indicator_errors.do"
