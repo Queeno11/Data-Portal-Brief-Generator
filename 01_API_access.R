@@ -355,8 +355,8 @@ dbv_format_dataframe <- function(df, cl_ref_areas, indicator) {
     )
   
   # 3) Asegurar columna SEX (total ambos sexos)
-  df <- df %>%
-    mutate(SEX = "_T") # FIX ME: Se estan cambiando todos
+  #df <- df %>%
+   # mutate(SEX = "_T") # FIX ME: Se estan cambiando todos
   
   # 4) Reordenar columnas en el orden deseado
   df <- df %>%
@@ -600,18 +600,26 @@ indicator_list <- get_list_of_unicef_indicators()
 indicator_list <- get_list_of_unicef_indicators(parent_database="SDG_PROGRESS_ASSESSMENT")
 
 df_ors <- query_indicator("C040202", "SDG_PROGRESS_ASSESSMENT", "ARG")
+
 df_ors <-  query_indicator(
-  indicator   = "NT_ANT_HAZ_NE2",
-  dataflow    = "NUTRITION",
+  indicator   = "C040202",
+  dataflow    = "SDG_PROGRESS_ASSESSMENT",
   startPeriod = "2010",
   countrycode = "ARG"
 )
 
 df_ors <-  query_indicator(
-  indicator   = "NT_CF_MMF",
-  dataflow    = "NUTRITION",
+  indicator   = "HVA_EPI_DTH_RT",
+  dataflow    = "HIV_AIDS",
   startPeriod = "2010",
-  countrycode = "ARG"
+  countrycode = "AFG"
+)
+
+df_ors <-  query_indicator(
+  indicator   = "HVA_EPI_INF_RT",
+  dataflow    = "HIV_AIDS",
+  startPeriod = "2010",
+  countrycode = "AFG"
 )
 
 df_ors <-  query_indicator(
@@ -623,7 +631,8 @@ df_ors <-  query_indicator(
 unique(df_ors$AGE)
 
 df_ors_2 <- drops_irrelevant_index_levels_HVA(df_ors)
-df_ors_3 <-  dbv_format_dataframe(df_ors_2, cl_ref_areas, HVA_EPI_INF_RT)
+df_ors_2 <- drops_irrelevant_index_levels(df_ors)
+df_ors_3 <-  dbv_format_dataframe(df_ors_2, cl_ref_areas, "HVA_EPI_INF_RT")
 
 df_SDG <- as.data.frame(msg)
 
